@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-docker run -it \
+./bin/compile
+
+sudo docker run -it \
   -p 80:2375 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $(pwd):/server \
-  --entrypoint /server/parsec-server \
-  danielsuo/parsec-server
+  --entrypoint /server/build/turkey \
+  danielsuo/turkey

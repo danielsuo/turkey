@@ -3,13 +3,13 @@
 # SOURCE: http://blog.yohanliyanage.com/2015/05/docker-clean-up-after-yourself/
 
 # Make sure exited containers are deleted
-docker rm -v $(docker ps -a -q -f status=exited)
+sudo docker rm -v $(sudo docker ps -a -q -f status=exited)
 
 # Remove unwanted dangling images
-docker rmi $(docker images -f "dangling=true" -q)
+sudo docker rmi $(sudo docker images -f "dangling=true" -q)
 
 # Clean up vfs
-docker volume rm $(docker volume ls -qf dangling=true)
+sudo docker volume rm $(sudo docker volume ls -qf dangling=true)
 
 # Stop / remove all containers
 # docker stop $(docker ps -a -q)

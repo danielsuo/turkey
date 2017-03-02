@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cp .gitignore .dockerignore
-docker build -t danielsuo/parsec-server:latest .
+sudo docker build -t danielsuo/turkey:latest .
