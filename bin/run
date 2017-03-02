@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+docker run -it \
+  -p 80:2375 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $(pwd):/server \
+  --entrypoint /server/parsec-server \
+  danielsuo/parsec-server
