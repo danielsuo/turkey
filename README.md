@@ -1,3 +1,12 @@
 ## TODO
-- Launch docker images with shared memory
 - Share some memory
+  - https://users.cs.cf.ac.uk/Dave.Marshall/C/node27.html
+  - http://stackoverflow.com/questions/15035248/linux-shmget-function-in-c
+  - http://stackoverflow.com/questions/29173193/shared-memory-with-docker-containers-docker-version-1-4-1
+  - https://dzone.com/articles/docker-in-action-the-shared-memory-namespace
+- Launch docker images with shared memory
+- Send signals between containers
+  - https://medium.com/@gchudnov/trapping-signals-in-docker-containers-7a57fdda7d86#.526m535mb
+  - https://blog.confirm.ch/sending-signals-docker-container/
+  - https://users.cs.cf.ac.uk/Dave.Marshall/C/node24.html
+  - http://blog.dixo.net/2015/02/sending-signals-from-one-docker-container-to-another/

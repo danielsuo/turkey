@@ -14,7 +14,6 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Add json
 set(JSON_DIR lib/json)
-#add_subdirectory(${JSON_DIR})
 
 # Add libdocker
 set(LIBDOCKER_DIR lib/libdocker)
