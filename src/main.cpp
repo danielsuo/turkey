@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Docker.h"
+#include "Container.h"
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -145,12 +146,15 @@ int main(int argc, char *argv[]) {
   int ncore = std::thread::hardware_concurrency();
   std::cout << "Number of cores: " << ncore << std::endl;
 
-  Response res = Docker::GetInstance().GET("http://v1.25/images/json");
-  std::cout << res.data << std::endl;
+  Response res = Docker::GetInstance().GET("images/json");
+  std::cout << res.data.dump() << std::endl;
 
-  res = Docker::GetInstance().POST("http://v1.25/containers/create",
-    "{\"Image\": \"alpine\", \"Cmd\": [\"echo\", \"hello world\"]}");
-  std::cout << res.data << std::endl;
+  // res = Docker::GetInstance().POST("containers/create",
+  //   "{\"Image\": \"alpine\", \"Cmd\": [\"echo\", \"hello world\"]}");
+  // std::cout << res.data.dump() << std::endl;
+
+  Container container("/home/ubuntu/turkey/jobs/client.json");
+  container.start();
 
   // if (argc < 2 || 0 == strncmp(argv[1], SRV_FLAG, strlen(SRV_FLAG))) {
   //     producer();

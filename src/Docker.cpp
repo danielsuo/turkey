@@ -35,6 +35,12 @@ Docker::~Docker() {
 
 void Docker::initBuffer() {
   _buffer.data = (char *)malloc(1);
+
+  if (_buffer.data == NULL) {
+    perror("ERROR: failed to initialize buffer.");
+    exit(1);
+  }
+
   _buffer.size = 0;
 }
 
@@ -44,11 +50,18 @@ void Docker::initCurl() {
   curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &_buffer);
 }
 
-void Docker::executeCurl(std::string url) {
+void Docker::performCurl(std::string endpoint) {
   initBuffer();
 
+  std::string url = "http://" + DOCKER_API_VERSION + "/" + endpoint;
   curl_easy_setopt(_curl, CURLOPT_URL, url.c_str());
-  code = curl_easy_perform(_curl);
+  CURLcode curl_code = curl_easy_perform(_curl);
+
+  if (curl_code != CURLE_OK) {
+    perror(curl_easy_strerror(curl_code));
+  }
+
+  curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &code);
   curl_easy_reset(_curl);
 }
 
@@ -56,32 +69,34 @@ Response Docker::getResponse() {
   Response response;
   response.code = code;
 
-  if (code != CURLE_OK) {
-    perror(curl_easy_strerror(code));
+  if (_buffer.size > 0) {
+    std::string data(_buffer.data);
+    response.data = json::parse(data);
+    free(_buffer.data);
+    _buffer.size = 0;
+  } else {
+    response.data = json::object();
   }
-
-  std::string data(_buffer.data);
-  response.data = data;
 
   return response;
 }
 
-Response Docker::POST(std::string url, std::string data) {
+Response Docker::POST(std::string endpoint, std::string data) {
   GetInstance().initCurl();
 
   struct curl_slist *headers = NULL;
   headers = curl_slist_append(headers, "Content-Type: application/json");
   curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(_curl, CURLOPT_POSTFIELDS, (void *)data.c_str());
-  executeCurl(url);
+  performCurl(endpoint);
   curl_slist_free_all(headers);
 
   return getResponse();
 }
 
-Response Docker::GET(std::string url) {
+Response Docker::GET(std::string endpoint) {
   GetInstance().initCurl();
-  executeCurl(url);
+  performCurl(endpoint);
 
   return getResponse();
 }

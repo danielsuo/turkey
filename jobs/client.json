@@ -1,0 +1,10 @@
+{
+  "Image": "turkey",
+  "Volumes": {
+    "/home/ubuntu/turkey": {},
+    "/dev/shm": {}
+  },
+  "HostConfig": {
+    "IpcMode": "host"
+  }
+}

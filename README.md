@@ -1,12 +1,17 @@
 # Turkey
 
 ## TODO
+- Docker++ API
+  - Mount volumes in containers
+  - Fix entrypoint
+  - Shared memory
+  - Detach
+  - Get process
 - Pinning and prioritizing processes
   - http://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
   - sched_setaffinity
   - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm
-- Launch docker containers
-  - Keep track of containers
+
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
 - Use init process
@@ -27,3 +32,5 @@
   - https://users.cs.cf.ac.uk/Dave.Marshall/C/node24.html
   - http://blog.dixo.net/2015/02/sending-signals-from-one-docker-container-to-another/
 - docker++
+- Launch docker containers
+- Keep track of containers

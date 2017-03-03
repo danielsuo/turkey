@@ -6,15 +6,19 @@
 #include <cstring>
 #include <curl/curl.h>
 
+#include "json.hpp"
+
+using json = nlohmann::json;
+
 // NOTE: https://curl.haxx.se/libcurl/c/threadsafe.html
 
 namespace docker {
 
-const std::string DOCKER_API_VERSION = "v1.25";
+const std::string DOCKER_API_VERSION = "v1.26";
 
 struct Response {
-  CURLcode code;
-  std::string data;
+  long code;
+  json data;
 };
 
 struct Buffer {
@@ -31,12 +35,12 @@ class Docker {
 
   void initBuffer();
   void initCurl();
-  void executeCurl(std::string url);
+  void performCurl(std::string endpoint);
   Response getResponse();
 
   CURL *_curl;
   Buffer _buffer;
-  CURLcode code;
+  long code;
 
 public:
   Docker(const Docker&) = delete;
@@ -49,8 +53,8 @@ public:
     return instance;
   }
 
-  Response POST(std::string url, std::string data);
-  Response GET(std::string url);
+  Response POST(std::string endpoint, std::string data = "");
+  Response GET(std::string endpoint);
 };
 
 }
