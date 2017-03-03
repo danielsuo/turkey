@@ -3,35 +3,15 @@
 #include <sys/shm.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
+#include <thread>
+#include <iostream>
 
-#include "docker.h"
+#include "Docker.h"
 #include "json.hpp"
 
 using json = nlohmann::json;
-
-void test_docker() {
-  fprintf(stderr, "curl_version: %s\n", curl_version());
-
-  DOCKER *docker = docker_init("v1.25");
-
-  if (docker) {
-    CURLcode response = docker_post(docker, "http://v1.25/containers/create",
-                                    "{\"Image\": \"alpine\", \"Cmd\": [\"echo\", \"hello world\"]}");
-    if (response == CURLE_OK) {
-      fprintf(stderr, "%s\n", docker_buffer(docker));
-    }
-
-    response = docker_get(docker, "http://v1.25/images/json");
-
-    if (response == CURLE_OK) {
-      fprintf(stderr, "%s\n", docker_buffer(docker));
-    }
-
-    docker_destroy(docker);
-  } else {
-    fprintf(stderr, "ERROR: Failed to get get a docker client!\n");
-  }
-}
+using namespace docker;
 
 void test_json() {
   json j2 = {
@@ -54,8 +34,14 @@ void test_json() {
 #define SHM_PATH "/dev/shm"
 #define SHMSZ 27
 
+void handler(int signum) {
+  printf("Received signal %d\n", signum);
+}
+
 void producer() {
   printf("producer!\n");
+
+  signal(SIGINT, handler);
 
   char c;
   int shmid;
@@ -156,10 +142,20 @@ void consumer() {
 }
 
 int main(int argc, char *argv[]) {
-  if (argc < 2 || 0 == strncmp(argv[1], SRV_FLAG, strlen(SRV_FLAG))) {
-      producer();
-  } else {
-      consumer();
-  }
+  int ncore = std::thread::hardware_concurrency();
+  std::cout << "Number of cores: " << ncore << std::endl;
+
+  Response res = Docker::GetInstance().GET("http://v1.25/images/json");
+  std::cout << res.data << std::endl;
+
+  res = Docker::GetInstance().POST("http://v1.25/containers/create",
+    "{\"Image\": \"alpine\", \"Cmd\": [\"echo\", \"hello world\"]}");
+  std::cout << res.data << std::endl;
+
+  // if (argc < 2 || 0 == strncmp(argv[1], SRV_FLAG, strlen(SRV_FLAG))) {
+  //     producer();
+  // } else {
+  //     consumer();
+  // }
   return 0;
 }

@@ -16,16 +16,17 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 set(JSON_DIR lib/json)
 
 # Add libdocker
-set(LIBDOCKER_DIR lib/libdocker)
-add_subdirectory(${LIBDOCKER_DIR})
+# set(LIBDOCKER_DIR lib/libdocker)
+# add_subdirectory(${LIBDOCKER_DIR})
 
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/${LIBDOCKER_DIR}/${DOCKER_INCLUDE_DIR}
+    # ${CMAKE_CURRENT_LIST_DIR}/${LIBDOCKER_DIR}/${DOCKER_INCLUDE_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/${JSON_DIR}/src
 )
 
 target_link_libraries(
     ${PROJECT_NAME}
-    docker
+    # docker
+    curl
 )
