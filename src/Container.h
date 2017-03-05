@@ -4,6 +4,8 @@
 #include <signal.h>
 #include <sched.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sstream>
 #include <fstream>
 #include "Docker.h"
@@ -15,9 +17,13 @@ namespace docker {
 
 class Container {
   json _args;
-  int pid;
-  cpu_set_t mask;
-  std::string id;
+  id_t _pid;
+  cpu_set_t _mask;
+  std::string _id;
+
+  int _which;
+  int _priority;
+
   std::string getURL(std::string endpoint,
                      bool use_id = false,
                      std::string params = "");
@@ -38,8 +44,10 @@ public:
                 int tail        = -1);
 
   void signal(int signum);
-  void setaffinity();
-  void getaffinity();
+  void setaffinity(cpu_set_t *mask);
+  void getaffinity(cpu_set_t *mask);
+  void setpriority(int priority);
+  int getpriority();
 };
 
 }

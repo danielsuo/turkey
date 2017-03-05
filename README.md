@@ -1,10 +1,7 @@
 # Turkey
 
 ## TODO
-- Pinning and prioritizing processes
-  - http://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
-  - sched_setaffinity
-  - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm
+- Start command in container programmatically
 
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
@@ -34,3 +31,7 @@
   - Shared memory
   - Detach
   - Get process
+- Pinning and prioritizing processes
+  - http://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
+  - sched_setaffinity
+  - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm
