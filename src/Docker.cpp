@@ -54,6 +54,9 @@ void Docker::performCurl(std::string endpoint) {
   initBuffer();
 
   std::string url = "http://" + DOCKER_API_VERSION + "/" + endpoint;
+
+  std::cerr << url << std::endl;
+
   curl_easy_setopt(_curl, CURLOPT_URL, url.c_str());
   CURLcode curl_code = curl_easy_perform(_curl);
 
@@ -69,14 +72,11 @@ Response Docker::getResponse() {
   Response response;
   response.code = code;
 
-  if (_buffer.size > 0) {
-    std::string data(_buffer.data);
-    response.data = json::parse(data);
-    free(_buffer.data);
-    _buffer.size = 0;
-  } else {
-    response.data = json::object();
-  }
+  std::string data(_buffer.data);
+  response.data = data;
+
+  free(_buffer.data);
+  _buffer.size = 0;
 
   return response;
 }
@@ -97,6 +97,19 @@ Response Docker::POST(std::string endpoint, std::string data) {
 Response Docker::GET(std::string endpoint) {
   GetInstance().initCurl();
   performCurl(endpoint);
+
+  return getResponse();
+}
+
+Response Docker::DELETE(std::string endpoint) {
+  GetInstance().initCurl();
+
+  struct curl_slist *headers = NULL;
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  curl_easy_setopt(_curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(_curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+  performCurl(endpoint);
+  curl_slist_free_all(headers);
 
   return getResponse();
 }

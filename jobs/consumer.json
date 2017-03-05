@@ -1,0 +1,24 @@
+{
+  "Image": "turkey",
+  "Entrypoint": [
+    "/server/build/turkey",
+    "consumer"
+  ],
+  "Tty": true,
+  "AttachStdin": true,
+  "OpenStdin": true,
+  "Volumes": {
+    "/home/ubuntu/turkey": {},
+    "/dev/shm": {}
+  },
+  "HostConfig": {
+    "IpcMode": "host",
+    "Binds": [
+      "/dev/shm:/dev/shm",
+      "/home/ubuntu/turkey:/server"
+    ]
+  },
+  "LogConfig": {
+    "Type": "json-file"
+  }
+}

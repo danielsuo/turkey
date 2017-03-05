@@ -2,13 +2,10 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <iostream>
 #include <string>
 #include <cstring>
 #include <curl/curl.h>
-
-#include "json.hpp"
-
-using json = nlohmann::json;
 
 // NOTE: https://curl.haxx.se/libcurl/c/threadsafe.html
 
@@ -18,7 +15,7 @@ const std::string DOCKER_API_VERSION = "v1.26";
 
 struct Response {
   long code;
-  json data;
+  std::string data;
 };
 
 struct Buffer {
@@ -55,6 +52,7 @@ public:
 
   Response POST(std::string endpoint, std::string data = "");
   Response GET(std::string endpoint);
+  Response DELETE(std::string endpoint);
 };
 
 }

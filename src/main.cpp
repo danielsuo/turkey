@@ -31,7 +31,8 @@ void test_json() {
   };
 }
 
-#define SRV_FLAG  "producer"
+#define SRV_FLAG "server"
+#define PRODUCER_FLAG "producer"
 #define SHM_PATH "/dev/shm"
 #define SHMSZ 27
 
@@ -143,23 +144,37 @@ void consumer() {
 }
 
 int main(int argc, char *argv[]) {
-  int ncore = std::thread::hardware_concurrency();
-  std::cout << "Number of cores: " << ncore << std::endl;
 
-  Response res = Docker::GetInstance().GET("images/json");
-  std::cout << res.data.dump() << std::endl;
+  if (argc < 2) {
+    int ncore = std::thread::hardware_concurrency();
+    std::cout << "Number of cores: " << ncore << std::endl;
 
-  // res = Docker::GetInstance().POST("containers/create",
-  //   "{\"Image\": \"alpine\", \"Cmd\": [\"echo\", \"hello world\"]}");
-  // std::cout << res.data.dump() << std::endl;
+    Response res = Docker::GetInstance().GET("images/json");
+    std::cout << res.data << std::endl;
 
-  Container container("/home/ubuntu/turkey/jobs/client.json");
-  container.start();
+    Container producer("/home/ubuntu/turkey/jobs/producer.json");
+    producer.attach();
+    producer.start();
 
-  // if (argc < 2 || 0 == strncmp(argv[1], SRV_FLAG, strlen(SRV_FLAG))) {
-  //     producer();
-  // } else {
-  //     consumer();
-  // }
+    sleep(1);
+    producer.signal(SIGINT);
+    sleep(1);
+
+    res = producer.logs();
+    std::cout << res.data << std::endl;
+
+    // Container consumer("/home/ubuntu/turkey/jobs/consumer.json");
+    // consumer.attach();
+    // consumer.start();
+    //
+    // res = consumer.logs();
+    // std::cout << res.data << std::endl;
+    // producer.stop();
+    // producer.remove();
+  } else if (0 == strncmp(argv[1], PRODUCER_FLAG, strlen(PRODUCER_FLAG))) {
+      producer();
+  } else {
+      consumer();
+  }
   return 0;
 }

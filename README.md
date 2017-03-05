@@ -1,12 +1,6 @@
 # Turkey
 
 ## TODO
-- Docker++ API
-  - Mount volumes in containers
-  - Fix entrypoint
-  - Shared memory
-  - Detach
-  - Get process
 - Pinning and prioritizing processes
   - http://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
   - sched_setaffinity
@@ -18,6 +12,7 @@
   - https://docs.docker.com/engine/reference/run/
 - Handle re-entrancy
   - http://www.ibm.com/developerworks/library/l-reent/
+- Eventually take over pinning / prioritizing from docker (how does it mess?)
 
 ## Completed
 - Share some memory
@@ -34,3 +29,8 @@
 - docker++
 - Launch docker containers
 - Keep track of containers
+- Docker++ API
+  - Mount volumes in containers (hostconfig:binds)
+  - Shared memory
+  - Detach
+  - Get process
