@@ -1,15 +1,17 @@
 # Turkey
 
 ## TODO
-- Start command in container programmatically
+- Implement server
+  - Keep track of containers
+  - Dummy scheduler (i.e., pin and prioritize)
 
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
+- Invetigate pthread API
 - Use init process
   - https://docs.docker.com/engine/reference/run/
 - Handle re-entrancy
   - http://www.ibm.com/developerworks/library/l-reent/
-- Eventually take over pinning / prioritizing from docker (how does it mess?)
 
 ## Completed
 - Share some memory
@@ -31,7 +33,11 @@
   - Shared memory
   - Detach
   - Get process
-- Pinning and prioritizing processes
+- Pinning and prioritizing processes`
   - http://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
   - sched_setaffinity
-  - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm
+  - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm`
+- Start command in container programmatically
+
+## Note on security
+We could run both server and client applications each in their own containers. But for sake of latency (REST API, really?) and convenience, we run the server as a host application and punch a gigantic hole through the wall of security with the great hammer of priveleged mode. We don't abuse this privelege in the client library, but there's no guarantee that client applications won't abuse them. C'est la vie, amirite?

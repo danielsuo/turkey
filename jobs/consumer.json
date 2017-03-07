@@ -13,6 +13,8 @@
   },
   "HostConfig": {
     "IpcMode": "host",
+    "PidMode": "host",
+    "Privileged": true,
     "Binds": [
       "/dev/shm:/dev/shm",
       "/home/ubuntu/turkey:/server"

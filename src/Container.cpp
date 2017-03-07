@@ -6,6 +6,11 @@ Container::Container(std::string args_path) {
   std::ifstream i(args_path);
   i >> _args;
 
+  std::stringstream ss;
+  ss << "[\"" << TURKEY_SERVER_PID_KEY << "=" << getpid() << "\"]";
+  std::cout << ss.str() << std::endl;
+  _args["Env"] = json::parse(ss.str());
+
   std::cout << _args.dump() << std::endl;
 
   Response res = Docker::GetInstance().POST(getURL("create", false),
@@ -141,7 +146,7 @@ void Container::setpriority(int priority_offset) {
 // TODO: this should really just return _priority
 int Container::getpriority() {
   int priority = 0;
-  
+
   if ((priority = ::getpriority(_which, _pid)) == -1) {
     perror("ERROR: failed to get priority");
   }

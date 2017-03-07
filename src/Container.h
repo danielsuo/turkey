@@ -1,13 +1,16 @@
 #pragma once
 
-#include <sys/types.h>
-#include <signal.h>
 #include <sched.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <sys/resource.h>
+
 #include <sstream>
 #include <fstream>
+
+#include "client.h"
 #include "Docker.h"
 #include "json.hpp"
 

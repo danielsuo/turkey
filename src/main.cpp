@@ -10,6 +10,7 @@
 #include "Docker.h"
 #include "Container.h"
 #include "json.hpp"
+#include "client.h"
 
 using json = nlohmann::json;
 using namespace docker;
@@ -143,38 +144,67 @@ void consumer() {
   exit(0);
 }
 
+static void hdl (int sig, siginfo_t *siginfo, void *context)
+{
+	printf ("Sending PID: %ld, UID: %ld\n",
+			(long)siginfo->si_pid, (long)siginfo->si_uid);
+  if ((long)siginfo->si_pid == 0) {
+    exit(1);
+  }
+}
+
 int main(int argc, char *argv[]) {
 
   if (argc < 2) {
-    int ncore = std::thread::hardware_concurrency();
-    std::cout << "Number of cores: " << ncore << std::endl;
 
-    Response res = Docker::GetInstance().GET("images/json");
-    std::cout << res.data << std::endl;
-
-    Container producer("/home/ubuntu/turkey/jobs/producer.json");
-    producer.attach();
-    producer.start();
-
-    sleep(1);
-    producer.signal(SIGINT);
-    sleep(1);
-
-    res = producer.logs();
-    std::cout << res.data << std::endl;
-
-    // Container consumer("/home/ubuntu/turkey/jobs/consumer.json");
-    // consumer.attach();
-    // consumer.start();
+    // int ncore = std::thread::hardware_concurrency();
+    // std::cout << "Number of cores: " << ncore << std::endl;
     //
-    // res = consumer.logs();
+    // Response res = Docker::GetInstance().GET("images/json");
     // std::cout << res.data << std::endl;
+    //
+    // Container producer("/home/ubuntu/turkey/jobs/producer.json");
+    // producer.attach();
+    // producer.start();
+    //
+    // sleep(1);
+    // producer.signal(SIGINT);
+    // sleep(1);
+    //
+    // res = producer.logs();
+    // std::cout << res.data << std::endl;
+
+    //
+    struct sigaction act;
+
+    memset (&act, '\0', sizeof(act));
+    act.sa_sigaction = &hdl;
+    act.sa_flags = SA_SIGINFO;
+    if (sigaction(SIGINT, &act, NULL) < 0) {
+      perror ("sigaction");
+      return 1;
+    }
+
+    Container consumer("/home/ubuntu/turkey/jobs/consumer.json");
+    consumer.attach();
+    consumer.start();
+
+    Response res = consumer.logs();
+    std::cout << res.data << std::endl;
+
+    for (;;) {
+      pause();
+    }
+
     // producer.stop();
     // producer.remove();
   } else if (0 == strncmp(argv[1], PRODUCER_FLAG, strlen(PRODUCER_FLAG))) {
       producer();
   } else {
-      consumer();
+      // consumer();
+      TURKEY *client = turkey_init();
+
+      turkey_destroy(client);
   }
   return 0;
 }
