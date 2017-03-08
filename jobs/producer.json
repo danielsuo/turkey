@@ -1,5 +1,5 @@
 {
-  "Image": "turkey",
+  "Image": "danielsuo/turkey",
   "Entrypoint": [
     "/server/build/turkey",
     "producer"

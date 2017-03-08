@@ -8,10 +8,10 @@ Container::Container(std::string args_path) {
 
   std::stringstream ss;
   ss << "[\"" << TURKEY_SERVER_PID_KEY << "=" << getpid() << "\"]";
-  std::cout << ss.str() << std::endl;
+  std::cerr << ss.str() << std::endl;
   _args["Env"] = json::parse(ss.str());
 
-  std::cout << _args.dump() << std::endl;
+  std::cerr << _args.dump() << std::endl;
 
   Response res = Docker::GetInstance().POST(getURL("create", false),
                                             _args.dump());
@@ -24,10 +24,19 @@ Container::Container(std::string args_path) {
     exit(1);
   }
 
-  std::cout << "Container successfully created!" << std::endl;
+  std::cerr << "Container successfully created!" << std::endl;
 
   _id = data["Id"];
   _which = PRIO_PROCESS;
+}
+
+// NOTE: We cannot destroy containers in time if the main process exits, so
+// there needs to be an auxillary mechanism to clean up
+Container::~Container() {
+  // stop();
+  // remove();
+
+  fprintf(stderr, "Destructing Container %d.\n", _pid);
 }
 
 std::string Container::getURL(std::string endpoint,
@@ -53,17 +62,17 @@ std::string Container::getURL(std::string endpoint,
 }
 
 Response Container::attach() {
-  std::cout << "Attaching to: " << _id << std::endl;
+  std::cerr << "Attaching to: " << _id << std::endl;
   Response res = Docker::GetInstance().POST(getURL("attach", true));
-  std::cout << res.code << std::endl;
+  std::cerr << res.code << std::endl;
 
   return res;
 }
 
 Response Container::start() {
-  std::cout << "Starting: " << _id << std::endl;
+  std::cerr << "Starting: " << _id << std::endl;
   Response res = Docker::GetInstance().POST(getURL("start", true));
-  std::cout << res.code << std::endl;
+  std::cerr << res.code << std::endl;
 
   // If the container is started or was already running, grab _pid
   if (res.code == 204 || res.code == 304) {
@@ -73,7 +82,7 @@ Response Container::start() {
       json data = json::parse(insp.data);
       _pid = data["State"]["Pid"];
 
-      std::cout << "_pid: " << _pid << std::endl;
+      std::cerr << "_pid: " << _pid << std::endl;
     }
   }
 
@@ -81,35 +90,35 @@ Response Container::start() {
 }
 
 Response Container::stop() {
-  std::cout << "Starting: " << _id << std::endl;
+  std::cerr << "Stopping: " << _id << std::endl;
   Response res = Docker::GetInstance().POST(getURL("stop", true));
-  std::cout << res.code << std::endl;
+  std::cerr << res.code << std::endl;
 
   return res;
 }
 
 Response Container::remove() {
-  std::cout << "Removing: " << _id << std::endl;
-  Response res = Docker::GetInstance().DELETE(getURL("", true));
-  std::cout << res.code << std::endl;
+  std::cerr << "Removing: " << _id << std::endl;
+  Response res = Docker::GetInstance().DELETE(getURL("", true, "v=true&force=true"));
+  std::cerr << res.code << std::endl;
 
   return res;
 }
 
 Response Container::inspect() {
-  std::cout << "Inspecting: " << _id << std::endl;
+  std::cerr << "Inspecting: " << _id << std::endl;
   Response res = Docker::GetInstance().GET(getURL("json", true));
-  std::cout << res.code << std::endl;
+  std::cerr << res.code << std::endl;
 
   return res;
 }
 
 // TODO: actually implement query parameters
 Response Container::logs(bool follow, bool stdout, bool stderr, int since, bool timestamps, int tail) {
-  std::cout << "Fetching logs: " << _id << std::endl;
+  std::cerr << "Fetching logs: " << _id << std::endl;
   // Response res = POST("logs");
   Response res = Docker::GetInstance().GET(getURL("logs", true, "stdout=true&stderr=true"));
-  std::cout << res.code << std::endl;
+  std::cerr << res.code << std::endl;
 
   return res;
 }

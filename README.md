@@ -3,11 +3,16 @@
 ## TODO
 - Implement server
   - Keep track of containers
+  - Run on threads
   - Dummy scheduler (i.e., pin and prioritize)
-
+  - Start containers with parameters
+  - Hook up to parsec
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
-- Invetigate pthread API
+  - Microsoft PPL
+  - Intel TBB
+- Investigate pthread API
+- Docker Image Pull
 - Use init process
   - https://docs.docker.com/engine/reference/run/
 - Handle re-entrancy
@@ -38,6 +43,9 @@
   - sched_setaffinity
   - http://www.tutorialspoint.com/unix_system_calls/sched_setaffinity.htm`
 - Start command in container programmatically
+- Finish cleaning up parsec / uploading data and remake docker
+  - Development vs production docker (need start-up script http://www.markbetz.net/2014/03/17/docker-run-startup-scripts-then-exit-to-a-shell/)
+
 
 ## Note on security
 We could run both server and client applications each in their own containers. But for sake of latency (REST API, really?) and convenience, we run the server as a host application and punch a gigantic hole through the wall of security with the great hammer of priveleged mode. We don't abuse this privelege in the client library, but there's no guarantee that client applications won't abuse them. C'est la vie, amirite?

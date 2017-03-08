@@ -33,6 +33,13 @@ class Container {
 
 public:
   Container(std::string args_path);
+  ~Container();
+
+  Container(const Container&) = delete;
+  Container& operator=(const Container&) = delete;
+  Container(Container&&) = default;
+  Container& operator=(Container&&) = default;
+
   Response attach();
   Response start();
   Response stop();

@@ -7,6 +7,7 @@
 #include <thread>
 #include <iostream>
 
+#include "Server.h"
 #include "Docker.h"
 #include "Container.h"
 #include "json.hpp"
@@ -14,6 +15,7 @@
 
 using json = nlohmann::json;
 using namespace docker;
+using namespace Turkey;
 
 void test_json() {
   json j2 = {
@@ -175,26 +177,29 @@ int main(int argc, char *argv[]) {
     // std::cout << res.data << std::endl;
 
     //
-    struct sigaction act;
+    // struct sigaction act;
+    //
+    // memset (&act, '\0', sizeof(act));
+    // act.sa_sigaction = &hdl;
+    // act.sa_flags = SA_SIGINFO;
+    // if (sigaction(SIGINT, &act, NULL) < 0) {
+    //   perror ("sigaction");
+    //   return 1;
+    // }
+    //
+    // Container consumer("/home/ubuntu/turkey/jobs/consumer.json");
+    // consumer.attach();
+    // consumer.start();
+    //
+    // Response res = consumer.logs();
+    // std::cout << res.data << std::endl;
 
-    memset (&act, '\0', sizeof(act));
-    act.sa_sigaction = &hdl;
-    act.sa_flags = SA_SIGINFO;
-    if (sigaction(SIGINT, &act, NULL) < 0) {
-      perror ("sigaction");
-      return 1;
-    }
+    Server::GetInstance().launch("/home/ubuntu/turkey/jobs/consumer.json");
+    // std::thread t(&Server::launch, Server::GetInstance(), "/home/ubuntu/turkey/jobs/consumer.json");
 
-    Container consumer("/home/ubuntu/turkey/jobs/consumer.json");
-    consumer.attach();
-    consumer.start();
-
-    Response res = consumer.logs();
-    std::cout << res.data << std::endl;
-
-    for (;;) {
-      pause();
-    }
+    // for (;;) {
+      // pause();
+    // }
 
     // producer.stop();
     // producer.remove();

@@ -9,6 +9,8 @@ void pexit(char *msg) {
   exit(1);
 }
 
+// TODO: write data to shared memory to indicate state (e.g., start / stop)
+// TODO: send signal in turkey_destroy to say job completed
 TURKEY *turkey_init() {
   TURKEY *client;
 
