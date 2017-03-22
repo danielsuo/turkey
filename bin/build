@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+dockerfile=$1
+if [[ -z $dockerfile ]]
+then
+  dockerfile=dev
+fi
+
+cp .gitignore .dockerignore
+sudo docker build -t danielsuo/turkey:latest -f ./docker/$dockerfile .

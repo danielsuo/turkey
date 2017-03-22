@@ -1,0 +1,26 @@
+{
+  "Image": "danielsuo/turkey",
+  "Entrypoint": [
+    "/server/build/turkey",
+    "consumer"
+  ],
+  "Tty": true,
+  "AttachStdin": true,
+  "OpenStdin": true,
+  "Volumes": {
+    "/home/dsuo/tmp/turkey": {},
+    "/dev/shm": {}
+  },
+  "HostConfig": {
+    "IpcMode": "host",
+    "PidMode": "host",
+    "Privileged": true,
+    "Binds": [
+      "/dev/shm:/dev/shm",
+      "/home/dsuo/tmp/turkey:/server"
+    ]
+  },
+  "LogConfig": {
+    "Type": "json-file"
+  }
+}

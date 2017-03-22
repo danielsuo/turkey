@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Add docker to apt
+sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
+apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
+sudo add-apt-repository \
+       "deb https://apt.dockerproject.org/repo/ \
+       ubuntu-$(lsb_release -cs) \
+       main"
+
+sudo apt-get install -y build-essential cmake libcurl4-openssl-dev git htop docker-engine
+
+# Set up watchman (for remote development)
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs automake autoconf python-dev libtool pkg-config
+sudo npm install -g nuclide
+
+git clone https://github.com/facebook/watchman.git
+cd watchman
+git checkout v4.8.0-rc1  # the latest stable release
+./autogen.sh
+./configure
+make
+sudo make install
+
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+echo "export NVM_DIR=\"$HOME/.nvm\"" >> ~/.bashrc
+echo "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"" >> ~/.bashrc
+
+# Clone repository
+git clone https://github.com/danielsuo/turkey --recursive

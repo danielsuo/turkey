@@ -1,0 +1,90 @@
+[
+  [
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 4,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    }
+  ],
+  [
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 8,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    }
+  ],
+  [
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 4,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 4,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 4,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 4,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    }
+  ],
+  [
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 8,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 8,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 8,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    },
+    {
+      "app": "ferret",
+      "input": "native",
+      "threads": 8,
+      "cpus": 512,
+      "mode": "share",
+      "docker": true
+    }
+  ]
+]
