@@ -3,7 +3,8 @@
 namespace Turkey {
 
 void signal_handler(int signal, siginfo_t *siginfo, void *context);
-void *client_handler(void *server);
+void *tcp_client_handler(void *server);
+void *tcp_client_accept_handler(void *server);
 
 Server::Server() {
   // Create sigaction struct
@@ -33,23 +34,23 @@ Server::~Server() {
   pthread_kill(_listener, SIGTERM);
 }
 
+// void Server::launch(std::string conf) {
+//   std::lock_guard<std::mutex> lock(_containerListMutex);
+//   _containerList.emplace_back(conf);
+//   _containerList.back().attach();
+//   _containerList.back().start();
+//   Response res = _containerList.back().logs();
+//
+//   std::cout << res.data << std::endl;
+// }
+
 void Server::listen() {
   fprintf(stderr, "Listening on %d\n", _port);
-  int rc = pthread_create(&_listener, NULL, client_handler, this);
+  int rc = pthread_create(&_listener, NULL, tcp_client_handler, this);
   if (rc) {
     printf("ERROR: return code from pthread_create() is %d\n", rc);
     exit(-1);
   }
-}
-
-void Server::launch(std::string conf) {
-  std::lock_guard<std::mutex> lock(_containerListMutex);
-  _containerList.emplace_back(conf);
-  _containerList.back().attach();
-  _containerList.back().start();
-  Response res = _containerList.back().logs();
-
-  std::cout << res.data << std::endl;
 }
 
 int Server::getPort() {
@@ -72,17 +73,7 @@ std::string Server::getPath() {
   return TURKEY_SERVER_PATH;
 }
 
-void signal_handler(int signal, siginfo_t *siginfo, void *context) {
-  printf ("Sending PID: %ld, UID: %ld\n",
-			(long)siginfo->si_pid, (long)siginfo->si_uid);
-
-  // If we send a signal from ourselves (e.g., KILL), then exit
-  if ((long)siginfo->si_pid == 0) {
-    exit(1);
-  }
-}
-
-void *client_handler(void *server) {
+void *tcp_client_handler(void *server) {
   Server *self = (Server *)server;
 
   fprintf(stderr, "In client handler!\n");
@@ -218,8 +209,17 @@ void *client_handler(void *server) {
       perror("ERROR on accept");
     }
 
-    printf("Received connection from %s\n", inet_ntoa(cli_addr.sin_addr));
+    Client *client = new Client();
+    client->addr = cli_addr;
+    client->sock = client_socket;
+    self->addClient(client);
 
+    pthread_t client_processing_thread;
+    if (pthread_create(&client_processing_thread, NULL, tcp_client_accept_handler, client) != 0) {
+      pexit("Failed to process client");
+    }
+
+    fprintf(stderr, "Out of processing thread\n");
     // printf("Number of connected devices before: %lu\n", self->manager->devices.size());
     //
     // Device *device = self->manager->getDeviceByIPAddress(cli_addr.sin_addr.s_addr, cli_addr.sin_port);
@@ -242,6 +242,67 @@ void *client_handler(void *server) {
   self->closeSocket();
 
   return 0;
+}
+
+Client::~Client() {
+  close(sock);
+  turkey_shm_destroy(tshm);
+}
+
+void Server::addClient(Client *client) {
+  _clients.push_back(client);
+}
+
+Client *Server::getClient(int index) {
+  return _clients[index];
+}
+
+void *tcp_client_accept_handler(void *client) {
+  Client *self = (Client *)client;
+
+  fprintf(stderr, "Received connection from %s\n", inet_ntoa(self->addr.sin_addr));
+
+  int n;
+  uint32_t n_pid;
+  if ((n = read(self->sock, &n_pid, sizeof(n_pid))) < 0) {
+    pexit("Failed to read data from server");
+  }
+
+  self->pid = ntohl(n_pid);
+
+  fprintf(stderr, "Got pid %d\n", self->pid);
+
+  self->tshm = turkey_shm_init(self->pid);
+
+  char c;
+  unsigned char *s = self->tshm->shm;
+
+  for (c = 'a'; c <= 'z'; c++) {
+    fprintf(stderr, "Putting character %c\n", c);
+    *s++ = c;
+  }
+  *s = NULL;
+
+  char buffer[1] = {'T'};
+  if (write(self->sock, buffer, 1) < 0) {
+    pexit("Failed to to write to client");
+  }
+
+  while (*self->tshm->shm != '*') {
+    sleep(1);
+  }
+
+  return 0;
+}
+
+void signal_handler(int signal, siginfo_t *siginfo, void *context) {
+  printf ("Sending PID: %ld, UID: %ld\n",
+			(long)siginfo->si_pid, (long)siginfo->si_uid);
+
+  // If we send a signal from ourselves (e.g., KILL), then exit
+  if ((long)siginfo->si_pid == 0) {
+    exit(1);
+  }
 }
 
 }

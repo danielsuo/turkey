@@ -21,6 +21,7 @@ struct Response {
 struct Buffer {
   char *data;
   size_t size;
+  bool allocated;
 
   Buffer();
   ~Buffer();

@@ -7,29 +7,34 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <sys/shm.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
+#include <arpa/inet.h>
+
+#include "common.h"
 #include "general_utils.h"
 
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
-
-#define TURKEY_SERVER_PID_KEY "TURKEY_SERVER_PID_KEY"
-
-enum TURKEY_CODE {
-  TURKEY_SUCCESS
-};
 
 struct turkey {
   int pid;
-  int server_pid;
+  char *server_ip;
+  int sock;
 
-  size_t shm_key_path_len;
-  char *shm_key_path;
-  key_t shm_key;
+  struct sockaddr_in serv_addr;
+  struct turkey_shm *tshm;
+
+  // int pid;
+  // size_t shm_key_path_len;
+  // char *shm_key_path;
+  // key_t shm_key;
+  // int shm_id;
+  //
+  // unsigned char* shm;
 };
 
 typedef struct turkey TURKEY;

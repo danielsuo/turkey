@@ -3,7 +3,10 @@
 ## TODO
 - Implement client
   - TCP client
-  - Communicate between containers: https://docs.docker.com/engine/userguide/networking/default_network/container-communication/#communication-between-containers
+  - Communicate between containers:
+    - https://docs.docker.com/engine/userguide/networking/default_network/container-communication/#communication-between-containers
+    - https://docs.docker.com/engine/userguide/networking/
+    - https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/
 - Implement server
   - Keep track of containers
   - Run on threads

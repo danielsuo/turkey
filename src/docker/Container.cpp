@@ -6,28 +6,12 @@ Container::Container(std::string args_path) {
   std::ifstream i(args_path);
   i >> _args;
 
-  std::stringstream ss;
-  ss << "[\"" << "TURKEY_SERVER_PID_KEY" << "=" << getpid() << "\"]";
-  std::cerr << ss.str() << std::endl;
-  _args["Env"] = json::parse(ss.str());
+  // std::stringstream ss;
+  // ss << "[\"" << TURKEY_SERVER_PID_KEY << "=" << getpid() << "\"]";
+  // std::cerr << ss.str() << std::endl;
+  // _args["Env"] = json::parse(ss.str());
 
   std::cerr << _args.dump() << std::endl;
-
-  Response res = Docker::GetInstance().POST(getURL("create", false),
-                                            _args.dump());
-
-  json data = json::parse(res.data);
-
-  if (res.code != 201) {
-    fprintf(stderr, "ERROR: unable to create container");
-    std::cerr << data["message"] << std::endl;
-    exit(1);
-  }
-
-  std::cerr << "Container successfully created!" << std::endl;
-
-  _id = data["Id"];
-  _which = PRIO_PROCESS;
 }
 
 // NOTE: We cannot destroy containers in time if the main process exits, so
@@ -61,6 +45,34 @@ std::string Container::getURL(std::string endpoint,
   return ss.str();
 }
 
+void Container::addArgs(std::string key, std::string value) {
+  _args[key] = json::parse(value);
+}
+
+std::string Container::getIP() {
+  return _ip;
+}
+
+Response Container::create() {
+  Response res = Docker::GetInstance().POST(getURL("create", false),
+                                            _args.dump());
+
+  json data = json::parse(res.data);
+
+  if (res.code != 201) {
+    fprintf(stderr, "ERROR: unable to create container");
+    std::cerr << data["message"] << std::endl;
+    exit(1);
+  }
+
+  std::cerr << "Container successfully created!" << std::endl;
+
+  _id = data["Id"];
+  _which = PRIO_PROCESS;
+
+  return res;
+}
+
 Response Container::attach() {
   std::cerr << "Attaching to: " << _id << std::endl;
   Response res = Docker::GetInstance().POST(getURL("attach", true));
@@ -81,8 +93,12 @@ Response Container::start() {
     if (insp.code == 200) {
       json data = json::parse(insp.data);
       _pid = data["State"]["Pid"];
+      _ip = data["NetworkSettings"]["IPAddress"];
+      inet_aton(_ip.c_str(), &_in_addr);
 
       std::cerr << "_pid: " << _pid << std::endl;
+      std::cerr << "_ip: " << _ip << std::endl;
+      std::cerr << "_s_addr: " << _in_addr.s_addr << std::endl;
     }
   }
 
@@ -143,7 +159,15 @@ Response Container::update(json data) {
 Response Container::logs(bool follow, bool stdout, bool stderr, int since, bool timestamps, int tail) {
   std::cerr << "Fetching logs: " << _id << std::endl;
   // Response res = POST("logs");
-  Response res = Docker::GetInstance().GET(getURL("logs", true, "stdout=true&stderr=true"));
+  std::stringstream ss;
+
+  ss << "stdout=true&stderr=true";
+
+  if (follow) {
+    ss << "&follow=true";
+  }
+
+  Response res = Docker::GetInstance().GET(getURL("logs", true, ss.str()));
   std::cerr << res.code << std::endl;
 
   return res;

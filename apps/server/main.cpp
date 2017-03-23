@@ -7,14 +7,15 @@
 #include <thread>
 #include <unistd.h>
 
-#include "turkey.h"
-// #include "json.hpp"
+// #include "turkey.h"
+#include "common.h"
+#include "json.hpp"
 // #include "Container.h"
 // #include "Docker.h"
 #include "Server.h"
 
 using json = nlohmann::json;
-using namespace docker;
+// using namespace docker;
 using namespace Turkey;
 //
 // void test_json() {
@@ -146,9 +147,26 @@ using namespace Turkey;
 // }
 
 int main(int argc, char *argv[]) {
+  std::cerr << "SERVER LOGS\n" << std::endl;
   // TURKEY *client = turkey_init();
   Server::GetInstance().listen();
-  std::cerr << "sup" << std::endl;
+  // sleep(1);
+  // Client *client = Server::GetInstance().getClient(0);
+  // fprintf(stderr, "Working with client: %s\n", client->tshm->shm_key_path);
+  //
+  //
+  // char c;
+  // unsigned char *s = client->tshm->shm;
+  //
+  // for (c = 'a'; c <= 'z'; c++) {
+  //   fprintf(stderr, "Putting character %c\n", c);
+  //   *s++ = c;
+  // }
+  // *s = NULL;
+
+  // while (*client->tshm->shm != '*') {
+  //   sleep(1);
+  // }
 
   // if (argc < 2) {
 

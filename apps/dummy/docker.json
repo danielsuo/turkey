@@ -1,0 +1,27 @@
+{
+  "Image": "danielsuo/turkey:dev",
+  "Entrypoint": [
+    "/home/dsuo/turkey/build/apps/dummy/dummy"
+  ],
+  "Tty": true,
+  "AttachStdin": true,
+  "OpenStdin": true,
+  "Volumes": {
+    "/home/dsuo/turkey": {},
+    "/var/run/docker.sock": {},
+    "/dev/shm": {}
+  },
+  "HostConfig": {
+    "IpcMode": "host",
+    "PidMode": "host",
+    "Privileged": true,
+    "Binds": [
+      "/home/dsuo/turkey:/home/dsuo/turkey",
+      "/var/run/docker.sock:/var/run/docker.sock",
+      "/dev/shm:/dev/shm"
+    ]
+  },
+  "LogConfig": {
+    "Type": "json-file"
+  }
+}

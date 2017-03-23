@@ -6,12 +6,14 @@ static size_t write_function(void *data, size_t size, size_t nmemb, void *buffer
 
 Buffer::Buffer() {
   size = 0;
+  allocated = false;
 }
 
 Buffer::~Buffer() {
-  free(data);
+  if (allocated) {
+    free(data);
+  }
   fprintf(stderr, "Destructing Buffer.\n");
-
 }
 
 Docker::Docker() {
@@ -35,6 +37,7 @@ Docker::~Docker() {
 
 void Docker::initBuffer() {
   _buffer.data = (char *)malloc(1);
+  _buffer.allocated = true;
 
   if (_buffer.data == NULL) {
     perror("ERROR: failed to initialize buffer.");
@@ -77,6 +80,7 @@ Response Docker::getResponse() {
 
   free(_buffer.data);
   _buffer.size = 0;
+  _buffer.allocated = false;
 
   return response;
 }

@@ -7,7 +7,7 @@ sudo docker run --rm -it \
   -v $(pwd):/home/dsuo/turkey \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --ipc=host \
-  --entrypoint /home/dsuo/turkey/build/apps/server/app-server \
+  --entrypoint /home/dsuo/turkey/build/apps/server/server \
   danielsuo/turkey:dev "$@"
   # -v /var/run/turkey.sock:/var/run/turkey.sock \
 

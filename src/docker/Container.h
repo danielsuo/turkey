@@ -8,9 +8,13 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 
+#include <iostream>
 #include <sstream>
 #include <fstream>
 
+#include <arpa/inet.h>
+
+#include "common.h"
 #include "Docker.h"
 #include "json.hpp"
 
@@ -23,6 +27,8 @@ class Container {
   id_t _pid;
   cpu_set_t _mask;
   std::string _id;
+  std::string _ip; // IP address in the usual 255.255.255.255 string format
+  struct in_addr _in_addr; // IP address via inet_aton
 
   int _which;
   int _priority;
@@ -40,6 +46,10 @@ public:
   Container(Container&&) = default;
   Container& operator=(Container&&) = default;
 
+  void addArgs(std::string key, std::string value);
+  std::string getIP();
+
+  Response create();
   Response attach();
   Response start();
   Response stop();

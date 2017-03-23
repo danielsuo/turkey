@@ -15,4 +15,5 @@ target_link_libraries(
   ${PROJECT_NAME}
   ${CMAKE_THREAD_LIBS_INIT}
   turkey-utils
+  turkey-common
 )

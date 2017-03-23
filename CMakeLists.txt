@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.5)
 project (turkey)
 
 # Set some flags
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -rdynamic")
 set (CMAKE_BUILD_TYPE Debug)
 
 # Add external libraries
@@ -29,6 +29,7 @@ set (MAKE "all" CACHE STRING "Application to build (default is all)")
 # List applications
 set (
   APPS
+  dummy
   server
   straw
 )
@@ -38,3 +39,10 @@ if (${MAKE} STREQUAL "all")
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
   endforeach ()
 endif ()
+
+add_executable (${PROJECT_NAME} src/main.cpp)
+target_link_libraries(
+  ${PROJECT_NAME}
+  docker
+  curl
+)

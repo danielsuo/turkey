@@ -6,18 +6,29 @@
 #include <string>
 #include <iostream>
 
+#include <signal.h>
+#include <unistd.h>
+#include <pthread.h>
+
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "messages.h"
+#include "common.h"
 #include "general_utils.h"
-#include "Container.h"
-
-using namespace docker;
 
 namespace Turkey {
+
+struct Client {
+  struct sockaddr_in addr;
+  int pid;
+  int sock;
+
+  struct turkey_shm *tshm;
+
+  ~Client();
+};
 
 class Server {
 public:
@@ -32,7 +43,6 @@ public:
   }
 
   void listen();
-  void launch(std::string conf);
 
   int getPort();
 
@@ -42,6 +52,10 @@ public:
 
   std::string getPath();
 
+  // TODO: manage the life cycle of this pointer better (e.g., smart pointer)
+  void addClient(Client *client);
+  Client *getClient(int index);
+
 private:
   Server();
   ~Server();
@@ -50,8 +64,7 @@ private:
   int _socket;
   pthread_t _listener;
 
-  std::vector<Container> _containerList;
-  std::mutex _containerListMutex;
+  std::vector<Client *> _clients;
 };
 
 }

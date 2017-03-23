@@ -15,59 +15,57 @@ TURKEY *turkey_init() {
   //       (which is what we're assuming...)
   client->pid = getpid();
 
-  char *server_pid;
-  if ((server_pid = getenv(TURKEY_SERVER_PID_KEY)) == NULL) {
-    pexit("Failed to get Turkey server pid");
-  }
-
-  if ((client->server_pid = atoi(server_pid)) == 0) {
-    pexit("Failed to parse Turkey server pid");
-  }
-
-  if ((client->shm_key_path_len =
-           snprintf(NULL, 0, "/dev/shm/turkey-%08d", client->pid)) < 0) {
-    pexit("Failed to get shared memory path length");
-  }
-
-  if ((client->shm_key_path = (char *)malloc(++client->shm_key_path_len)) ==
-      NULL) {
-    pexit("Failed to allocate memory for shared memory file name");
-  }
-
-  if (snprintf(client->shm_key_path, client->shm_key_path_len,
-               "/dev/shm/turkey-%08d", client->pid) < 0) {
-    pexit("Failed to create shared memory file name string");
-  }
-
-  printf("%d: %d -> %s\n", client->server_pid, client->pid,
-         client->shm_key_path);
-
-  FILE *shm_file;
-  if (!(shm_file = fopen(client->shm_key_path, "wt"))) {
-    pexit("Failed to create file for shared memory");
-  }
-  fclose(shm_file);
-
-  if (client->shm_key = ftok(client->shm_key_path, 1) == -1) {
-    pexit("Failed to get IPC key from file name");
-  }
+  client->tshm = turkey_shm_init(client->pid);
 
   if (signal(SIGINT, handler) == SIG_ERR) {
     pexit("Failed to handle SIGINT signal");
   }
 
-  if (kill(client->server_pid, SIGINT) < 0) {
-    pexit("Failed to register with Turkey server");
+  if ((client->server_ip = getenv(TURKEY_SERVER_IP_KEY)) == NULL) {
+    pexit("Failed to get Turkey server ip");
   }
+
+  if ((client->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    pexit("Failed to open socket");
+  }
+
+  bzero((char *) &client->serv_addr, sizeof(client->serv_addr));
+  client->serv_addr.sin_family = AF_INET;
+  inet_aton(client->server_ip, &client->serv_addr.sin_addr);
+  client->serv_addr.sin_port = htons(TURKEY_SERVER_PORT);
+
+  if (connect(client->sock, (struct sockaddr *) &client->serv_addr, sizeof(client->serv_addr)) < 0) {
+    pexit("Failed to connect to server");
+  }
+
+  fprintf(stderr, "Connected to server %s\n", client->server_ip);
+
+  // Convert pid to network order
+  uint32_t pid = (uint32_t)client->pid;
+  uint32_t n_pid = htonl(pid);
+
+  if (write(client->sock, &n_pid, sizeof(n_pid)) < 0) {
+    pexit("Failed to to send pid to server");
+  }
+
+  int n;
+  char buffer[1];
+  if ((n = read(client->sock, buffer, 1)) < 0) {
+    pexit("Failed to read data from server");
+  }
+
+  fprintf(stderr, "All systems go!\n");
+
+  // if (kill(client->server_pid, SIGINT) < 0) {
+  //   pexit("Failed to register with Turkey server");
+  // }
 
   return client;
 }
 
-void turkey_destroy(TURKEY *turkey_client) {
-  if (remove(turkey_client->shm_key_path) < 0) {
-    pexit("Failed to remove shared memory file");
-  }
-
-  free(turkey_client->shm_key_path);
-  free(turkey_client);
+// TODO: we should call this on failure too
+void turkey_destroy(TURKEY *client) {
+  close(client->sock);
+  turkey_shm_destroy(client->tshm);
+  free(client);
 }
