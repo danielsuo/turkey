@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install -y \
   cmake \
   libcurl4-openssl-dev
 
-RUN mkdir /server
+RUN mkdir -p /home/dsuo/turkey

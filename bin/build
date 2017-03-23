@@ -7,4 +7,4 @@ then
 fi
 
 cp .gitignore .dockerignore
-sudo docker build -t danielsuo/turkey:latest -f ./docker/$dockerfile .
+sudo docker build -t danielsuo/turkey:$dockerfile -f ./docker/$dockerfile .

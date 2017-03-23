@@ -12,7 +12,11 @@ file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 
 add_library (${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-target_link_libraries (
-  ${PROJET_NAME}
-  docker
-)
+message (${PROJECT_NAME})
+
+# target_link_libraries (
+#   ${PROJET_NAME}
+#   docker
+#   turkey-common
+#   turkey-utils
+# )

@@ -3,6 +3,13 @@
 .idea
 cmake-build-debug
 build/
+out/
+vendor/
+
+*.out
+
+# Python files
+*.pyc
 
 # Created by .ignore support plugin (hsz.mobi)
 ### C template

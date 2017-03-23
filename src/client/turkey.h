@@ -11,6 +11,8 @@
 #include <sys/ipc.h>
 #include <sys/types.h>
 
+#include "general_utils.h"
+
 #ifdef __cplusplus
 extern "C"{
 #endif

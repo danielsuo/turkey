@@ -1,6 +1,9 @@
 # Turkey
 
 ## TODO
+- Implement client
+  - TCP client
+  - Communicate between containers: https://docs.docker.com/engine/userguide/networking/default_network/container-communication/#communication-between-containers
 - Implement server
   - Keep track of containers
   - Run on threads

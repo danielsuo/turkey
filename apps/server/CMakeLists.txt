@@ -16,6 +16,8 @@ target_link_libraries(
     ${PROJECT_NAME}
     turkey-client
     turkey-server
+    turkey-common
+    turkey-utils
     docker
     curl
 )

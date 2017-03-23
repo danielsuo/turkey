@@ -2,22 +2,33 @@
 
 ./bin/compile
 
-actor=$1
-if [[ -z $actor || $actor == "server" ]]
-then
-  sudo docker run --rm -it \
-    -p 80:2375 \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $(pwd):/server \
-    -v /dev/shm:/dev/shm \
-    --ipc=host \
-    --entrypoint /server/build/turkey \
-    danielsuo/turkey $actor
-else
-  sudo docker run --rm -it \
-    -v $(pwd):/server \
-    -v /dev/shm:/dev/shm \
-    --ipc=host \
-    --entrypoint /server/build/turkey \
-    danielsuo/turkey $actor
-fi
+sudo docker run --rm -it \
+  -p 1234:21216/tcp \
+  -v $(pwd):/home/dsuo/turkey \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --ipc=host \
+  --entrypoint /home/dsuo/turkey/build/apps/server/app-server \
+  danielsuo/turkey:dev "$@"
+  # -v /var/run/turkey.sock:/var/run/turkey.sock \
+
+# ./bin/compile
+#
+# actor=$1
+# if [[ -z $actor || $actor == "server" ]]
+# then
+#   sudo docker run --rm -it \
+#     -p 80:2375 \
+#     -v /var/run/docker.sock:/var/run/docker.sock \
+#     -v $(pwd):/server \
+#     -v /dev/shm:/dev/shm \
+#     --ipc=host \
+#     --entrypoint /server/build/turkey \
+#     danielsuo/turkey $actor
+# else
+#   sudo docker run --rm -it \
+#     -v $(pwd):/server \
+#     -v /dev/shm:/dev/shm \
+#     --ipc=host \
+#     --entrypoint /server/build/turkey \
+#     danielsuo/turkey $actor
+# fi
