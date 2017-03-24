@@ -70,7 +70,7 @@ TURKEY *turkey_init() {
   //   pexit("Failed to create server address string");
   // }
 
-  client->req = zsock_new_req(client->server_ip);
+  client->req = zsock_new_push(client->server_ip);
   // zstr_send(client->req, "Hello, world!");
 
   // TODO: https://github.com/zeromq/cppzmq/blob/master/zmq.hpp

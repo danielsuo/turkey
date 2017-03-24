@@ -69,7 +69,9 @@ void *tcp_client_handler(void *server) {
 
   zmq::context_t context = zmq::context_t(1);
   zmq::socket_t socket = zmq::socket_t(context, ZMQ_REP);
-  socket.bind("tcp://0.0.0.0:21218");
+  std::string addr = "tcp://0.0.0.0:" + std::to_string(TURKEY_SERVER_PORT);
+  std::cerr << addr << std::endl;
+  socket.bind(addr);
 
   while (1) {
     fprintf(stderr, "Waiting to receive...\n");
