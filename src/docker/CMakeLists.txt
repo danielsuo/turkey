@@ -11,3 +11,4 @@ set (CMAKE_BUILD_TYPE Debug)
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 
 add_library (${PROJECT_NAME} SHARED ${SOURCE_FILES})
+add_dependencies (${PROJECT_NAME} turkey-json)

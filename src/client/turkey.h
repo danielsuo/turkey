@@ -13,7 +13,10 @@
 
 #include <arpa/inet.h>
 
+#include <czmq.h>
+
 #include "common.h"
+#include "common_builder.h"
 #include "general_utils.h"
 
 #ifdef __cplusplus
@@ -23,6 +26,7 @@ extern "C" {
 struct turkey {
   int pid;
   char *server_ip;
+  zsock_t *push;
   int sock;
 
   struct sockaddr_in serv_addr;

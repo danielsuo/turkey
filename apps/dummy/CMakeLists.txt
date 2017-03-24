@@ -17,6 +17,10 @@ target_link_libraries(
     turkey-client
     # turkey-server
     turkey-common
+    flatcc
+    flatccrt
+    czmq
+    zmq
     # turkey-utils
     # docker
     # curl

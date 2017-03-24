@@ -5,6 +5,7 @@ void handler(int signum) { printf("Received signal %d\n", signum); }
 // TODO: write data to shared memory to indicate state (e.g., start / stop)
 // TODO: send signal in turkey_destroy to say job completed
 TURKEY *turkey_init() {
+
   TURKEY *client;
 
   if ((client = (TURKEY *)malloc(sizeof(TURKEY))) == NULL) {
@@ -24,6 +25,38 @@ TURKEY *turkey_init() {
   if ((client->server_ip = getenv(TURKEY_SERVER_IP_KEY)) == NULL) {
     pexit("Failed to get Turkey server ip");
   }
+
+  flatcc_builder_t builder;
+  flatcc_builder_t *B = &builder;
+  flatcc_builder_init(B);
+
+  // ns(turkey_msg_register_client_t) msg = { client->pid };
+  ns(turkey_msg_register_client_create_as_root)(B, client->pid);
+
+  uint8_t *buf;
+  size_t size;
+  buf = flatcc_builder_finalize_buffer(B, &size);
+
+  int addr_len;
+  if ((addr_len = snprintf(NULL, 0, "tcp://%s:%d", client->server_ip, TURKEY_SERVER_PORT)) < 0) {
+    pexit("Failed to get server address string length");
+  }
+
+  char *addr;
+  if ((addr = (char *)malloc(++addr_len)) == NULL) {
+    pexit("Failed to allocate memory for server address string");
+  }
+
+  if (snprintf(addr, 0, "tcp//%s:%d", client->server_ip, TURKEY_SERVER_PORT) < 0) {
+    pexit("Failed to create server address string");
+  }
+
+  client->push = zsock_new_push(addr);
+  // zstr_send(client->push, "Hello, world!");
+
+  free(addr);
+  free(buf);
+  flatcc_builder_clear(B);
 
   if ((client->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     pexit("Failed to open socket");
@@ -66,6 +99,7 @@ TURKEY *turkey_init() {
 // TODO: we should call this on failure too
 void turkey_destroy(TURKEY *client) {
   close(client->sock);
+  zsock_destroy(&client->push);
   turkey_shm_destroy(client->tshm);
   free(client);
 }

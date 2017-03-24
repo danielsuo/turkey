@@ -11,15 +11,16 @@ include (ExternalProject)
 
 set (CXX "clang++ -stdlib=c++")
 
-ExternalProject_Add (zeromq
-    URL "https://github.com/zeromq/zeromq4-1/releases/download/v4.1.5/zeromq-4.1.5.tar.gz"
+ExternalProject_Add (turkey-zmq
+    GIT_REPOSITORY "https://github.com/zeromq/libzmq.git"
+    GIT_TAG "master"
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     BUILD_IN_SOURCE 1
     UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ./configure
+    CONFIGURE_COMMAND ./autogen.sh && ./configure
     BUILD_COMMAND make
-    INSTALL_COMMAND ""
+    INSTALL_COMMAND sudo make install
 )
 
-set (ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/zeromq/include PARENT_SCOPE)
-set (ZEROMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/zeromq/.libs PARENT_SCOPE)
+set (ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/turkey-zmq/include PARENT_SCOPE)
+set (ZEROMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/turkey-zmq/src/.libs PARENT_SCOPE)

@@ -1,9 +1,8 @@
 #include "turkey.h"
 
 int main(int argc, char *argv[]) {
+  fprintf(stderr, "CLIENT LOGS\n");
   TURKEY *client = turkey_init();
-
-  fprintf(stderr, "Starting\n");
 
   unsigned char *s;
   for (s = client->tshm->shm; *s != NULL; s++) {

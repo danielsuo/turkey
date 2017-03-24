@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.5)
 
 include (ExternalProject)
 
-ExternalProject_Add (json
+ExternalProject_Add (turkey-json
     GIT_REPOSITORY "https://github.com/nlohmann/json.git"
     GIT_TAG "master"
     BUILD_IN_SOURCE 1
@@ -12,4 +12,4 @@ ExternalProject_Add (json
     INSTALL_COMMAND ""
 )
 
-set (JSON_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/json-prefix/src/json/src PARENT_SCOPE)
+set (JSON_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-json-prefix/src/turkey-json/src PARENT_SCOPE)

@@ -2,7 +2,8 @@ cmake_minimum_required (VERSION 3.5)
 project (turkey)
 
 # Set some flags
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -rdynamic")
+# TODO: Turn back on warnings and take out -fpermissive
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -rdynamic -fpermissive -w")
 set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -10,7 +11,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 add_subdirectory (lib/json)
 include_directories (${JSON_INCLUDE_DIRS})
 
-add_subdirectory (lib/zeromq)
+add_subdirectory (lib/zmq)
 include_directories (${ZEROMQ_INCLUDE_DIRS})
 link_directories (${ZEROMQ_LINK_DIRS})
 
@@ -25,6 +26,10 @@ add_subdirectory (lib/flatbuffers)
 include_directories (${FLATBUFFERS_INCLUDE_DIR})
 link_directories (${FLATBUFFERS_LINK_DIR})
 
+add_subdirectory (lib/flatcc)
+include_directories (${FLATCC_INCLUDE_DIR})
+link_directories (${FLATCC_LINK_DIR})
+
 # Macro for adding and including subdirectories
 macro (add_sublib LIB)
   add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/${LIB})
@@ -32,19 +37,27 @@ macro (add_sublib LIB)
 endmacro (add_sublib)
 
 # Generate flatbuffer stubs
-find_package (FlatBuffers REQUIRED)
 file (GLOB FBS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.fbs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/stubs)
 
 # See cmake/BuildFlatBuffers.cmake
+include (${CMAKE_MODULE_PATH}/BuildFlatBuffers.cmake)
 build_flatbuffers (
   ${FBS_FILES}
   ""
   GENERATED_FLATBUFFERS
-  ""
+  turkey-flatbuffers
   ${CMAKE_CURRENT_BINARY_DIR}/stubs
   ""
   ""
+)
+
+include (${CMAKE_MODULE_PATH}/BuildFlatCC.cmake)
+build_flatcc (
+  ${FBS_FILES}
+  GENERATED_FLATCC
+  turkey-flatcc
+  ${CMAKE_CURRENT_BINARY_DIR}/stubs
 )
 
 # Add libraries

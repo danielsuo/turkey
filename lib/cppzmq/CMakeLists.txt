@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.5)
 
 include (ExternalProject)
 
-ExternalProject_Add (cppzmq
+ExternalProject_Add (turkey-cppzmq
     GIT_REPOSITORY "https://github.com/zeromq/cppzmq.git"
     GIT_TAG "master"
     BUILD_IN_SOURCE 1
@@ -13,4 +13,4 @@ ExternalProject_Add (cppzmq
     INSTALL_COMMAND ""
 )
 
-set (CPPZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/cppzmq-prefix/src/cppzmq/src PARENT_SCOPE)
+set (CPPZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-cppzmq-prefix/src/turkey-cppzmq/src PARENT_SCOPE)
