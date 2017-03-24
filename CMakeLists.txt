@@ -37,7 +37,7 @@ macro (add_sublib LIB)
 endmacro (add_sublib)
 
 # Generate flatbuffer stubs
-file (GLOB FBS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/common/*.fbs)
+file (GLOB FBS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/fbs/*.fbs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/stubs)
 
 # See cmake/BuildFlatBuffers.cmake
@@ -63,6 +63,7 @@ build_flatcc (
 # Add libraries
 add_sublib (utils)
 add_sublib (common)
+add_Sublib (fbs)
 add_sublib (client)
 add_sublib (docker)
 add_sublib (server)

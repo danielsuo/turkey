@@ -1,6 +1,9 @@
 # Turkey
 
 ## TODO
+- Test out passing flatbuffers via zmq
+- Replace TCP with zmq
+- Shared memory with flatbuffers
 - Implement client
   - TCP client
   - Communicate between containers:

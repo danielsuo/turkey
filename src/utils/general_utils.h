@@ -8,8 +8,6 @@
 extern "C" {
 #endif
 
-#define ns(x) FLATBUFFERS_WRAP_NAMESPACE(Turkey, x)
-
 void pexit(char *msg) {
   perror(msg);
   exit(1);

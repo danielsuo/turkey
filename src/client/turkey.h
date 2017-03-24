@@ -16,7 +16,7 @@
 #include <czmq.h>
 
 #include "common.h"
-#include "common_builder.h"
+#include "fbs.h"
 #include "general_utils.h"
 
 #ifdef __cplusplus
@@ -26,10 +26,10 @@ extern "C" {
 struct turkey {
   int pid;
   char *server_ip;
-  zsock_t *push;
-  int sock;
+  zsock_t *req;
+  // int sock;
 
-  struct sockaddr_in serv_addr;
+  // struct sockaddr_in serv_addr;
   struct turkey_shm *tshm;
 };
 

@@ -15,6 +15,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include <zmq.hpp>
+
+#include "fbs.h"
 #include "common.h"
 #include "general_utils.h"
 #include "Container.h"

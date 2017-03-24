@@ -1,5 +1,0 @@
-namespace Turkey;
-
-struct turkey_msg_register_client {
-  pid:int;
-}

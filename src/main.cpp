@@ -19,7 +19,11 @@ int main(int argc, char *argv[]) {
 
   Container dummy("/home/dsuo/turkey/apps/dummy/docker.json");
   std::stringstream ss;
-  ss << "[\"" << TURKEY_SERVER_IP_KEY << "=" << server.getIP() << "\"]";
+
+  ss << "[\"";
+  ss << TURKEY_SERVER_IP_KEY;
+  ss << "=tcp://" << server.getIP() << ":" << TURKEY_SERVER_PORT;
+  ss << "\"]";
   std::cerr << ss.str() << std::endl;
   dummy.addArgs("Env", ss.str());
   dummy.create();
