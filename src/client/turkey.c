@@ -26,10 +26,14 @@ TURKEY *turkey_init() {
     pexit("Failed to get Turkey server ip");
   }
 
+  fprintf(stderr, "Received server ip at %s\n", client->server_ip);
+
+
   flatcc_builder_t builder;
   flatcc_builder_t *B = &builder;
   flatcc_builder_init(B);
 
+  // NOTE: builder documentation https://github.com/dvidelabs/flatcc/blob/master/doc/builder.md
   // ns(turkey_msg_register_client_t) msg = { client->pid };
   ns(turkey_msg_register_client_create_as_root)(B, client->pid);
 
@@ -47,16 +51,21 @@ TURKEY *turkey_init() {
     pexit("Failed to allocate memory for server address string");
   }
 
-  if (snprintf(addr, 0, "tcp//%s:%d", client->server_ip, TURKEY_SERVER_PORT) < 0) {
+  if (snprintf(addr, addr_len, "tcp://%s:%d", client->server_ip, 21217) < 0) {
     pexit("Failed to create server address string");
   }
 
+  fprintf(stderr, "Trying to connect to %s\n", addr);
+
   client->push = zsock_new_push(addr);
-  // zstr_send(client->push, "Hello, world!");
+  zstr_send(client->push, "Hello, world!");
 
   free(addr);
   free(buf);
   flatcc_builder_clear(B);
+
+
+
 
   if ((client->sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     pexit("Failed to open socket");

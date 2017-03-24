@@ -13,4 +13,4 @@ ExternalProject_Add (turkey-cppzmq
     INSTALL_COMMAND ""
 )
 
-set (CPPZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-cppzmq-prefix/src/turkey-cppzmq/src PARENT_SCOPE)
+set (CPPZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-cppzmq-prefix/src/turkey-cppzmq PARENT_SCOPE)

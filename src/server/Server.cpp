@@ -270,7 +270,7 @@ void *tcp_client_accept_handler(void *client) {
 
   self->pid = ntohl(n_pid);
 
-  fprintf(stderr, "Got pid %d\n", self->pid);
+  fprintf(stderr, "Got pid %d (%d)\n", self->pid, n_pid);
 
   self->tshm = turkey_shm_init(self->pid);
 
