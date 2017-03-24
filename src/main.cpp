@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
 
   pause();
 
-  Response res = dummy.logs();
+  Response res = server.logs();
   std::cout << res.data << std::endl;
-  res = server.logs();
+  res = dummy.logs();
   std::cout << res.data << std::endl;
 
   dummy.stop();

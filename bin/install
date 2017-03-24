@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# Clone repository
+# git clone https://github.com/danielsuo/turkey --recursive
+
+# Basic setup
+sudo apt-get update
+sudo apt-get install -y \
+  git \
+  build-essential \
+  cmake \
+  autoconf \
+  automake \
+  libtool \
+  uuid-dev \
+  pkg-config \
+  htop
+
 # Add docker to apt
 sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
@@ -9,25 +25,38 @@ sudo add-apt-repository \
        ubuntu-$(lsb_release -cs) \
        main"
 
-sudo apt-get install -y build-essential cmake libcurl4-openssl-dev git htop docker-engine
+sudo apt-get install -y \
+  docker-engine
+
+# Install curl
+sudo apt-get install -y libcurl4-openssl-dev
+
+# # Install zeromq
+# pushd vendor/libzmq
+# mkdir build && pushd build
+# cmake .. && make -j 4 && sudo make install && sudo ldconfig
+# pushd +2 && dirs -c
+#
+# # Install czmq
+# pushd vendor/czmq
+# ./autogen.sh && ./configure && make -j 4 && make check && sudo make install && sudo ldconfig
+# popd
 
 # Set up watchman (for remote development)
 curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 sudo apt-get install -y nodejs automake autoconf python-dev libtool pkg-config
 sudo npm install -g nuclide
 
-git clone https://github.com/facebook/watchman.git
-cd watchman
+git clone https://github.com/facebook/watchman.git vendor/watchman
+pushd vendor/watchman
 git checkout v4.8.0-rc1  # the latest stable release
 ./autogen.sh
 ./configure
 make
 sudo make install
+popd
 
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
 echo "export NVM_DIR=\"$HOME/.nvm\"" >> ~/.bashrc
 echo "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"" >> ~/.bashrc
-
-# Clone repository
-git clone https://github.com/danielsuo/turkey --recursive

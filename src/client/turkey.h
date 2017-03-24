@@ -27,14 +27,6 @@ struct turkey {
 
   struct sockaddr_in serv_addr;
   struct turkey_shm *tshm;
-
-  // int pid;
-  // size_t shm_key_path_len;
-  // char *shm_key_path;
-  // key_t shm_key;
-  // int shm_id;
-  //
-  // unsigned char* shm;
 };
 
 typedef struct turkey TURKEY;

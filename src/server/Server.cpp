@@ -278,10 +278,11 @@ void *tcp_client_accept_handler(void *client) {
   unsigned char *s = self->tshm->shm;
 
   for (c = 'a'; c <= 'z'; c++) {
-    fprintf(stderr, "Putting character %c\n", c);
+    putchar(c);
     *s++ = c;
   }
   *s = NULL;
+  putchar('\n');
 
   char buffer[1] = {'T'};
   if (write(self->sock, buffer, 1) < 0) {
