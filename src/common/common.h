@@ -8,7 +8,7 @@
 
 // For TCP sockets.
 #define TURKEY_SERVER_IP_KEY "TURKEY_SERVER_IP_KEY"
-#define TURKEY_SERVER_PORT 21217
+#define TURKEY_SERVER_PORT 21218
 
 // For shared memory
 #define TURKEY_SHM_PATH_FORMAT "/dev/shm/turkey-%08d"

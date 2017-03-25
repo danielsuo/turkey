@@ -63,7 +63,7 @@ build_flatcc (
 # Add libraries
 add_sublib (utils)
 add_sublib (common)
-add_Sublib (fbs)
+add_sublib (fbs)
 add_sublib (client)
 add_sublib (docker)
 add_sublib (server)

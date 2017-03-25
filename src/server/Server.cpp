@@ -35,7 +35,6 @@ Server::~Server() {
 }
 
 void Server::listen() {
-  fprintf(stderr, "Listening on %d\n", _port);
   int rc = pthread_create(&_listener, NULL, tcp_client_handler, this);
   if (rc) {
     printf("ERROR: return code from pthread_create() is %d\n", rc);
@@ -69,8 +68,8 @@ void *tcp_client_handler(void *server) {
 
   zmq::context_t context = zmq::context_t(1);
   zmq::socket_t socket = zmq::socket_t(context, ZMQ_REP);
-  std::string addr = "tcp://0.0.0.0:" + std::to_string(TURKEY_SERVER_PORT);
-  std::cerr << addr << std::endl;
+  std::string addr = "tcp://0.0.0.0:" + std::to_string(self->getPort());
+  std::cerr << "Bound to: " << addr << std::endl;
   socket.bind(addr);
 
   while (1) {
@@ -81,9 +80,9 @@ void *tcp_client_handler(void *server) {
     // flatbuffers::FlatBufferBuilder fbb;
     // turkey_msg_register_clientBuilder builder(fbb);
     fprintf(stderr, "message size: %d\n", receiveMessage.size());
+    fprintf(stderr, "raw: %s\n", receiveMessage.data());
     auto msg = Getturkey_msg_register_client(receiveMessage.data());
     fprintf(stderr, "parsed: %d\n", msg->pid());
-    fprintf(stderr, "raw: %s\n", receiveMessage.data());
 
     Client *client = new Client();
     client->pid = msg->pid();
@@ -103,10 +102,6 @@ void *tcp_client_handler(void *server) {
     *s = NULL;
     putchar('\n');
 
-    // char buffer[1] = {'T'};
-    // if (write(client->sock, buffer, 1) < 0) {
-    //   pexit("Failed to to write to client");
-    // }
     zmq::message_t reply(6);
     memcpy((void *)reply.data(), "World", 6);
     socket.send(reply);
