@@ -1,18 +1,10 @@
 # Turkey
 
 ## TODO
-- Test out passing flatbuffers via zmq
-- Replace TCP with zmq
+
 - Shared memory with flatbuffers
-- Implement client
-  - TCP client
-  - Communicate between containers:
-    - https://docs.docker.com/engine/userguide/networking/default_network/container-communication/#communication-between-containers
-    - https://docs.docker.com/engine/userguide/networking/
-    - https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/
 - Implement server
   - Keep track of containers
-  - Run on threads
   - Dummy scheduler (i.e., pin and prioritize)
   - Start containers with parameters
   - Hook up to parsec
@@ -29,6 +21,16 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Test out passing flatbuffers via zmq
+- Replace TCP with zmq
+- Implement server
+  - Run on threads
+- Implement client
+  - TCP client
+  - Communicate between containers:
+    - https://docs.docker.com/engine/userguide/networking/default_network/container-communication/#communication-between-containers
+    - https://docs.docker.com/engine/userguide/networking/
+    - https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/
 - Share some memory
   - https://users.cs.cf.ac.uk/Dave.Marshall/C/node27.html
   - http://stackoverflow.com/questions/15035248/linux-shmget-function-in-c

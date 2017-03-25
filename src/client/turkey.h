@@ -27,9 +27,6 @@ struct turkey {
   int pid;
   char *server_ip;
   zsock_t *req;
-  // int sock;
-
-  // struct sockaddr_in serv_addr;
   struct turkey_shm *tshm;
 };
 

@@ -4,16 +4,13 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <thread>
 #include <iostream>
 
 #include <signal.h>
 #include <unistd.h>
-#include <pthread.h>
 
 #include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 
 #include <zmq.hpp>
 
@@ -66,7 +63,6 @@ private:
 
   int _port;
   int _socket;
-  pthread_t _listener;
 
   std::vector<Client *> _clients;
 };
