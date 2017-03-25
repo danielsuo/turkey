@@ -3,8 +3,6 @@
 namespace Turkey {
 
 void signal_handler(int signal, siginfo_t *siginfo, void *context);
-void tcp_client_handler(Server *server);
-void tcp_client_accept_handler(Server *server, int pid);
 
 Server::Server() {
   // Create sigaction struct
@@ -24,8 +22,6 @@ Server::Server() {
     perror("Failed to attach sigaction to SIGINT in Turkey server");
     exit(1);
   }
-
-  _port = TURKEY_SERVER_PORT;
 }
 
 Server::~Server() {
@@ -35,69 +31,108 @@ Server::~Server() {
   for (int i = 0; i < _clients.size(); i++) {
     delete _clients[i];
   }
+
+  zmq_ctx_destroy(_context);
 }
 
-void Server::listen() {
-  std::thread listener(tcp_client_handler, this);
+void Server::listen(int port) {
+  std::thread listener(&Server::bind, this, port);
   listener.join();
 }
 
-int Server::getPort() {
-  return _port;
-}
+void Server::bind(int port) {
+  // Use Router-Dealer pattern: http://zguide.zeromq.org/cpp:mtserver
+  // _context = zmq::context_t(1);
+  _context = zmq_ctx_new();
 
-int Server::getSocket() {
-  return _socket;
-}
+  // ROUTER (get client requests)
+  // zmq::socket_t clients(_context, ZMQ_ROUTER);
 
-void Server::setSocket(int sock) {
-  _socket = sock;
-}
+  // Create socket
+  std::string addr = "tcp://*:" + std::to_string(port);
+  // clients.bind(addr);
+  // zsock_t *clients = zsock_new_router(addr.c_str());
+  void *clients = zmq_socket(_context, ZMQ_ROUTER);
+  zmq_bind(clients, addr.c_str());
+  std::cerr << "Clients bound to: " << addr << std::endl;
 
-void Server::closeSocket() {
-  close(_socket);
-}
+  // DEALER (manage workers)
+  // zmq::socket_t workers(_context, ZMQ_DEALER);
+  // workers.bind(TURKEY_SERVER_WORKERS_ADDR);
+  // zsock_t *workers = zsock_new_dealer(TURKEY_SERVER_WORKERS_ADDR.c_str());
+  void *workers = zmq_socket(_context, ZMQ_DEALER);
+  zmq_bind(workers, TURKEY_SERVER_WORKERS_ADDR.c_str());
+  std::cerr << "Workers bound to: " << TURKEY_SERVER_WORKERS_ADDR << std::endl;
 
-std::string Server::getPath() {
-  return TURKEY_SERVER_PATH;
-}
-
-// TODO: http://zguide.zeromq.org/c:mtserver
-void tcp_client_handler(Server *self) {
-  // TODO: perhaps move this into the initializer; or at least have socket on the server object
-  zmq::context_t context = zmq::context_t(1);
-  zmq::socket_t socket = zmq::socket_t(context, ZMQ_REP);
-  std::string addr = "tcp://0.0.0.0:" + std::to_string(self->getPort());
-  std::cerr << "Bound to: " << addr << std::endl;
-  socket.bind(addr);
-
-  while (1) {
-    fprintf(stderr, "Waiting to receive...\n");
-    zmq::message_t receiveMessage;
-    socket.recv(&receiveMessage);
-
-    fprintf(stderr, "message size: %d\n", receiveMessage.size());
-    fprintf(stderr, "raw: %s\n", receiveMessage.data());
-    auto msg = Getturkey_msg_register_client(receiveMessage.data());
-    fprintf(stderr, "parsed: %d\n", msg->pid());
-
-    // TODO: Move this
-    zmq::message_t reply(6);
-    memcpy((void *)reply.data(), "World", 6);
-    socket.send(reply);
-
-    std::thread client(tcp_client_accept_handler, self, msg->pid());
-
-    // TODO: Figure out how to wait on a number of threads
-    client.join();
+  std::vector<std::thread> worker_threads;
+  for (int i = 0; i < TURKEY_SERVER_NUM_WORKERS; i++) {
+    worker_threads.emplace_back(&Server::worker, this);
   }
 
-  return 0;
+  // Connect clients to workers
+  // zmq::proxy(clients, workers, NULL);
+  // TODO: check return code
+  zmq_proxy(clients, workers, NULL);
+
+  for (auto &worker_thread : worker_threads) {
+    worker_thread.join();
+  }
+
+  zmq_close(clients);
+  zmq_close(workers);
 }
 
-Client::~Client() {
-  close(sock);
-  turkey_shm_destroy(tshm);
+void Server::worker() {
+  // zmq::socket_t socket(_context, ZMQ_REP);
+  // socket.connect(TURKEY_SERVER_WORKERS_ADDR);
+
+  zsock_t *socket = zmq_socket(_context, ZMQ_REP);
+  zmq_connect(socket, TURKEY_SERVER_WORKERS_ADDR.c_str());
+  if (socket == NULL) {
+    pexit("Failed to create socket in worker thread");
+  }
+  fprintf(stderr, "Created worker socket!\n");
+
+
+  while (true) {
+    // zmq::message_t msg;
+    // socket.recv(&msg);
+    fprintf(stderr, "Waiting for message...\n");
+    zmsg_t *msg = zmsg_recv(socket);
+    if (msg == NULL) {
+      pexit("Failed to receive message");
+    }
+
+    fprintf(stderr, "mesage size: %d\n", zmsg_size(msg));
+    zframe_t *frame = zmsg_pop(msg);
+    void *raw = zframe_data(frame);
+    fprintf(stderr, "raw: %s\n", raw);
+    auto data = Getturkey_msg_register_client(raw);
+    fprintf(stderr, "parsed: %d\n", data->pid());
+
+    Client *client = new Client();
+    client->pid = data->pid();
+    addClient(client);
+
+    client->tshm = turkey_shm_init(client->pid);
+
+    char c;
+    unsigned char *s = client->tshm->shm;
+
+    for (c = 'a'; c <= 'z'; c++) {
+      putchar(c);
+      *s++ = c;
+    }
+    *s = NULL;
+    putchar('\n');
+
+    zmsg_t *reply = zmsg_new();
+    zframe_t *reply_frame = zframe_new("OK", 2);
+    zmsg_append(reply, &reply_frame);
+    zmsg_send(&reply, socket);
+  }
+
+  zmq_close(socket);
 }
 
 void Server::addClient(Client *client) {
@@ -108,33 +143,8 @@ Client *Server::getClient(int index) {
   return _clients[index];
 }
 
-void tcp_client_accept_handler(Server *self, int pid) {
-  Client *client = new Client();
-  client->pid = pid;
-  self->addClient(client);
-
-  client->tshm = turkey_shm_init(client->pid);
-
-  char c;
-  unsigned char *s = client->tshm->shm;
-
-  for (c = 'a'; c <= 'z'; c++) {
-    putchar(c);
-    *s++ = c;
-  }
-  *s = NULL;
-  putchar('\n');
-
-  char buffer[1] = {'T'};
-  if (write(client->sock, buffer, 1) < 0) {
-    pexit("Failed to to write to client");
-  }
-
-  while (*client->tshm->shm != '*') {
-    sleep(1);
-  }
-
-  return 0;
+Client::~Client() {
+  turkey_shm_destroy(tshm);
 }
 
 void signal_handler(int signal, siginfo_t *siginfo, void *context) {

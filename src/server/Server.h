@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <thread>
+#include <memory>
 #include <iostream>
 
 #include <signal.h>
@@ -12,7 +13,7 @@
 
 #include <string.h>
 
-#include <zmq.hpp>
+#include <czmq.h>
 
 #include "fbs.h"
 #include "common.h"
@@ -21,11 +22,11 @@
 
 namespace Turkey {
 
-struct Client {
-  struct sockaddr_in addr;
-  int pid;
-  int sock;
+static const std::string TURKEY_SERVER_WORKERS_ADDR = "inproc://workers";
+static const int TURKEY_SERVER_NUM_WORKERS = 5;
 
+struct Client {
+  int pid;
   struct turkey_shm *tshm;
 
   ~Client();
@@ -43,27 +44,21 @@ public:
     return instance;
   }
 
-  void listen();
+  void listen(int port = TURKEY_SERVER_PORT);
 
-  int getPort();
-
-  int getSocket();
-  void setSocket(int sock);
-  void closeSocket();
-
-  std::string getPath();
+private:
+  void bind(int port = TURKEY_SERVER_PORT);
+  void worker();
 
   // TODO: manage the life cycle of this pointer better (e.g., smart pointer)
   void addClient(Client *client);
   Client *getClient(int index);
 
-private:
   Server();
   ~Server();
 
-  int _port;
-  int _socket;
-
+  // zmq::context_t _context;
+  void *_context;
   std::vector<Client *> _clients;
 };
 
