@@ -15,7 +15,7 @@ TURKEY *turkey_init() {
   // TODO: this is 1 unless we use an init process or run in priveleged mode
   //       (which is what we're assuming...)
   client->pid = getpid();
-
+  client->tcpu = turkey_cpu_init();
   client->tshm = turkey_shm_init(client->pid);
 
   if (signal(SIGINT, handler) == SIG_ERR) {
@@ -54,8 +54,8 @@ TURKEY *turkey_init() {
   zmsg_recv(client->req);
 
   Turkey_turkey_shm_cpu_table_t table = Turkey_turkey_shm_cpu_as_root(client->tshm->shm);
-  int32_t share = Turkey_turkey_shm_cpu_share(table);
-  fprintf(stderr, "Got %d share\n", share);
+  client->tcpu->share = Turkey_turkey_shm_cpu_share(table);
+  fprintf(stderr, "Got %d share\n", client->tcpu->share);
 
   flatcc_builder_clear(B);
 
@@ -67,6 +67,7 @@ TURKEY *turkey_init() {
 // TODO: we should call this on failure too
 void turkey_destroy(TURKEY *client) {
   zsock_destroy(&client->req);
+  turkey_cpu_destroy(client->tcpu);
   turkey_shm_destroy(client->tshm);
   free(client);
 }

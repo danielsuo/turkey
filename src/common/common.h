@@ -37,8 +37,17 @@ struct turkey_shm {
   unsigned char* shm;
 };
 
+struct turkey_cpu {
+  int32_t share;
+};
+
 struct turkey_shm *turkey_shm_init(int pid);
 void turkey_shm_destroy(struct turkey_shm *tshm);
+int turkey_shm_lock(struct turkey_shm *tshm);
+int turkey_shm_unlock(struct turkey_shm *tshm);
+
+struct turkey_cpu *turkey_cpu_init();
+void turkey_cpu_destroy(struct turkey_cpu *tshm);
 
 #ifdef __cplusplus
 }

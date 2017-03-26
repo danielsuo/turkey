@@ -66,3 +66,25 @@ void turkey_shm_destroy(struct turkey_shm *tshm) {
   free(tshm->shm_key_path);
   free(tshm);
 }
+
+int turkey_shm_lock(struct turkey_shm *tshm) {
+  return shmctl(tshm->shm_id, SHM_LOCK, NULL);
+}
+
+int turkey_shm_unlock(struct turkey_shm *tshm) {
+  return shmctl(tshm->shm_id, SHM_UNLOCK, NULL);
+}
+
+struct turkey_cpu *turkey_cpu_init() {
+  struct turkey_cpu *tcpu;
+
+  if ((tcpu = (struct turkey_cpu *)malloc(sizeof(struct turkey_cpu *))) == NULL) {
+    pexit("Failed to allocate memory for shared memory struct");
+  }
+
+  return tcpu;
+}
+
+void turkey_cpu_destroy(struct turkey_cpu *tcpu) {
+  free(tcpu);
+}

@@ -1,13 +1,11 @@
 # Turkey
 
 ## TODO
-- Shared memory locking
+- Docker update command
 - Implement server
-  - Keep track of containers
   - Dummy scheduler (i.e., pin and prioritize)
   - Start containers with parameters
   - Hook up to parsec
-- Docker update command
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
   - Microsoft PPL
@@ -20,11 +18,13 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Shared memory locking
 - Shared memory with flatbuffers
 - Test out passing flatbuffers via zmq
 - Replace TCP with zmq
 - Implement server
   - Run on threads
+  - Keep track of containers
 - Implement client
   - TCP client
   - Communicate between containers:

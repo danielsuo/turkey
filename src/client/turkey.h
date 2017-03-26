@@ -28,6 +28,7 @@ struct turkey {
   char *server_ip;
   zsock_t *req;
   struct turkey_shm *tshm;
+  struct turkey_cpu *tcpu;
 };
 
 typedef struct turkey TURKEY;

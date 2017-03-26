@@ -123,17 +123,13 @@ void Server::worker() {
     auto response = builder.Finish();
     fbb.Finish(response);
 
+    if (turkey_shm_lock(client->tshm) < 0) {
+      pexit("Failed to lock shared memory");
+    }
     memcpy(client->tshm->shm, fbb.GetBufferPointer(), fbb.GetSize());
-
-    // char c;
-    // unsigned char *s = client->tshm->shm;
-    //
-    // for (c = 'a'; c <= 'z'; c++) {
-    //   putchar(c);
-    //   *s++ = c;
-    // }
-    // *s = NULL;
-    // putchar('\n');
+    if (turkey_shm_unlock(client->tshm) < 0) {
+      pexit("Failed to unlock shared memory");
+    }
 
     zmsg_t *reply = zmsg_new();
     zframe_t *reply_frame = zframe_new("OK", 2);
