@@ -10,15 +10,16 @@
 
 #include <signal.h>
 #include <unistd.h>
-
 #include <string.h>
 
+#include <sys/wait.h>
+
+#include <libcgroup.h>
 #include <czmq.h>
 
 #include "fbs/fbs.h"
 #include "common/common.h"
 #include "utils/general.h"
-#include "docker/Container.h"
 
 namespace Turkey {
 
@@ -44,6 +45,7 @@ public:
     return instance;
   }
 
+  void spawn(const std::string exec_path, const std::vector<std::string> args = std::vector<std::string>());
   void listen(int port = TURKEY_SERVER_PORT);
 
 private:

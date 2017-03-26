@@ -67,6 +67,18 @@ void turkey_shm_destroy(struct turkey_shm *tshm) {
   free(tshm);
 }
 
+int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size) {
+  if (turkey_shm_lock(tshm) < 0) {
+    perror("Failed to lock shared memory");
+    return -1;
+  }
+  memcpy(tshm->shm, buffer, size);
+  if (turkey_shm_unlock(tshm) < 0) {
+    perror("Failed to unlock shared memory");
+    return -1;
+  }
+}
+
 int turkey_shm_lock(struct turkey_shm *tshm) {
   return shmctl(tshm->shm_id, SHM_LOCK, NULL);
 }

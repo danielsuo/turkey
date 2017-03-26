@@ -22,6 +22,8 @@ Server::Server() {
     perror("Failed to attach sigaction to SIGINT in Turkey server");
     exit(1);
   }
+
+  _context = zmq_ctx_new();
 }
 
 Server::~Server() {
@@ -35,6 +37,53 @@ Server::~Server() {
   zmq_ctx_destroy(_context);
 }
 
+void Server::spawn(const std::string exec_path, const std::vector<std::string> args) {
+  Client *client = new Client();
+
+  char **cargs = new char *[args.size()];
+
+  for (size_t i = 0; i < args.size(); i++) {
+    cargs[i] = new char[args[i].size() + 1];
+    strcpy(cargs[i], args[i].c_str());
+  }
+
+  client->pid = fork();
+
+  // Child proces
+  if (client->pid == 0) {
+    fprintf(stderr, "In child!\n");
+    if (execv(exec_path.c_str(), cargs) < 0) {
+      pexit("Failed to execv");
+    }
+  }
+
+  // Fork error'd
+  else if (client->pid == -1) {
+    pexit("Failed to fork child process");
+  }
+
+  // Parent process
+  else if (client->pid > 0) {
+    fprintf(stderr, "In parent!\n");
+    int child_status;
+    pid_t wait_pid = wait(&child_status);
+    if (wait_pid == -1) {
+      pexit("Failed to wait for child process");
+    } else {
+      if (WIFEXITED(child_status)) {
+        int ret = WEXITSTATUS(child_status);
+        fprintf(stderr, "Child existed normally with %d\n", ret);
+      }
+    }
+  }
+
+  fprintf(stderr, "Freeing memory\n");
+  for (size_t i = 0; i < args.size(); i++) {
+    delete [] cargs[i];
+  }
+  delete [] cargs;
+}
+
 void Server::listen(int port) {
   std::thread listener(&Server::bind, this, port);
   listener.join();
@@ -42,24 +91,16 @@ void Server::listen(int port) {
 
 void Server::bind(int port) {
   // Use Router-Dealer pattern: http://zguide.zeromq.org/cpp:mtserver
-  // _context = zmq::context_t(1);
-  _context = zmq_ctx_new();
 
   // ROUTER (get client requests)
-  // zmq::socket_t clients(_context, ZMQ_ROUTER);
 
   // Create socket
   std::string addr = "tcp://*:" + std::to_string(port);
-  // clients.bind(addr);
-  // zsock_t *clients = zsock_new_router(addr.c_str());
   void *clients = zmq_socket(_context, ZMQ_ROUTER);
   zmq_bind(clients, addr.c_str());
   std::cerr << "Clients bound to: " << addr << std::endl;
 
   // DEALER (manage workers)
-  // zmq::socket_t workers(_context, ZMQ_DEALER);
-  // workers.bind(TURKEY_SERVER_WORKERS_ADDR);
-  // zsock_t *workers = zsock_new_dealer(TURKEY_SERVER_WORKERS_ADDR.c_str());
   void *workers = zmq_socket(_context, ZMQ_DEALER);
   zmq_bind(workers, TURKEY_SERVER_WORKERS_ADDR.c_str());
   std::cerr << "Workers bound to: " << TURKEY_SERVER_WORKERS_ADDR << std::endl;
@@ -70,7 +111,6 @@ void Server::bind(int port) {
   }
 
   // Connect clients to workers
-  // zmq::proxy(clients, workers, NULL);
   // TODO: check return code
   zmq_proxy(clients, workers, NULL);
 
@@ -83,9 +123,6 @@ void Server::bind(int port) {
 }
 
 void Server::worker() {
-  // zmq::socket_t socket(_context, ZMQ_REP);
-  // socket.connect(TURKEY_SERVER_WORKERS_ADDR);
-
   zsock_t *socket = zmq_socket(_context, ZMQ_REP);
   zmq_connect(socket, TURKEY_SERVER_WORKERS_ADDR.c_str());
   if (socket == NULL) {
@@ -95,15 +132,13 @@ void Server::worker() {
 
 
   while (true) {
-    // zmq::message_t msg;
-    // socket.recv(&msg);
     fprintf(stderr, "Waiting for message...\n");
     zmsg_t *msg = zmsg_recv(socket);
     if (msg == NULL) {
       pexit("Failed to receive message");
     }
 
-    fprintf(stderr, "mesage size: %d\n", zmsg_size(msg));
+    fprintf(stderr, "message size: %d\n", zmsg_size(msg));
     zframe_t *frame = zmsg_pop(msg);
     void *raw = zframe_data(frame);
     fprintf(stderr, "raw: %s\n", raw);
@@ -123,12 +158,8 @@ void Server::worker() {
     auto response = builder.Finish();
     fbb.Finish(response);
 
-    if (turkey_shm_lock(client->tshm) < 0) {
-      pexit("Failed to lock shared memory");
-    }
-    memcpy(client->tshm->shm, fbb.GetBufferPointer(), fbb.GetSize());
-    if (turkey_shm_unlock(client->tshm) < 0) {
-      pexit("Failed to unlock shared memory");
+    if (turkey_shm_write(client->tshm, fbb.GetBufferPointer(), fbb.GetSize()) < 0) {
+      pexit ("Failed to write to shared memory");
     }
 
     zmsg_t *reply = zmsg_new();

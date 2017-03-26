@@ -1,10 +1,15 @@
 # Turkey
 
 ## TODO
-- Docker update command
+<!-- - Docker update command
   - Change so that server launches application containers
   - Server should inspect launched containers and parse relevant info
-  - Write update function
+  - Write update function -->
+- Fork / exec / wait new processes
+  - Share memory
+  - NOTE: can work with unmodified programs
+- Update share and write to shared memory
+-
 - Dummy parallel program
 - Implement server
   - Dummy scheduler (i.e., pin and prioritize)

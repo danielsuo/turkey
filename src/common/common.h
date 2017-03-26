@@ -43,6 +43,7 @@ struct turkey_cpu {
 
 struct turkey_shm *turkey_shm_init(int pid);
 void turkey_shm_destroy(struct turkey_shm *tshm);
+int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size);
 int turkey_shm_lock(struct turkey_shm *tshm);
 int turkey_shm_unlock(struct turkey_shm *tshm);
 
