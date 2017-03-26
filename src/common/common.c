@@ -38,7 +38,10 @@ struct turkey_shm *turkey_shm_init(pid_t pid) {
 }
 
 void turkey_shm_destroy(struct turkey_shm *tshm) {
+
+  // TODO: This is really janky, but we just assume that failing to detach from shared memory just means we already took care of it. Idempotency at its finest.
   if (shmdt(tshm->shm) < 0) {
+    return;
     pexit("Failed to detach from shared memory");
   }
 

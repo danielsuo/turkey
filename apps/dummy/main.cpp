@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   //
   // *client->tshm->shm = '*';
 
-  fprintf(stderr, "Finishing\n");
 
   turkey_destroy(client);
+  fprintf(stderr, "Finishing\n");
 }

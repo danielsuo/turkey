@@ -57,6 +57,7 @@ build_flatcc (
 # Add libraries
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/utils)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/cgroup)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/common)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/fbs)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/client)
@@ -84,8 +85,9 @@ endif ()
 add_executable (${PROJECT_NAME} src/main.cpp)
 target_link_libraries(
   ${PROJECT_NAME}
-  cgroup
+  turkey-cgroup
   turkey-utils
+  cgroup
   docker
   curl
 )

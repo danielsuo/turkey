@@ -7,6 +7,7 @@
 #include <thread>
 #include <memory>
 #include <iostream>
+#include <unordered_map>
 
 #include <signal.h>
 #include <unistd.h>
@@ -19,6 +20,7 @@
 
 #include "fbs/fbs.h"
 #include "common/common.h"
+#include "cgroup/cgroup.h"
 #include "utils/general.h"
 
 namespace Turkey {
@@ -30,8 +32,14 @@ struct Client {
   pid_t pid;
   struct turkey_shm *tshm;
 
+  char *cg_name;
+  struct cgroup *cg;
+  struct cgroup_controller *cg_ctl_cpu;
+
   Client(pid_t pid);
   ~Client();
+
+  void updateCPUShares(int cpu_shares);
 };
 
 class Server {
@@ -62,15 +70,18 @@ private:
                   );
 
   // TODO: manage the life cycle of this pointer better (e.g., smart pointer)
-  void addClient(Client *client);
-  Client *getClient(int index);
+  void addClient(pid_t pid);
+  void removeClient(pid_t pid);
+  Client *getClient(pid_t pid);
+
+  void updateClientCPUShares(pid_t pid, int cpu_shares);
 
   Server();
   ~Server();
 
   // zmq::context_t _context;
-  void *_context;
-  std::vector<Client *> _clients;
+  // void *_context;
+  std::unordered_map<pid_t, Client *> _clients;
   std::mutex _clientsMutex;
 };
 

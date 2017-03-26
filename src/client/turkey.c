@@ -20,8 +20,6 @@ TURKEY *turkey_init() {
           getpid()
         );
 
-  fprintf(stderr, "All systems go!\n");
-
   return client;
 }
 

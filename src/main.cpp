@@ -2,22 +2,10 @@
 #include <signal.h>
 #include <stdio.h>
 
-#include <libcgroup.h>
-
+#include "cgroup/cgroup.h"
 #include "utils/general.h"
 
 void handler(int signum) { printf("Received signal %d and continuing\n", signum); }
-
-void cgroup_cleanup(struct cgroup *g) {
-  cgroup_delete_cgroup(g, 1);
-  cgroup_free_controllers(g);
-  cgroup_free(&g);
-}
-
-void cgroup_pexit(struct cgroup *g, char *msg) {
-  cgroup_cleanup(g);
-  pexit(msg);
-}
 
 int main(int argc, char *argv[]) {
   signal(SIGINT, handler);

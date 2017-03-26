@@ -9,17 +9,16 @@
 #include "fbs/fbs.h"
 #include "utils/general.h"
 
+#define TURKEY_FORMAT "turkey-%08d"
+
 // For TCP sockets.
 #define TURKEY_SERVER_IP_KEY "TURKEY_SERVER_IP_KEY"
 #define TURKEY_SERVER_PORT 21218
 
 // For shared memory
-#define TURKEY_SHM_PATH_FORMAT "/dev/shm/turkey-%08d"
 #define TURKEY_SHM_PATH "/dev/shm"
+#define TURKEY_SHM_PATH_FORMAT TURKEY_SHM_PATH TURKEY_FORMAT
 #define TURKEY_SHM_SIZE 1024
-
-// For zmq inproc
-#define TURKEY_INPROC_FORMAT "turkey-%08d"
 
 // For signalling. Not currently used.
 #define TURKEY_SERVER_PID_KEY "TURKEY_SERVER_PID_KEY"

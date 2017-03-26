@@ -1,11 +1,6 @@
 # Turkey
 
 ## TODO
-<!-- - Docker update command
-  - Change so that server launches application containers
-  - Server should inspect launched containers and parse relevant info
-  - Write update function -->
-- Change client vector to map?
 - Dummy parallel program
 - Logging
 - Implement server
@@ -24,6 +19,11 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Integrate cgroup operations
+  - Spawn processes
+  - Clean up after process
+  - Modify share
+- Change client vector to map?
 - Update share and write to shared memory
   - Read/write turkey data
 - Fork / exec / wait new processes

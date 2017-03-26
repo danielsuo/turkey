@@ -24,7 +24,11 @@ Server::Server() {
     exit(1);
   }
 
-  _context = zmq_ctx_new();
+  // _context = zmq_ctx_new();
+  int ret;
+  if ((ret = cgroup_init()) != 0) {
+    pexit(cgroup_strerror(ret));
+  }
 }
 
 Server::~Server() {
@@ -35,7 +39,7 @@ Server::~Server() {
     delete _clients[i];
   }
 
-  zmq_ctx_destroy(_context);
+  // zmq_ctx_destroy(_context);
 }
 
 std::thread Server::spawn(const std::string exec_path,
@@ -87,30 +91,12 @@ void Server::spawn_helper(const std::string exec_path,
   // Parent process
   else if (pid > 0) {
     fprintf(stderr, "In parent! with child %d\n", pid);
-    Client *client = new Client(pid);
 
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    addClient(client);
+    addClient(pid);
     lock.~lock_guard();
 
-    fprintf(stderr, "Client initialized\n");
-
-    flatbuffers::FlatBufferBuilder fbb;
-    turkey_shm_dataBuilder builder(fbb);
-    builder.add_cpid(pid);
-    builder.add_spid(getpid());
-    builder.add_cpu_shares(512);
-
-    auto response = builder.Finish();
-    fbb.Finish(response);
-
-    fprintf(stderr, "Build response\n");
-
-    if (turkey_shm_write(client->tshm, fbb.GetBufferPointer(), fbb.GetSize()) < 0) {
-      pexit ("Failed to write to shared memory");
-    }
-
-    fprintf(stderr, "Memory written\n");
+    updateClientCPUShares(pid, 512);
 
     kill(pid, SIGINT);
 
@@ -119,6 +105,7 @@ void Server::spawn_helper(const std::string exec_path,
     if (wait_pid == -1) {
       pexit("Failed to wait for child process");
     } else {
+      removeClient(pid);
       int ret = WEXITSTATUS(child_status);
       if (WIFEXITED(child_status)) {
         fprintf(stderr, "Child existed normally with %d\n", ret);
@@ -226,21 +213,71 @@ void Server::spawn_helper(const std::string exec_path,
 //   zmq_close(socket);
 // }
 
-void Server::addClient(Client *client) {
-  _clients.push_back(client);
+void Server::addClient(pid_t pid) {
+  _clients.emplace(pid, new Client(pid));
 }
 
-Client *Server::getClient(int index) {
-  return _clients[index];
+void Server::removeClient(pid_t pid) {
+  Client *client = getClient(pid);
+  delete client;
+  _clients.erase(pid);
+}
+
+Client *Server::getClient(pid_t pid) {
+  return _clients[pid];
+}
+
+void Server::updateClientCPUShares(pid_t pid, int cpu_shares) {
+  Client *client = getClient(pid);
+  client->updateCPUShares(cpu_shares);
 }
 
 Client::Client(pid_t pid) {
   this->pid = pid;
   tshm = turkey_shm_init(pid);
+
+  cg_name = tsprintf(TURKEY_FORMAT, pid);
+  cg = cgroup_new_cgroup(cg_name);
+  cg_ctl_cpu = cgroup_add_controller(cg, "cpu");
+
+  if (cgroup_create_cgroup(cg, 0) != 0) {
+    cgroup_delete_cgroup(cg, 1);
+    cgroup_pexit(cg, "Failed to create group in kernel");
+  }
 }
 
 Client::~Client() {
+  fprintf(stderr, "Destroying client %d\n", pid);
+  free(cg_name);
+  cgroup_cleanup(cg);
   turkey_shm_destroy(tshm);
+}
+
+void Client::updateCPUShares(int cpu_shares) {
+  if (cgroup_attach_task(cg) != 0) {
+    cgroup_pexit(cg, "Failed to attach task");
+  }
+
+  if (cgroup_add_value_int64(cg_ctl_cpu, "cpu.shares", 512) != 0) {
+    cgroup_pexit(cg, "Failed to modify shares");
+  }
+
+  if (cgroup_modify_cgroup(cg) != 0) {
+    cgroup_pexit(cg, "Failed to propagate changes to cgroup");
+  }
+
+  flatbuffers::FlatBufferBuilder fbb;
+  turkey_shm_dataBuilder builder(fbb);
+  builder.add_cpid(pid);
+  builder.add_spid(getpid());
+  builder.add_cpu_shares(cpu_shares);
+
+  auto response = builder.Finish();
+  fbb.Finish(response);
+
+  if (turkey_shm_write(tshm, fbb.GetBufferPointer(), fbb.GetSize()) < 0) {
+    pexit ("Failed to write to shared memory");
+  }
 }
 
 void signal_handler(int signal, siginfo_t *siginfo, void *context) {

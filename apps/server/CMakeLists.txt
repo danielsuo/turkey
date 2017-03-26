@@ -19,6 +19,7 @@ target_link_libraries(
     turkey-server
     turkey-common
     turkey-utils
+    turkey-cgroup
     flatcc
     flatccrt
     czmq
