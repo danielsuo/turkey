@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/shm.h>
 
+#include "fbs/fbs.h"
 #include "utils/general.h"
 
 // For TCP sockets.
@@ -47,15 +48,19 @@ struct turkey_shm {
 struct turkey_data {
   pid_t cpid;
   pid_t spid;
-  
+
   int32_t cpu_shares;
 };
 
 struct turkey_shm *turkey_shm_init(pid_t pid);
 void turkey_shm_destroy(struct turkey_shm *tshm);
+int turkey_shm_read(struct turkey_shm *tshm, void *buffer, size_t size);
 int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size);
 int turkey_shm_lock(struct turkey_shm *tshm);
 int turkey_shm_unlock(struct turkey_shm *tshm);
+
+int turkey_data_read(struct turkey_shm *tshm);
+int turkey_data_write(struct turkey_shm *tshm);
 
 struct turkey_data *turkey_data_init();
 void turkey_data_destroy(struct turkey_data *tshm);

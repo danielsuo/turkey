@@ -23,8 +23,8 @@
 
 namespace Turkey {
 
-static const std::string TURKEY_SERVER_WORKERS_ADDR = "inproc://workers";
-static const int TURKEY_SERVER_NUM_WORKERS = 5;
+// static const std::string TURKEY_SERVER_WORKERS_ADDR = "inproc://workers";
+// static const int TURKEY_SERVER_NUM_WORKERS = 5;
 
 struct Client {
   pid_t pid;

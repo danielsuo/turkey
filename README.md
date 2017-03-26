@@ -5,9 +5,9 @@
   - Change so that server launches application containers
   - Server should inspect launched containers and parse relevant info
   - Write update function -->
-- Update share and write to shared memory
--
+- Change client vector to map?
 - Dummy parallel program
+- Logging
 - Implement server
   - Dummy scheduler (i.e., pin and prioritize)
   - Start containers with parameters
@@ -24,6 +24,8 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Update share and write to shared memory
+  - Read/write turkey data
 - Fork / exec / wait new processes
   - Share memory
   - NOTE: can work with unmodified programs

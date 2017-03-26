@@ -12,10 +12,7 @@ TURKEY *turkey_init() {
 
   client->tshm = turkey_shm_init(getpid());
 
-  Turkey_turkey_shm_data_table_t table = Turkey_turkey_shm_data_as_root(client->tshm->shm);
-  client->tshm->data->cpu_shares = Turkey_turkey_shm_data_cpu_shares(table);
-  client->tshm->data->cpid = Turkey_turkey_shm_data_cpid(table);
-  client->tshm->data->spid = Turkey_turkey_shm_data_spid(table);
+  turkey_data_read(client->tshm);
   fprintf(stderr, "Got %d share from %d to %d (%d)\n",
           client->tshm->data->cpu_shares,
           client->tshm->data->spid,

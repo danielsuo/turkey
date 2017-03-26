@@ -61,6 +61,18 @@ void turkey_shm_destroy(struct turkey_shm *tshm) {
   free(tshm);
 }
 
+int turkey_shm_read(struct turkey_shm *tshm, void *buffer, size_t size) {
+  if (turkey_shm_lock(tshm) < 0) {
+    perror("Failed to lock shared memory");
+    return -1;
+  }
+  memcpy(buffer, tshm->shm, size);
+  if (turkey_shm_unlock(tshm) < 0) {
+    perror("Failed to unlock shared memory");
+    return -1;
+  }
+}
+
 int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size) {
   if (turkey_shm_lock(tshm) < 0) {
     perror("Failed to lock shared memory");
@@ -71,6 +83,34 @@ int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size) {
     perror("Failed to unlock shared memory");
     return -1;
   }
+}
+
+int turkey_data_read(struct turkey_shm *tshm) {
+  Turkey_turkey_shm_data_table_t table = Turkey_turkey_shm_data_as_root(tshm->shm);
+  tshm->data->cpu_shares = Turkey_turkey_shm_data_cpu_shares(table);
+  tshm->data->cpid = Turkey_turkey_shm_data_cpid(table);
+  tshm->data->spid = Turkey_turkey_shm_data_spid(table);
+
+  return 0;
+}
+
+int turkey_data_write(struct turkey_shm *tshm) {
+  void *buffer;
+  size_t size;
+  flatcc_builder_t builder, *B;
+  B = &builder;
+  flatcc_builder_init(B);
+
+  Turkey_turkey_shm_data_create_as_root(B,
+    tshm->data->cpid, tshm->data->spid, tshm->data->cpu_shares);
+
+  buffer = flatcc_builder_finalize_aligned_buffer(B, &size);
+
+  if (turkey_shm_write(tshm, buffer, size) < 0) {
+    pexit("Failed to write data to shm");
+  }
+
+  flatcc_builder_clear(B);
 }
 
 int turkey_shm_lock(struct turkey_shm *tshm) {
