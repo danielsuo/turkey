@@ -53,6 +53,10 @@ TURKEY *turkey_init() {
   // Wait for a server response
   zmsg_recv(client->req);
 
+  Turkey_turkey_shm_cpu_table_t table = Turkey_turkey_shm_cpu_as_root(client->tshm->shm);
+  int32_t share = Turkey_turkey_shm_cpu_share(table);
+  fprintf(stderr, "Got %d share\n", share);
+
   flatcc_builder_clear(B);
 
   fprintf(stderr, "All systems go!\n");

@@ -1,8 +1,7 @@
 # Turkey
 
 ## TODO
-
-- Shared memory with flatbuffers
+- Shared memory locking
 - Implement server
   - Keep track of containers
   - Dummy scheduler (i.e., pin and prioritize)
@@ -21,6 +20,7 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Shared memory with flatbuffers
 - Test out passing flatbuffers via zmq
 - Replace TCP with zmq
 - Implement server

@@ -43,21 +43,21 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/stubs)
 # See cmake/BuildFlatBuffers.cmake
 include (${CMAKE_MODULE_PATH}/BuildFlatBuffers.cmake)
 build_flatbuffers (
-  ${FBS_FILES}
+  "${FBS_FILES}"
   ""
-  GENERATED_FLATBUFFERS
-  turkey-flatbuffers
-  ${CMAKE_CURRENT_BINARY_DIR}/stubs
+  "GENERATED_FLATBUFFERS"
+  "turkey-flatbuffers"
+  "${CMAKE_CURRENT_BINARY_DIR}/stubs"
   ""
   ""
 )
 
 include (${CMAKE_MODULE_PATH}/BuildFlatCC.cmake)
 build_flatcc (
-  ${FBS_FILES}
-  GENERATED_FLATCC
-  turkey-flatcc
-  ${CMAKE_CURRENT_BINARY_DIR}/stubs
+  "${FBS_FILES}"
+  "GENERATED_FLATCC"
+  "turkey-flatcc"
+  "${CMAKE_CURRENT_BINARY_DIR}/stubs"
 )
 
 # Add libraries

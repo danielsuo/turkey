@@ -116,15 +116,24 @@ void Server::worker() {
 
     client->tshm = turkey_shm_init(client->pid);
 
-    char c;
-    unsigned char *s = client->tshm->shm;
+    flatbuffers::FlatBufferBuilder fbb;
+    turkey_shm_cpuBuilder builder(fbb);
+    builder.add_share(512);
 
-    for (c = 'a'; c <= 'z'; c++) {
-      putchar(c);
-      *s++ = c;
-    }
-    *s = NULL;
-    putchar('\n');
+    auto response = builder.Finish();
+    fbb.Finish(response);
+
+    memcpy(client->tshm->shm, fbb.GetBufferPointer(), fbb.GetSize());
+
+    // char c;
+    // unsigned char *s = client->tshm->shm;
+    //
+    // for (c = 'a'; c <= 'z'; c++) {
+    //   putchar(c);
+    //   *s++ = c;
+    // }
+    // *s = NULL;
+    // putchar('\n');
 
     zmsg_t *reply = zmsg_new();
     zframe_t *reply_frame = zframe_new("OK", 2);

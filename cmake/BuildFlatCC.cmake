@@ -21,7 +21,7 @@ function (
     list(APPEND all_generated_files ${generated_include})
   endforeach ()
 
-  add_custom_target(
-  ${custom_target_name} ALL DEPENDS ${all_generated_files} ${additional_dependencies})
+  message(${custom_target_name})
+  add_custom_target(${custom_target_name} ALL DEPENDS ${all_generated_files} ${additional_dependencies})
 
 endfunction ()
