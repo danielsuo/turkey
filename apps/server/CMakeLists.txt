@@ -20,6 +20,7 @@ target_link_libraries(
     turkey-common
     czmq
     zmq
+    cgroup
     # turkey-client
     # turkey-utils
     ${CMAKE_THREAD_LIBS_INIT}

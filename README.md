@@ -2,6 +2,10 @@
 
 ## TODO
 - Docker update command
+  - Change so that server launches application containers
+  - Server should inspect launched containers and parse relevant info
+  - Write update function
+- Dummy parallel program
 - Implement server
   - Dummy scheduler (i.e., pin and prioritize)
   - Start containers with parameters

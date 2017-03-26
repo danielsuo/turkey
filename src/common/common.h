@@ -38,7 +38,7 @@ struct turkey_shm {
 };
 
 struct turkey_cpu {
-  int32_t share;
+  int32_t shares;
 };
 
 struct turkey_shm *turkey_shm_init(int pid);

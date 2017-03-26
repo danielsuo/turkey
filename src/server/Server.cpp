@@ -118,7 +118,7 @@ void Server::worker() {
 
     flatbuffers::FlatBufferBuilder fbb;
     turkey_shm_cpuBuilder builder(fbb);
-    builder.add_share(512);
+    builder.add_shares(512);
 
     auto response = builder.Finish();
     fbb.Finish(response);

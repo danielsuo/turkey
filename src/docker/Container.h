@@ -14,8 +14,8 @@
 
 #include <arpa/inet.h>
 
-#include "common.h"
-#include "Docker.h"
+#include "common/common.h"
+#include "docker/Docker.h"
 #include "json.hpp"
 
 using json = nlohmann::json;

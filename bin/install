@@ -14,7 +14,9 @@ sudo apt-get install -y \
   libtool \
   uuid-dev \
   pkg-config \
-  htop
+  htop \
+  libcgroup-dev \
+  cgroup-tools
 
 # Add docker to apt
 sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common

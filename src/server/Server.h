@@ -15,10 +15,10 @@
 
 #include <czmq.h>
 
-#include "fbs.h"
-#include "common.h"
-#include "general_utils.h"
-#include "Container.h"
+#include "fbs/fbs.h"
+#include "common/common.h"
+#include "utils/general.h"
+#include "docker/Container.h"
 
 namespace Turkey {
 

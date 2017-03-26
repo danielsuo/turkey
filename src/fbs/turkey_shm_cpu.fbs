@@ -1,7 +1,7 @@
 namespace Turkey;
 
 table turkey_shm_cpu {
-  share:int;
+  shares:int;
 }
 
 root_type turkey_shm_cpu;

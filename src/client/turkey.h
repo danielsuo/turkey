@@ -15,9 +15,9 @@
 
 #include <czmq.h>
 
-#include "common.h"
-#include "fbs.h"
-#include "general_utils.h"
+#include "common/common.h"
+#include "fbs/fbs.h"
+#include "utils/general.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -54,8 +54,8 @@ TURKEY *turkey_init() {
   zmsg_recv(client->req);
 
   Turkey_turkey_shm_cpu_table_t table = Turkey_turkey_shm_cpu_as_root(client->tshm->shm);
-  client->tcpu->share = Turkey_turkey_shm_cpu_share(table);
-  fprintf(stderr, "Got %d share\n", client->tcpu->share);
+  client->tcpu->shares = Turkey_turkey_shm_cpu_shares(table);
+  fprintf(stderr, "Got %d share\n", client->tcpu->shares);
 
   flatcc_builder_clear(B);
 

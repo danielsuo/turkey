@@ -30,12 +30,6 @@ add_subdirectory (lib/flatcc)
 include_directories (${FLATCC_INCLUDE_DIR})
 link_directories (${FLATCC_LINK_DIR})
 
-# Macro for adding and including subdirectories
-macro (add_sublib LIB)
-  add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/${LIB})
-  include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src/${LIB})
-endmacro (add_sublib)
-
 # Generate flatbuffer stubs
 file (GLOB FBS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/fbs/*.fbs)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/stubs)
@@ -61,12 +55,13 @@ build_flatcc (
 )
 
 # Add libraries
-add_sublib (utils)
-add_sublib (common)
-add_sublib (fbs)
-add_sublib (client)
-add_sublib (docker)
-add_sublib (server)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/utils)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/common)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/fbs)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/client)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/docker)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/server)
 
 # Get applications to build
 set (APP_DIR apps)
@@ -89,6 +84,7 @@ endif ()
 add_executable (${PROJECT_NAME} src/main.cpp)
 target_link_libraries(
   ${PROJECT_NAME}
+  cgroup
   docker
   curl
 )

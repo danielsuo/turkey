@@ -4,7 +4,8 @@
 #include <stdio.h>  /* for printf */
 #include <unistd.h> /* for getopt */
 
-#include "cycle_utils.h"
+#include "utils/cycles.h"
+#include "utils/general.h"
 
 #define set_int_opt(opt, arg) if ((opt = atoi(arg)) < 1) usage();
 

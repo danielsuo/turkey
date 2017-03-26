@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "common.h"
-#include "Server.h"
+#include "common/common.h"
+#include "server/Server.h"
 
 using namespace Turkey;
 
