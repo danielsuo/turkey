@@ -15,13 +15,10 @@ add_executable (${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(
     ${PROJECT_NAME}
     turkey-client
-    # turkey-server
     turkey-common
+    turkey-utils
     flatcc
     flatccrt
     czmq
     zmq
-    # turkey-utils
-    # docker
-    # curl
 )

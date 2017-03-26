@@ -12,11 +12,11 @@
 #endif
 
 #ifdef __cplusplus
-  #include "turkey_shm_cpu_generated.h"
+  #include "turkey_shm_data_generated.h"
 #else
-  #include "turkey_shm_cpu_builder.h"
-  #include "turkey_shm_cpu_reader.h"
-  #include "turkey_shm_cpu_verifier.h"
+  #include "turkey_shm_data_builder.h"
+  #include "turkey_shm_data_reader.h"
+  #include "turkey_shm_data_verifier.h"
 #endif
 
 #endif // TURKEY_FBS_H

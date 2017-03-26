@@ -5,9 +5,6 @@
   - Change so that server launches application containers
   - Server should inspect launched containers and parse relevant info
   - Write update function -->
-- Fork / exec / wait new processes
-  - Share memory
-  - NOTE: can work with unmodified programs
 - Update share and write to shared memory
 -
 - Dummy parallel program
@@ -27,6 +24,10 @@
   - http://www.ibm.com/developerworks/library/l-reent/
 
 ## Completed
+- Fork / exec / wait new processes
+  - Share memory
+  - NOTE: can work with unmodified programs
+  - Make thread safe
 - Shared memory locking
 - Shared memory with flatbuffers
 - Test out passing flatbuffers via zmq

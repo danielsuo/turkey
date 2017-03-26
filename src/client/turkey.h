@@ -24,11 +24,10 @@ extern "C" {
 #endif
 
 struct turkey {
-  int pid;
-  char *server_ip;
-  zsock_t *req;
+//   pid_t cpid; // client pid
+//   pid_t spid; // server pid
+
   struct turkey_shm *tshm;
-  struct turkey_cpu *tcpu;
 };
 
 typedef struct turkey TURKEY;

@@ -27,9 +27,10 @@ static const std::string TURKEY_SERVER_WORKERS_ADDR = "inproc://workers";
 static const int TURKEY_SERVER_NUM_WORKERS = 5;
 
 struct Client {
-  int pid;
+  pid_t pid;
   struct turkey_shm *tshm;
 
+  Client(pid_t pid);
   ~Client();
 };
 
@@ -45,12 +46,20 @@ public:
     return instance;
   }
 
-  void spawn(const std::string exec_path, const std::vector<std::string> args = std::vector<std::string>());
-  void listen(int port = TURKEY_SERVER_PORT);
+  std::thread spawn(const std::string exec_path,
+                    const std::vector<std::string> args = std::vector<std::string>(),
+                    const std::vector<std::string> envp = std::vector<std::string>()
+                  );
+  // void listen(int port = TURKEY_SERVER_PORT);
 
 private:
-  void bind(int port = TURKEY_SERVER_PORT);
-  void worker();
+  // void bind(int port = TURKEY_SERVER_PORT);
+  // void worker();
+
+  void spawn_helper(const std::string exec_path,
+                    const std::vector<std::string> args = std::vector<std::string>(),
+                    const std::vector<std::string> envp = std::vector<std::string>()
+                  );
 
   // TODO: manage the life cycle of this pointer better (e.g., smart pointer)
   void addClient(Client *client);
@@ -62,6 +71,7 @@ private:
   // zmq::context_t _context;
   void *_context;
   std::vector<Client *> _clients;
+  std::mutex _clientsMutex;
 };
 
 }

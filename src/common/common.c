@@ -1,6 +1,6 @@
 #include "common.h"
 
-struct turkey_shm *turkey_shm_init(int pid) {
+struct turkey_shm *turkey_shm_init(pid_t pid) {
   struct turkey_shm *tshm;
 
   if ((tshm = (struct turkey_shm *)malloc(sizeof(struct turkey_shm *))) == NULL) {
@@ -8,20 +8,10 @@ struct turkey_shm *turkey_shm_init(int pid) {
   }
 
   tshm->pid = pid;
+  tshm->data = turkey_data_init();
 
-  if ((tshm->shm_key_path_len =
-           snprintf(NULL, 0, TURKEY_SHM_PATH_FORMAT, tshm->pid)) < 0) {
-    pexit("Failed to get shared memory path length");
-  }
-
-  if ((tshm->shm_key_path = (char *)malloc(++tshm->shm_key_path_len)) ==
-      NULL) {
-    pexit("Failed to allocate memory for shared memory file name");
-  }
-
-  if (snprintf(tshm->shm_key_path, tshm->shm_key_path_len,
-               TURKEY_SHM_PATH_FORMAT, tshm->pid) < 0) {
-    pexit("Failed to create shared memory file name string");
+  if ((tshm->shm_key_path = tsprintf(TURKEY_SHM_PATH_FORMAT, tshm->pid)) == NULL) {
+    pexit("Failed to create shared memory path");
   }
 
   fprintf(stderr, "%d -> %s\n", tshm->pid, tshm->shm_key_path);
@@ -57,12 +47,16 @@ void turkey_shm_destroy(struct turkey_shm *tshm) {
   }
 
   // TODO: shm_key_path gets emptied
-  snprintf(tshm->shm_key_path, tshm->shm_key_path_len,
-               TURKEY_SHM_PATH_FORMAT, tshm->pid);
+  free(tshm->shm_key_path);
+  if ((tshm->shm_key_path = tsprintf(TURKEY_SHM_PATH_FORMAT, tshm->pid)) == NULL) {
+    pexit("Failed to create shared memory path");
+  }
+
   if (remove(tshm->shm_key_path) < 0) {
     pexit("Failed to remove shared memory file");
   }
 
+  turkey_data_destroy(tshm->data);
   free(tshm->shm_key_path);
   free(tshm);
 }
@@ -87,16 +81,16 @@ int turkey_shm_unlock(struct turkey_shm *tshm) {
   return shmctl(tshm->shm_id, SHM_UNLOCK, NULL);
 }
 
-struct turkey_cpu *turkey_cpu_init() {
-  struct turkey_cpu *tcpu;
+struct turkey_data *turkey_data_init() {
+  struct turkey_data *tdata;
 
-  if ((tcpu = (struct turkey_cpu *)malloc(sizeof(struct turkey_cpu *))) == NULL) {
+  if ((tdata = (struct turkey_data *)malloc(sizeof(struct turkey_data *))) == NULL) {
     pexit("Failed to allocate memory for shared memory struct");
   }
 
-  return tcpu;
+  return tdata;
 }
 
-void turkey_cpu_destroy(struct turkey_cpu *tcpu) {
-  free(tcpu);
+void turkey_data_destroy(struct turkey_data *tdata) {
+  free(tdata);
 }

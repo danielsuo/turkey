@@ -1,0 +1,10 @@
+namespace Turkey;
+
+table turkey_shm_data {
+  cpid:int; // Client pid
+  spid:int; // Server pid
+  
+  cpu_shares:int; // CPU shares
+}
+
+root_type turkey_shm_data;
