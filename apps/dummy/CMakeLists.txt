@@ -1,10 +1,10 @@
 cmake_minimum_required (VERSION 3.5)
 project (dummy)
 
-#Set C++ 14
+# Set C++ 14
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-#Set compiler flags
+# Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
 
 # Set target name and source files

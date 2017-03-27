@@ -1,7 +1,8 @@
 # Turkey
 
 ## TODO
-- Dummy parallel program
+- Blackscholes
+  - https://github.com/danielsuo/parsec/blob/a159cc3884d900e1cf496011bd5b073ba396e09b/pkgs/apps/blackscholes/src/c.m4.pthreads
 - Test cgroup cpu shares
 - Parallel programming patterns
   - Textbook

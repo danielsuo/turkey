@@ -3,22 +3,33 @@ project (blackscholes)
 
 set(CMAKE_C_STANDARD 99)
 
-#Set compiler flags
+# Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
 
+add_definitions (-DENABLE_THREADS)
+
+# TODO: refactor into something more general if we use m4 a lot
+file (MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out)
+add_custom_command (
+  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/out/main.c
+  COMMAND /usr/bin/m4
+    ${CMAKE_CURRENT_SOURCE_DIR}/pthreads.m4
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.c
+    > ${CMAKE_CURRENT_SOURCE_DIR}/out/main.c
+  COMMENT "Applying pthreads.m4 to main.c"
+)
+add_custom_target (
+  blackscholes-m4
+  ALL DEPENDS
+  ${CMAKE_CURRENT_SOURCE_DIR}/out/main.c
+)
+
 # Set target name and source files
-file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/out/main.c)
 
-add_executable (${PROJECT_NAME} ${SOURCE_FILES})
-
+find_package (Threads)
 target_link_libraries(
     ${PROJECT_NAME}
     m
-    # turkey-client
-    # turkey-common
-    # turkey-utils
-    # flatcc
-    # flatccrt
-    # czmq
-    # zmq
+    ${CMAKE_THREAD_LIBS_INIT}
 )
