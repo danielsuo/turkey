@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+INPUTS_DIR=$DIR/../inputs
+
+mkdir -p $INPUTS_DIR
+
+if [[ ! -v PARSEC_HOME ]]; then
+    PARSEC_HOME=~/parsec
+fi
+
+cp $PARSEC_HOME/pkgs/apps/blackscholes/inputs/* $INPUTS_DIR/
+
+for input in `ls $INPUTS_DIR`
+do
+  filename="${input%.*}"
+  tar xC $INPUTS_DIR -f $INPUTS_DIR/$input
+done
