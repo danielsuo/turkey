@@ -1,5 +1,4 @@
-#ifndef TURKEY_COMMON_MESSAGES_H
-#define TURKEY_COMMON_MESSAGES_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,5 +66,3 @@ void turkey_data_destroy(struct turkey_data *tshm);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // TURKEY_COMMON_MESSAGES_H

@@ -1,5 +1,4 @@
-#ifndef TURKEY_CLIENT_H
-#define TURKEY_CLIENT_H
+#pragma once
 
 #include <stdio.h>
 #include <error.h>
@@ -38,5 +37,3 @@ void turkey_destroy(TURKEY *turkey_client);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // TURKEY_CLIENT_H

@@ -1,5 +1,4 @@
-#ifndef TURKEY_FBS_H
-#define TURKEY_FBS_H
+#pragma once
 
 #define ns(x) FLATBUFFERS_WRAP_NAMESPACE(Turkey, x)
 
@@ -18,5 +17,3 @@
   #include "turkey_shm_data_reader.h"
   #include "turkey_shm_data_verifier.h"
 #endif
-
-#endif // TURKEY_FBS_H

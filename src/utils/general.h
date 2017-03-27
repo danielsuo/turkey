@@ -1,5 +1,4 @@
-#ifndef TURKEY_GENERAL_UTILS_H
-#define TURKEY_GENERAL_UTILS_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,5 +14,3 @@ char *tsprintf(const char *format, ...);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TURKEY_GENERAL_UTILS_H */

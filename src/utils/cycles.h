@@ -1,5 +1,4 @@
-#ifndef TURKEY_CYCLE_UTILS_H
-#define TURKEY_CYCLE_UTILS_H
+#pragma once
 
 #include <time.h>	  /* for clock_gettime */
 #include <error.h>
@@ -46,5 +45,3 @@ void spin(uint64_t ns) {
     clock_gettime(CLOCK_MONOTONIC, &end);
   }
 }
-
-#endif /* TURKEY_CYCLE_UTILS_H */

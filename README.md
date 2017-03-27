@@ -9,6 +9,7 @@
   - Hook up to parsec
 - Read about thread pools
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
+  - https://code.facebook.com/posts/215466732167400/wangle-an-asynchronous-c-networking-and-rpc-library/
   - Microsoft PPL
   - Intel TBB
 - Investigate pthread API
@@ -17,6 +18,9 @@
   - https://docs.docker.com/engine/reference/run/
 - Handle re-entrancy
   - http://www.ibm.com/developerworks/library/l-reent/
+- Concurrency books
+  - https://www.amazon.com/The-Multiprocessor-Programming-Maurice-Herlihy/dp/0123705916
+  - https://www.manning.com/books/c-plus-plus-concurrency-in-action
 
 ## Completed
 - Integrate cgroup operations

@@ -1,5 +1,4 @@
-#ifndef STRAW_ARGS_H
-#define STRAW_ARGS_H
+#pragma once
 
 #include <stdio.h>  /* for printf */
 #include <unistd.h> /* for getopt */
@@ -68,5 +67,3 @@ STRAW_ARGS *get_args(int argc, char **argv) {
 
   return args;
 }
-
-#endif /* STRAW_ARGS_H */
