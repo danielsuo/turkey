@@ -19,30 +19,19 @@ sudo apt-get install -y \
   cgroup-tools
 
 # Add docker to apt
-sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
-apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
-sudo add-apt-repository \
-       "deb https://apt.dockerproject.org/repo/ \
-       ubuntu-$(lsb_release -cs) \
-       main"
-
-sudo apt-get install -y \
-  docker-engine
+# sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common
+# curl -fsSL https://apt.dockerproject.org/gpg | sudo apt-key add -
+# apt-key fingerprint 58118E89F3A912897C070ADBF76221572C52609D
+# sudo add-apt-repository \
+#        "deb https://apt.dockerproject.org/repo/ \
+#        ubuntu-$(lsb_release -cs) \
+#        main"
+#
+# sudo apt-get install -y \
+#   docker-engine
 
 # Install curl
 sudo apt-get install -y libcurl4-openssl-dev
-
-# # Install zeromq
-# pushd vendor/libzmq
-# mkdir build && pushd build
-# cmake .. && make -j 4 && sudo make install && sudo ldconfig
-# pushd +2 && dirs -c
-#
-# # Install czmq
-# pushd vendor/czmq
-# ./autogen.sh && ./configure && make -j 4 && make check && sudo make install && sudo ldconfig
-# popd
 
 # Set up watchman (for remote development)
 curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -

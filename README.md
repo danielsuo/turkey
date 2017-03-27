@@ -8,6 +8,8 @@
   - Start containers with parameters
   - Hook up to parsec
 - Read about thread pools
+  - https://github.com/Pithikos/C-Thread-Pool
+  - https://github.com/mbrossard/threadpool
   - https://github.com/facebook/wangle/tree/master/wangle/concurrent
   - https://code.facebook.com/posts/215466732167400/wangle-an-asynchronous-c-networking-and-rpc-library/
   - Microsoft PPL

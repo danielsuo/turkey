@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-sudo docker ps -q | xargs sudo docker inspect --format '{{.State.Pid}}'

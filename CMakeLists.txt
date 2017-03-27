@@ -61,7 +61,6 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/cgroup)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/common)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/fbs)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/client)
-add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/docker)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/server)
 
 # Get applications to build
@@ -88,6 +87,5 @@ target_link_libraries(
   turkey-cgroup
   turkey-utils
   cgroup
-  docker
   curl
 )

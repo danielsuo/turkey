@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.5)
-project (docker)
+project (turkey-cgroup)
 
 #Set C++ 14
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -rdynamic")
@@ -11,4 +11,3 @@ set (CMAKE_BUILD_TYPE Debug)
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
 
 add_library (${PROJECT_NAME} SHARED ${SOURCE_FILES})
-add_dependencies (${PROJECT_NAME} turkey-json)
