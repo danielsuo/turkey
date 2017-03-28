@@ -6,33 +6,22 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <sys/ipc.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#include <arpa/inet.h>
-
-#include <czmq.h>
-
 #include "common/common.h"
 #include "fbs/fbs.h"
 #include "utils/general.h"
+
+#include "block.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct turkey {
-//   pid_t cpid; // client pid
-//   pid_t spid; // server pid
+typedef struct _turkey {
+  turkey_shm *tshm;
+} turkey;
 
-  struct turkey_shm *tshm;
-};
-
-typedef struct turkey TURKEY;
-
-TURKEY *turkey_init();
-void turkey_destroy(TURKEY *turkey_client);
+turkey *turkey_init();
+void turkey_destroy(turkey *turkey_client);
 
 #ifdef __cplusplus
 }

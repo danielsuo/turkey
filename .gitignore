@@ -6,6 +6,8 @@ build/
 out/
 inputs/
 
+*.deb
+
 *.out
 
 # Python files

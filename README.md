@@ -1,8 +1,6 @@
 # Turkey
 
 ## TODO
-- Blackscholes
-  - https://github.com/danielsuo/parsec/blob/a159cc3884d900e1cf496011bd5b073ba396e09b/pkgs/apps/blackscholes/src/c.m4.pthreads
 - Test cgroup cpu shares
 - Parallel programming patterns
   - Textbook
@@ -28,6 +26,8 @@
   - https://www.manning.com/books/c-plus-plus-concurrency-in-action
 
 ## Completed
+- Blackscholes
+  - https://github.com/danielsuo/parsec/blob/a159cc3884d900e1cf496011bd5b073ba396e09b/pkgs/apps/blackscholes/src/c.m4.pthreads
 - Implement server
   - Dummy scheduler (i.e., pin and prioritize)
   - Start processes with parameters

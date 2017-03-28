@@ -30,7 +30,7 @@ namespace Turkey {
 
 struct Client {
   pid_t pid;
-  struct turkey_shm *tshm;
+  turkey_shm *tshm;
 
   char *cg_name;
   struct cgroup *cg;

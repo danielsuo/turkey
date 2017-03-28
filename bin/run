@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./build/apps/$1/$1 ${@:2}

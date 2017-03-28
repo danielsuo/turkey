@@ -29,7 +29,14 @@
 extern "C" {
 #endif
 
-struct turkey_shm {
+typedef struct _turkey_data {
+  pid_t cpid;
+  pid_t spid;
+
+  int32_t cpu_shares;
+} turkey_data;
+
+typedef struct _turkey_shm {
   pid_t pid;
 
   size_t shm_key_path_len;
@@ -40,28 +47,21 @@ struct turkey_shm {
 
   unsigned char* shm;
 
-  struct turkey_data *data;
-};
+  turkey_data *data;
+} turkey_shm;
 
-struct turkey_data {
-  pid_t cpid;
-  pid_t spid;
+turkey_shm *turkey_shm_init(pid_t pid);
+void turkey_shm_destroy(turkey_shm *tshm);
+int turkey_shm_read(turkey_shm *tshm, void *buffer, size_t size);
+int turkey_shm_write(turkey_shm *tshm, void *buffer, size_t size);
+int turkey_shm_lock(turkey_shm *tshm);
+int turkey_shm_unlock(turkey_shm *tshm);
 
-  int32_t cpu_shares;
-};
+int turkey_data_read(turkey_shm *tshm);
+int turkey_data_write(turkey_shm *tshm);
 
-struct turkey_shm *turkey_shm_init(pid_t pid);
-void turkey_shm_destroy(struct turkey_shm *tshm);
-int turkey_shm_read(struct turkey_shm *tshm, void *buffer, size_t size);
-int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size);
-int turkey_shm_lock(struct turkey_shm *tshm);
-int turkey_shm_unlock(struct turkey_shm *tshm);
-
-int turkey_data_read(struct turkey_shm *tshm);
-int turkey_data_write(struct turkey_shm *tshm);
-
-struct turkey_data *turkey_data_init();
-void turkey_data_destroy(struct turkey_data *tshm);
+turkey_data *turkey_data_init();
+void turkey_data_destroy(turkey_data *tshm);
 
 #ifdef __cplusplus
 }

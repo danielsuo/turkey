@@ -1,9 +1,9 @@
 #include "common.h"
 
-struct turkey_shm *turkey_shm_init(pid_t pid) {
-  struct turkey_shm *tshm;
+turkey_shm *turkey_shm_init(pid_t pid) {
+  turkey_shm *tshm;
 
-  if ((tshm = (struct turkey_shm *)malloc(sizeof(struct turkey_shm *))) == NULL) {
+  if ((tshm = (turkey_shm *)malloc(sizeof(turkey_shm *))) == NULL) {
     pexit("Failed to allocate memory for shared memory struct");
   }
 
@@ -37,7 +37,7 @@ struct turkey_shm *turkey_shm_init(pid_t pid) {
   return tshm;
 }
 
-void turkey_shm_destroy(struct turkey_shm *tshm) {
+void turkey_shm_destroy(turkey_shm *tshm) {
 
   // TODO: This is really janky, but we just assume that failing to detach from shared memory just means we already took care of it. Idempotency at its finest.
   if (shmdt(tshm->shm) < 0) {
@@ -64,7 +64,7 @@ void turkey_shm_destroy(struct turkey_shm *tshm) {
   free(tshm);
 }
 
-int turkey_shm_read(struct turkey_shm *tshm, void *buffer, size_t size) {
+int turkey_shm_read(turkey_shm *tshm, void *buffer, size_t size) {
   if (turkey_shm_lock(tshm) < 0) {
     perror("Failed to lock shared memory");
     return -1;
@@ -76,7 +76,7 @@ int turkey_shm_read(struct turkey_shm *tshm, void *buffer, size_t size) {
   }
 }
 
-int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size) {
+int turkey_shm_write(turkey_shm *tshm, void *buffer, size_t size) {
   if (turkey_shm_lock(tshm) < 0) {
     perror("Failed to lock shared memory");
     return -1;
@@ -88,7 +88,7 @@ int turkey_shm_write(struct turkey_shm *tshm, void *buffer, size_t size) {
   }
 }
 
-int turkey_data_read(struct turkey_shm *tshm) {
+int turkey_data_read(turkey_shm *tshm) {
   Turkey_turkey_shm_data_table_t table = Turkey_turkey_shm_data_as_root(tshm->shm);
   tshm->data->cpu_shares = Turkey_turkey_shm_data_cpu_shares(table);
   tshm->data->cpid = Turkey_turkey_shm_data_cpid(table);
@@ -97,7 +97,7 @@ int turkey_data_read(struct turkey_shm *tshm) {
   return 0;
 }
 
-int turkey_data_write(struct turkey_shm *tshm) {
+int turkey_data_write(turkey_shm *tshm) {
   void *buffer;
   size_t size;
   flatcc_builder_t builder, *B;
@@ -116,24 +116,24 @@ int turkey_data_write(struct turkey_shm *tshm) {
   flatcc_builder_clear(B);
 }
 
-int turkey_shm_lock(struct turkey_shm *tshm) {
+int turkey_shm_lock(turkey_shm *tshm) {
   return shmctl(tshm->shm_id, SHM_LOCK, NULL);
 }
 
-int turkey_shm_unlock(struct turkey_shm *tshm) {
+int turkey_shm_unlock(turkey_shm *tshm) {
   return shmctl(tshm->shm_id, SHM_UNLOCK, NULL);
 }
 
-struct turkey_data *turkey_data_init() {
-  struct turkey_data *tdata;
+turkey_data *turkey_data_init() {
+  turkey_data *tdata;
 
-  if ((tdata = (struct turkey_data *)malloc(sizeof(struct turkey_data *))) == NULL) {
+  if ((tdata = (turkey_data *)malloc(sizeof(turkey_data *))) == NULL) {
     pexit("Failed to allocate memory for shared memory struct");
   }
 
   return tdata;
 }
 
-void turkey_data_destroy(struct turkey_data *tdata) {
+void turkey_data_destroy(turkey_data *tdata) {
   free(tdata);
 }

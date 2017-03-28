@@ -2,11 +2,11 @@
 
 // TODO: write data to shared memory to indicate state (e.g., start / stop)
 // TODO: send signal in turkey_destroy to say job completed
-TURKEY *turkey_init() {
+turkey *turkey_init() {
 
-  TURKEY *client;
+  turkey *client;
 
-  if ((client = (TURKEY *)malloc(sizeof(TURKEY))) == NULL) {
+  if ((client = (turkey *)malloc(sizeof(turkey))) == NULL) {
     pexit("Failed to allocate memory for Turkey client");
   }
 
@@ -24,7 +24,7 @@ TURKEY *turkey_init() {
 }
 
 // TODO: we should call this on failure too
-void turkey_destroy(TURKEY *client) {
+void turkey_destroy(turkey *client) {
   turkey_shm_destroy(client->tshm);
   free(client);
 }
