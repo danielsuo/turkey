@@ -1,7 +1,14 @@
 # Turkey
 
 ## TODO
+- Server data
+  - Gather speed-up data
+  - Fit speed-up curves (phi_cpuset_1_native_#_0-255)
+  - Create scheduling algorithm
+  - Run blackscholes and ferret at different cpu shares
+  - Python + docker to run / update parsec applications
 - Test cgroup cpu shares
+- eBPF
 - Parallel programming patterns
   - Textbook
   - Pipeline paper

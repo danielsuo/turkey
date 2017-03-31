@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#include <sched.h>
+#include <linux/sched.h>
 
 #include "client/turkey.h"
 
@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   //
   // turkey_destroy(client);
 
-  // fprintf(stderr, "CLONE_NEWCGROUP %d\n", CLONE_NEWCGROUP);
+  fprintf(stderr, "CLONE_NEWCGROUP %d\n", CLONE_NEWCGROUP);
 
   fprintf(stderr, "Finishing\n");
 }
