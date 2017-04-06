@@ -7,8 +7,10 @@
   - Create scheduling algorithm
   - Run blackscholes and ferret at different cpu shares
   - Python + docker to run / update parsec applications
-- Test cgroup cpu shares
+  - Confirm what is being timed
 - eBPF
+  - https://github.com/iovisor/bcc/blob/master/tools/offcputime.py
+  - http://www.brendangregg.com/FlameGraphs/hotcoldflamegraphs.html
 - Parallel programming patterns
   - Textbook
   - Pipeline paper
@@ -33,6 +35,7 @@
   - https://www.manning.com/books/c-plus-plus-concurrency-in-action
 
 ## Completed
+- Test cgroup cpu shares
 - Blackscholes
   - https://github.com/danielsuo/parsec/blob/a159cc3884d900e1cf496011bd5b073ba396e09b/pkgs/apps/blackscholes/src/c.m4.pthreads
 - Implement server

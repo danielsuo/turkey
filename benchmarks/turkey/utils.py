@@ -78,12 +78,12 @@ def generate_cmd(params):
                 args.append('--cpu-quota=%d --cpu-period=%d' %
                     (params['cpus'][0], params['cpus'][1]))
 
-        args.append('danielsuo/parsec:latest')
+        args.append('danielsuo/parsec:prod')
 
     else:
         # TODO: manage shares/quota with nice and cpulimit
-        if params['cpus'] != 'NA':
-            args.extend(['taskset', '-c', params['cpus']])
+        if params['cpus'] == 'set':
+            args.extend(['taskset', '-c', str(params['cpus'])])
 
         args.append(os.path.join(os.environ['PARSEC_HOME'], 'bin/parsecmgmt'))
 
@@ -109,6 +109,7 @@ def run(params):
     cmd = generate_cmd(params)
     out = generate_out(params)
 
+    print(cmd)
     print(' '.join(cmd))
     print(out)
 
@@ -140,6 +141,11 @@ def run_json(file):
 def getMilliseconds(line):
     m = re.search('(\d+)m(\d+\.\d+)s', line)
     return float(m.group(1)) * 60 * 1000 + float(m.group(2)) * 1000
+
+def parse_dir(out_dir='./', delim='_'):
+    outs = [parse(f, delim, out_dir) for f in os.listdir(out_dir) if f.find('.out') > -1]
+    for out in outs:
+        print(out)
 
 def parse(out_file, delim='_', out_dir='./'):
     params = os.path.splitext(out_file)[0].split(delim)
