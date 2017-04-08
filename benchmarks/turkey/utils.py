@@ -1,11 +1,4 @@
-import os
 import re
-import sys
-import json
-import time
-import copy
-import random
-import subprocess
 
 apps = [
     'blackscholes',
@@ -57,107 +50,6 @@ values = {
     'cpus': cpus
 }
 
-def generate_out(params):
-    return '%s_%s_%s_%s_%s.out' % (params['prefix'],
-                                   params['app'],
-                                   params['input'],
-                                   str(params['threads']),
-                                   str(params['cpus']))
-
-def generate_cmd(params):
-    print(params)
-    args = []
-    if params['docker']:
-        args.extend(['sudo', 'docker', 'run', '--rm', '-i', '-t'])
-
-        if params['mode'] != 'NA':
-            if params['mode'] == 'set':
-                args.append('--cpuset-cpus=%s' % params['cpus'])
-            elif params['mode'] == 'shares':
-                args.append('--cpu-shares=%d' % params['cpus'])
-            elif params['mode'] == 'quota':
-                args.append('--cpu-quota=%d --cpu-period=%d' %
-                    (params['cpus'][0], params['cpus'][1]))
-
-        args.append('danielsuo/parsec:prod')
-
-    else:
-        # TODO: manage shares/quota with nice and cpulimit
-        if params['cpus'] == 'set':
-            args.extend(['taskset', '-c', str(params['cpus'])])
-
-        args.append(os.path.join(os.environ['PARSEC_HOME'], 'bin/parsecmgmt'))
-
-    args.extend([
-        '-a', 'run',
-        '-i', params['input'],
-        '-p', params['app'],
-        '-n', str(params['threads'])
-    ])
-
-    return args
-
-def rand_cpus(k, n):
-    if type(n) is int:
-        cpus = [str(i) for i in range(n)]
-    else:
-        cpus = [str(i) for i in n]
-
-    random.shuffle(cpus)
-    return ','.join(cpus[:k])
-
-def run(params):
-    cmd = generate_cmd(params)
-    out = generate_out(params)
-
-    print(cmd)
-    print(' '.join(cmd))
-    print(out)
-
-    with open(out, 'w') as out:
-        subprocess.Popen(cmd, stdout=out, stderr=out)
-
-def run_jobs(jobs):
-    for job in jobs:
-        run(job)
-
-    os.wait()
-    os.system('stty sane')
-
-    for job in jobs:
-        out = generate_out(job)
-        print(parse(out))
-
-def run_json(file):
-    prefix = os.path.splitext(os.path.basename(file))[0]
-    print(prefix)
-    with open(file, 'r') as f:
-        jobs = json.loads(f.read())
-        for i in range(len(jobs)):
-            for j in range(len(jobs[i])):
-                print(jobs[i][j])
-                jobs[i][j]['prefix'] = '%s-%d-%d' % (prefix, i, j)
-            run_jobs(jobs[i])
-
-def run_app(app, nthreads, ninstances):
-	job = {
-		'app': app,
-		'input': 'native',
-		'threads': nthreads,
-		'cpus': 1024,
-		'mode': 'shares',
-		'docker': True
-	}
-
-	jobs = [copy.deepcopy(job) for i in range(ninstances)]
-
-	for i in range(ninstances):
-		jobs[i]['prefix'] = 'test%02d' % i
-		if jobs[i]['mode'] == 'set':
-			jobs[i]['cpus'] = '%d' % (i / 2)
-
-	run_jobs(jobs)
-
 def parse_ms(line):
     m = re.search('(\d+)m(\d+\.\d+)s', line)
     return float(m.group(1)) * 60 * 1000 + float(m.group(2)) * 1000
@@ -181,19 +73,120 @@ def parse_file(out_file, delim='_', out_dir='./'):
 
     return params
 
-# Run trials times on k cores out of n total cores
-# If n is array of cores, treat as NUMA node
-def run_job_rand_cpus(job, trials, k, n):
-    job.append('')
-    for i in range(trials):
-        job[len(job) - 1] = rand_cpus(k, n)
-        run_jobs(job)
-        time.sleep(5)
-
-def run_job_seq_cpus(job, trials, k, n):
-    job.append('')
-
-    for i in range(min(trials, int(n / k))):
-        job[len(job) - 1] = '%d-%d' % (i * k, (i + 1) * k - 1)
-        run_jobs(job)
-        time.sleep(5)
+#
+# def generate_out(params):
+#     return '%s_%s_%s_%s_%s.out' % (params['prefix'],
+#                                    params['app'],
+#                                    params['input'],
+#                                    str(params['threads']),
+#                                    str(params['cpus']))
+#
+# def generate_cmd(params):
+#     print(params)
+#     args = []
+#     if params['docker']:
+#         args.extend(['sudo', 'docker', 'run', '--rm', '-i', '-t'])
+#
+#         if params['mode'] != 'NA':
+#             if params['mode'] == 'set':
+#                 args.append('--cpuset-cpus=%s' % params['cpus'])
+#             elif params['mode'] == 'shares':
+#                 args.append('--cpu-shares=%d' % params['cpus'])
+#             elif params['mode'] == 'quota':
+#                 args.append('--cpu-quota=%d --cpu-period=%d' %
+#                     (params['cpus'][0], params['cpus'][1]))
+#
+#         args.append('danielsuo/parsec:prod')
+#
+#     else:
+#         # TODO: manage shares/quota with nice and cpulimit
+#         if params['cpus'] == 'set':
+#             args.extend(['taskset', '-c', str(params['cpus'])])
+#
+#         args.append(os.path.join(os.environ['PARSEC_HOME'], 'bin/parsecmgmt'))
+#
+#     args.extend([
+#         '-a', 'run',
+#         '-i', params['input'],
+#         '-p', params['app'],
+#         '-n', str(params['threads'])
+#     ])
+#
+#     return args
+#
+# def rand_cpus(k, n):
+#     if type(n) is int:
+#         cpus = [str(i) for i in range(n)]
+#     else:
+#         cpus = [str(i) for i in n]
+#
+#     random.shuffle(cpus)
+#     return ','.join(cpus[:k])
+#
+# def run(params):
+#     cmd = generate_cmd(params)
+#     out = generate_out(params)
+#
+#     print(cmd)
+#     print(' '.join(cmd))
+#     print(out)
+#
+#     with open(out, 'w') as out:
+#         subprocess.Popen(cmd, stdout=out, stderr=out)
+#
+# def run_jobs(jobs):
+#     for job in jobs:
+#         run(job)
+#
+#     os.wait()
+#     os.system('stty sane')
+#
+#     for job in jobs:
+#         out = generate_out(job)
+#         print(parse(out))
+#
+# def run_json(file):
+#     prefix = os.path.splitext(os.path.basename(file))[0]
+#     print(prefix)
+#     with open(file, 'r') as f:
+#         jobs = json.loads(f.read())
+#         for i in range(len(jobs)):
+#             for j in range(len(jobs[i])):
+#                 print(jobs[i][j])
+#                 jobs[i][j]['prefix'] = '%s-%d-%d' % (prefix, i, j)
+#             run_jobs(jobs[i])
+#
+# def run_app(app, nthreads, ninstances):
+# 	job = {
+# 		'app': app,
+# 		'input': 'native',
+# 		'threads': nthreads,
+# 		'cpus': 1024,
+# 		'mode': 'shares',
+# 		'docker': True
+# 	}
+#
+# 	jobs = [copy.deepcopy(job) for i in range(ninstances)]
+#
+# 	for i in range(ninstances):
+# 		jobs[i]['prefix'] = 'test%02d' % i
+# 		if jobs[i]['mode'] == 'set':
+# 			jobs[i]['cpus'] = '%d' % (i / 2)
+#
+# 	run_jobs(jobs)
+# # Run trials times on k cores out of n total cores
+# # If n is array of cores, treat as NUMA node
+# def run_job_rand_cpus(job, trials, k, n):
+#     job.append('')
+#     for i in range(trials):
+#         job[len(job) - 1] = rand_cpus(k, n)
+#         run_jobs(job)
+#         time.sleep(5)
+#
+# def run_job_seq_cpus(job, trials, k, n):
+#     job.append('')
+#
+#     for i in range(min(trials, int(n / k))):
+#         job[len(job) - 1] = '%d-%d' % (i * k, (i + 1) * k - 1)
+#         run_jobs(job)
+#         time.sleep(5)

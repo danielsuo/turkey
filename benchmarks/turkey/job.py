@@ -1,4 +1,5 @@
 import os
+import time
 import subprocess
 
 from utils import *
@@ -9,15 +10,15 @@ class Job:
 
     def run(self, out_dir='./'):
         for task in self.tasks:
-            task.run(out_dir)
+            task.run(out_dir=out_dir)
 
         os.wait()
         os.system('stty sane')
 
     @classmethod
-    def from_duplicated_task(cls, task, num=1):
+    def from_duplicated_task(cls, task, num_dups=1):
         job = cls()
-        for i in range(num):
+        for i in range(num_dups):
             job.tasks.append(Task(**task))
 
         return job
@@ -26,6 +27,7 @@ class Task:
     def __init__(self, app='blackscholes', input='simdev', threads=1,
                  cpus=1024, mode='shares'):
 
+        self.prefix  = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
         self.app     = app
         self.input   = input
         self.threads = threads
@@ -42,7 +44,7 @@ class Task:
         return ','.join([str(getattr(self, attr)) for attr in members])
 
     def run(self, docker=True, out_dir='./'):
-        path = self.generate_path(out_dir)
+        path = self.generate_path(out_dir=out_dir)
         args = self.generate_args(docker)
 
         # TODO: add logger that's configurable from CLI
@@ -52,7 +54,7 @@ class Task:
             subprocess.Popen(args, stdout=out, stderr=out)
 
     def parse(self, out_dir='./'):
-        params = parse_file(self.generate_file(out_dir), out_dir=out_dir)
+        params = parse_file(self.generate_file(out_dir=out_dir), out_dir=out_dir)
 
         self.real = params['real']
         self.user = params['user']
@@ -69,9 +71,11 @@ class Task:
                                             self.input,
                                             str(self.threads),
                                             str(self.cpus))
+        return filename
 
     def generate_path(self, out_dir='./'):
-        return os.path.join(out_dir, self.generate_file(out_dir))
+        print(out_dir)
+        return os.path.join(out_dir, self.generate_file(out_dir=out_dir))
 
     def generate_args(self, docker=True):
         args = []
@@ -82,10 +86,11 @@ class Task:
                 if self.mode == 'set':
                     args.append('--cpuset-cpus=%s' % self.cpus)
                 elif self.mode == 'shares':
-                    args.append('--cpu-shares=%d' % self.cpus)
+                    args.append('--cpu-shares=%s' % str(self.cpus))
+                # TODO: fix this; not currently working
                 elif self.mode == 'quota':
-                    args.append('--cpu-quota=%d --cpu-period=%d' %
-                        (self.cpus[0], self.cpus[1]))
+                    args.append('--cpu-quota=%s --cpu-period=%s' %
+                        (str(self.cpus[0]), str(self.cpus[1])))
 
             args.append('danielsuo/parsec:prod')
 
@@ -112,12 +117,3 @@ task = {
     'cpus': 1024,
     'mode': 'shares'
 }
-
-a = Job.from_duplicated_task(task, 2)
-a.tasks[1].real=4
-print(a.tasks[0])
-print(a.tasks[1])
-#
-# a = Task()
-# print(a.members())
-# print(a)
