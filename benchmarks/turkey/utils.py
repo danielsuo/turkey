@@ -3,6 +3,7 @@ import re
 import sys
 import json
 import time
+import copy
 import random
 import subprocess
 
@@ -57,11 +58,11 @@ values = {
 }
 
 def generate_out(params):
-    return '%s_%s_%s_%d_%s.out' % (params['prefix'],
+    return '%s_%s_%s_%s_%s.out' % (params['prefix'],
                                    params['app'],
                                    params['input'],
-                                   params['threads'],
-                                   params['cpus'])
+                                   str(params['threads']),
+                                   str(params['cpus']))
 
 def generate_cmd(params):
     print(params)
@@ -69,10 +70,10 @@ def generate_cmd(params):
     if params['docker']:
         args.extend(['sudo', 'docker', 'run', '--rm', '-i', '-t'])
 
-        if cpus != 'NA':
+        if params['mode'] != 'NA':
             if params['mode'] == 'set':
                 args.append('--cpuset-cpus=%s' % params['cpus'])
-            elif params['mode'] == 'share':
+            elif params['mode'] == 'shares':
                 args.append('--cpu-shares=%d' % params['cpus'])
             elif params['mode'] == 'quota':
                 args.append('--cpu-quota=%d --cpu-period=%d' %
@@ -138,16 +139,35 @@ def run_json(file):
                 jobs[i][j]['prefix'] = '%s-%d-%d' % (prefix, i, j)
             run_jobs(jobs[i])
 
-def getMilliseconds(line):
+def run_app(app, nthreads, ninstances):
+	job = {
+		'app': app,
+		'input': 'native',
+		'threads': nthreads,
+		'cpus': 1024,
+		'mode': 'shares',
+		'docker': True
+	}
+
+	jobs = [copy.deepcopy(job) for i in range(ninstances)]
+
+	for i in range(ninstances):
+		jobs[i]['prefix'] = 'test%02d' % i
+		if jobs[i]['mode'] == 'set':
+			jobs[i]['cpus'] = '%d' % (i / 2)
+
+	run_jobs(jobs)
+
+def parse_ms(line):
     m = re.search('(\d+)m(\d+\.\d+)s', line)
     return float(m.group(1)) * 60 * 1000 + float(m.group(2)) * 1000
 
-def parse_dir(out_dir='./', delim='_'):
-    outs = [parse(f, delim, out_dir) for f in os.listdir(out_dir) if f.find('.out') > -1]
+def parse_dir(out_dir='./', _filter='.out', _delim='_'):
+    outs = [parse_file(f, _delim, out_dir) for f in os.listdir(out_dir) if f.find(_filter) > -1]
     for out in outs:
-        print(out)
+        print(','.join(out))
 
-def parse(out_file, delim='_', out_dir='./'):
+def parse_file(out_file, delim='_', out_dir='./'):
     params = os.path.splitext(out_file)[0].split(delim)
     out_file = os.path.join(out_dir, out_file)
 
@@ -155,7 +175,7 @@ def parse(out_file, delim='_', out_dir='./'):
         for line in f:
             if line.find('real') > -1 or line.find('user') > -1 or line.find('sys') > -1:
                 try:
-                    params.append(str(getMilliseconds(line)))
+                    params.append(str(parse_ms(line)))
                 except AttributeError:
                     continue
 
