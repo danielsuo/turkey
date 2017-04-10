@@ -4,7 +4,7 @@ import sys
 import argparse
 
 import docker
-from turkey import Job
+from turkey import Job, parse_dir
 
 sys.stdout = sys.stderr
 

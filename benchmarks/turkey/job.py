@@ -20,6 +20,9 @@ class Job:
         job = cls()
         for i in range(num_dups):
             job.tasks.append(Task(**task))
+            if task['mode'] == 'set':
+                job.tasks[i].cpus = '%d' % (i / 2)
+            job.tasks[i].prefix += '-%04d' % i
 
         return job
 
@@ -48,10 +51,10 @@ class Task:
         args = self.generate_args(docker)
 
         # TODO: add logger that's configurable from CLI
-        print(args)
+        # print(args)
 
         with open(path, 'w') as out:
-            subprocess.Popen(args, stdout=out, stderr=out)
+            subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
 
     def parse(self, out_dir='./'):
         params = parse_file(self.generate_file(out_dir=out_dir), out_dir=out_dir)
@@ -74,13 +77,12 @@ class Task:
         return filename
 
     def generate_path(self, out_dir='./'):
-        print(out_dir)
         return os.path.join(out_dir, self.generate_file(out_dir=out_dir))
 
     def generate_args(self, docker=True):
         args = []
         if docker:
-            args.extend(['sudo', 'docker', 'run', '--rm', '-i', '-t'])
+            args.extend(['sudo', 'docker', 'run', '--rm', '-i'])
 
             if self.mode != 'NA':
                 if self.mode == 'set':
@@ -109,11 +111,3 @@ class Task:
         ])
 
         return args
-
-task = {
-    'app': 'blackscholes',
-    'input': 'native',
-    'threads': 1,
-    'cpus': 1024,
-    'mode': 'shares'
-}

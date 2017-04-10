@@ -2,6 +2,12 @@
 .DS_Store
 
 *.out
+*.tty
+*.perf
+*.run
+
+out
+perf
 
 # NGrok
 ngrok
