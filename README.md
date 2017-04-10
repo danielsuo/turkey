@@ -1,19 +1,18 @@
 # Turkey
 
 ## TODO
-- Server data
-  - Gather speed-up data
-  - Fit speed-up curves (phi_cpuset_1_native_#_0-255)
-  - Create scheduling algorithm
-  - Run blackscholes and ferret at different cpu shares
-  - Python + docker to run / update parsec applications
-  - Confirm what is being timed
-- eBPF
-  - https://github.com/iovisor/bcc/blob/master/tools/offcputime.py
-  - http://www.brendangregg.com/FlameGraphs/hotcoldflamegraphs.html
-- Parallel programming patterns
-  - Textbook
-  - Pipeline paper
+- Confirm results on c4.8xlarge
+- Paper outline
+- Understand difference in performance for different levels of parallelism
+- Understand Intel TBB
+- Design interface between TBB and scheduler
+- Implement and integrate scheduler with TBB
+- Evaluations
+- ...
+- Profit
+
+## Completed
+- Understand mix of applications, rather than just a single application
 - Logging
 - Lock-free data structures
   - https://github.com/liblfds
@@ -25,6 +24,10 @@
   - Microsoft PPL
   - Intel TBB
   - Investigate pthread API
+
+- Parallel programming patterns
+  - Textbook
+  - Pipeline paper
 - Docker Image Pull
 - Use init process
   - https://docs.docker.com/engine/reference/run/
@@ -33,8 +36,19 @@
 - Concurrency books
   - https://www.amazon.com/The-Multiprocessor-Programming-Maurice-Herlihy/dp/0123705916
   - https://www.manning.com/books/c-plus-plus-concurrency-in-action
-
-## Completed
+- eBPF
+  - https://github.com/iovisor/bcc/blob/master/tools/offcputime.py
+  - http://www.brendangregg.com/FlameGraphs/hotcoldflamegraphs.html
+- Parallel programming patterns
+  - Textbook
+  - Pipeline paper
+- Server data
+  - Gather speed-up data
+  - Fit speed-up curves (phi_cpuset_1_native_#_0-255)
+  - Create scheduling algorithm
+  - Run blackscholes and ferret at different cpu shares
+  - Python + docker to run / update parsec applications
+  - Confirm what is being timed
 - Test cgroup cpu shares
 - Blackscholes
   - https://github.com/danielsuo/parsec/blob/a159cc3884d900e1cf496011bd5b073ba396e09b/pkgs/apps/blackscholes/src/c.m4.pthreads
