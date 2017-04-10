@@ -1,17 +1,18 @@
 # Turkey
 
 ## TODO
-- Confirm results on c4.8xlarge
 - Paper outline
 - Understand difference in performance for different levels of parallelism
 - Understand Intel TBB
-- Design interface between TBB and scheduler
-- Implement and integrate scheduler with TBB
+- Design interface between TBB and coordinator
+- Implement and integrate coordinator with TBB
+- Integrate TBB into applications
 - Evaluations
 - ...
 - Profit
 
 ## Completed
+- Confirm results on c4.8xlarge
 - Understand mix of applications, rather than just a single application
 - Logging
 - Lock-free data structures
@@ -24,7 +25,6 @@
   - Microsoft PPL
   - Intel TBB
   - Investigate pthread API
-
 - Parallel programming patterns
   - Textbook
   - Pipeline paper
