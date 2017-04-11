@@ -13,7 +13,6 @@
 \documentclass[10pt,preprint]{sigplanconf}
 \usepackage{times}
 
-\usepackage{biblatex}
 \usepackage{datetime}
 \usepackage{url}
 \usepackage{hyperref}
@@ -43,22 +42,11 @@
 \maketitle
 
 \begin{abstract}
-The last decade saw economic and physical realities weigh down the famously exponential Moore's Law. To keep up with performance demands, chip designers turned towards many-core architectures and 
+In recent years, economic and physical realities have pushed both chip designers and application developers to rely increasingly on parallelism to satisfy performance demands \cite{mack2011fifty}. However, there is no free lunch. Even after an application developer has wrestled with several target architectures, she still does not know what resources the application will get at runtime. Often, it is easier to over-provision units of execution and hope for the best. Yet even mild contention can drastically reduce overall system throughput and wall-clock execution times of individual applications. On the other hand, under-provisioning units of execution means leaving resources unused and falling short of performance potential. In this paper, we show that by selectively and dynamically changing application parallelism, we can avoid both pitfalls [in some way].
 
-Yet it's not the case
 
-Many cores
-To get better performance, turn to parallelism
-However, hardware dependent
-Often don't know what hardware will be running and even if do, what resources (e.g., contention)
-Solution is to overprovision units of execution (e.g., thread / process)
-However, we show that overprovisioning under contention -> reduces overall system throughput and often reduces wall-clock execution time of individual applications
-Yet don't want to underprovisiong either
-By selectively and dynamically changing parallelism, we can improve a machine's throughput of parallel applications.
 Stronger guarantees from scheduler to application (monitor actual resource utilization). Insights from application to scheduler (e.g., some information about app?).
 
-
-By moving network appliance functionality from proprietary hardware to software, Network Function Virtualization promises to bring the advantages of cloud computing to network packet processing. However, the evolution of cloud computing (particularly for data analytics) has greatly benefited from application-independent methods for scaling and placement that achieve high efficiency while relieving programmers of these burdens. NFV has no such general management solutions. In this paper, we present a scalable and application-agnostic scheduling framework for packet processing, and compare its performance to current approaches.
 \end{abstract}
 
 \section{Questions}
@@ -66,31 +54,47 @@ By moving network appliance functionality from proprietary hardware to software,
   \item How do developers typically provision number of threads? How do they determine the maximum?
 \end{itemize}
 
-\section{Introduction}
+\section{To do}
+\begin{itemize}
+  \item DS Paper outline
+  \item MS AC Understand difference in performance for different levels of parallelism
+  \item DS YW Understand Intel TBB
+  \begin{itemize}
+    \item http://cas.ee.ic.ac.uk/people/dt10/teaching/2012/hpce/hpce-lec6-tbb-intro-handout-4up.pdf
+    \item https://drive.google.com/file/d/0B_10gtxnPV-_UFUyRGQ4MTQ4YTA/view?usp=sharing
+  \end{itemize}
+  \item Design interface between TBB and coordinator
+  \item Implement and integrate coordinator with TBB
+  \item Integrate TBB into applications
+  \begin{itemize}
+    \item http://wiki.cs.princeton.edu/index.php/PARSEC
+  \end{itemize}
+  \item Evaluations
+\end{itemize}
 
+\section{Introduction}
+\subsection*{What's the problem}
+\begin{itemize}
+  \item Parallel hardware + software hard to reason about
+  \item Too many combinations to hand-tune
+  \item Existing approach either over or under provision parallelism
+\end{itemize}
 \subsection*{Contributions}
 \begin{itemize}
-  \item User-level scheduler for parallel applications
+  \item User-level coordinator to determine appropriate level of parallelism for registered applications
   \item Thread library that can dynamically scale application parallelism
 \end{itemize}
 
-\section{Motivation for a []}
-\subsection{Hardware: many cores are here to say}
-\subsection{Hardware: systems are increasingly heterogeneous}
-https://www.sigops.org/sosp/sosp09/papers/baumann-sosp09.pdf
-\subsection{Software: the Linux scheduler struggles with growing complexity}
-https://hal.archives-ouvertes.fr/hal-01295194/document
-\subsection{Software: increasingly run many containers on a single host}
-\subsection{Software: centralized schedulers in distributed systems struggle to scale}
-https://cs.stanford.edu/~matei/papers/2013/sosp\_sparrow.pdf
+Not sufficient to set parallelism just at application start
 
-\subsection{Software: distributed systems typically use tasks to express parallelism}
-https://drive.google.com/file/d/0B\_10gtxnPV-\_SHgxNGtyOUZZQ2M/view
 
-\subsection{Software: schedulers and applications should exchange more information}
-https://github.com/PlatformLab/Arachne/wiki
-
-\subsection{Software: different applications w/ different goals; don't want to change kernel}
+\section{Motivation for a dynamic parallelism}
+\begin{itemize}
+  \item Many cores are here to stay. Need more automated methods to take advantage of. \cite{baumann2009multikernel}
+  \item OS schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
+  \item Applications are being increasingly run in containers / VMs on a single host
+  \item Centralized schedulers in distributed systems struggle to scale \cite{ousterhout2013sparrow}
+\end{itemize}
 
 \section{Performance of parallel programs under CPU contention}
 
@@ -105,7 +109,7 @@ https://github.com/PlatformLab/Arachne/wiki
   \caption{How groups of applications (same or mixed) do under contention at varying \# of threads}
 \end{figure}
 
-\subsection{Common strategies}
+\subsection{Common strategies for dealing with unknown resources}
 \begin{itemize}
   \item Overprovision number of threads and hope for the best. But this can cause problems (e.g., lock or resource contention)
 \end{itemize}
@@ -135,6 +139,9 @@ Change CPU share or quota
 \section{Imeplementation}
 
 \section{Evaluation}
+\subsection{Workloads}
+Different classes of applications. Mixture of applications.
+
 \subsection{Comparison with other thread libraries}
 OS (pthreads), OpenMP, Intel TBB
 \subsection{Varying guarantees (CPU share / quota)}
@@ -158,8 +165,8 @@ OS (pthreads), OpenMP, Intel TBB
 
 \section*{Acknowledgements}
 
+\bibliography{citations}{}
 \bibliographystyle{acm}
-\addbibresource{citations.bib}
-\printbibliography
+% \printbibliography
 
 \end{document}

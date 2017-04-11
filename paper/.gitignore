@@ -3,8 +3,8 @@
 *.fls
 *.log
 *.out
-*.pdf
 *.bbl
+*.dvi
 *.bcf
 *.blg
 *.run.xml
