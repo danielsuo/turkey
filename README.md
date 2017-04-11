@@ -1,12 +1,15 @@
 # Turkey
 
 ## TODO
-- Paper outline
-- Understand difference in performance for different levels of parallelism
-- Understand Intel TBB
+- [DS] Paper outline
+- [MS][AC] Understand difference in performance for different levels of parallelism
+- [DS] Understand Intel TBB
+  - http://cas.ee.ic.ac.uk/people/dt10/teaching/2012/hpce/hpce-lec6-tbb-intro-handout-4up.pdf
+  - https://drive.google.com/file/d/0B_10gtxnPV-_UFUyRGQ4MTQ4YTA/view?usp=sharing
 - Design interface between TBB and coordinator
 - Implement and integrate coordinator with TBB
 - Integrate TBB into applications
+  - http://wiki.cs.princeton.edu/index.php/PARSEC
 - Evaluations
 - ...
 - Profit
