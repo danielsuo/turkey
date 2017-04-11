@@ -210,7 +210,7 @@
 
 
 \@setflag \@authorversion = \@false
-\@setflag \@authoryear = \@true
+\@setflag \@authoryear = \@false
 \@setflag \@blockstyle = \@false
 \@setflag \@copyrightwanted = \@true
 \@setflag \@legacycopyright = \@false

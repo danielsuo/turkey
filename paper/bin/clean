@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+for ext in `cat .gitignore | sed s/\*\.//g`
+do
+  find . | grep $ext | xargs rm -rf
+done

@@ -1,0 +1,21 @@
+\section{Design}
+Not sufficient to set parallelism just at application start, need to scale up and down. Machine load may change over time. Application requirements may change within a single run
+
+\subsection{Thread library}
+Similar to Intel Thread Building Blocks \cite{reinders2007intel}, but dynamically scale number of workers across applications, rather than just across workers
+\begin{itemize}
+  \item Types of blocks: iterative / non-iterative parallelized operations
+  \item DAG
+  \item Unstructured
+\end{itemize}
+
+\begin{figure}
+\centering
+  \includegraphics[width=8cm,height=4cm]{overhead.png}
+  \caption{What is performance overhead of thread library over pthreads?}
+\end{figure}
+\subsection{Driver application}
+Track CPU utilization by application (any other metrics?)
+Change target parallelism (how to decide, when to decide, how much to change by, which to change)
+Change CPU share or quota
+\subsection{Client applications}

@@ -1,30 +1,20 @@
-%
-%% SOSP 2017 Template
-%%
-%% Uses sigplanconf from:
-%%
-%%    http://www.sigplan.org/sites/default/files/sigplanconf.cls
-%%
-%% with 10pt and preprint options.
-%%
-%% Replace 'XX' with your paper number (assigned when you register abstract)
-%% Replace 'NN' with actual number of pages.
-
 \documentclass[10pt,preprint]{sigplanconf}
 \usepackage{times}
-
 \usepackage{datetime}
 \usepackage{url}
 \usepackage{hyperref}
 
+% TODO: remove draft
+\usepackage{graphicx}
+
 \conferenceinfo{SOSP'17}{October 29--31, 2017, Shanghai, China}
 \copyrightyear{2017}
 
-\usepackage[draft]{graphicx}
 
 % These only appear when the 'preprint' option is specified.
 % Enabling these will cause the first page of the document to fail the
 % format check on HotCRP :-(
+% TODO: remove before submitting
 \titlebanner{Under submission to SOSP 2017 - do not cite or distribute}
 \preprintfooter{Draft of {\currenttime}, \today{}}
 
@@ -32,8 +22,9 @@
 \date{}
 
 % Paper number and no. of pages as author
+% TODO: Replace 'XX' with your paper number (assigned when you register abstract)
+% TODO: Replace 'NN' with actual number of pages.
 \authorinfo{Paper \textbf{\#XX}}{NN pages}
-
 
 % Actual document begins below.
 \begin{document}
@@ -41,13 +32,7 @@
 \title{Tuning application performance with dynamically scalable parallelism}
 \maketitle
 
-\begin{abstract}
-In recent years, economic and physical realities have pushed both chip designers and application developers to rely increasingly on parallelism to satisfy performance demands \cite{mack2011fifty}. However, there is no free lunch. Even after an application developer has wrestled with several target architectures, she still does not know what resources the application will get at runtime. Often, it is easier to over-provision units of execution and hope for the best. Yet even mild contention can drastically reduce overall system throughput and wall-clock execution times of individual applications. On the other hand, under-provisioning units of execution means leaving resources unused and falling short of performance potential. In this paper, we show that by selectively and dynamically changing application parallelism, we can avoid both pitfalls [in some way].
-
-
-Stronger guarantees from scheduler to application (monitor actual resource utilization). Insights from application to scheduler (e.g., some information about app?).
-
-\end{abstract}
+\input{tex/abstract.tex}
 
 \section{Questions}
 \begin{itemize}
@@ -61,7 +46,7 @@ Stronger guarantees from scheduler to application (monitor actual resource utili
   \item DS YW Understand Intel TBB
   \begin{itemize}
     \item http://cas.ee.ic.ac.uk/people/dt10/teaching/2012/hpce/hpce-lec6-tbb-intro-handout-4up.pdf
-    \item https://drive.google.com/file/d/0B_10gtxnPV-_UFUyRGQ4MTQ4YTA/view?usp=sharing
+    \item https://drive.google.com/file/d/0B\_10gtxnPV-\_UFUyRGQ4MTQ4YTA/view?usp=sharing
   \end{itemize}
   \item Design interface between TBB and coordinator
   \item Implement and integrate coordinator with TBB
@@ -72,94 +57,15 @@ Stronger guarantees from scheduler to application (monitor actual resource utili
   \item Evaluations
 \end{itemize}
 
-\section{Introduction}
-\subsection*{What's the problem}
-\begin{itemize}
-  \item Parallel hardware + software hard to reason about
-  \item Too many combinations to hand-tune
-  \item Existing approach either over or under provision parallelism
-\end{itemize}
-\subsection*{Contributions}
-\begin{itemize}
-  \item User-level coordinator to determine appropriate level of parallelism for registered applications
-  \item Thread library that can dynamically scale application parallelism
-\end{itemize}
-
-Not sufficient to set parallelism just at application start
-
-
-\section{Motivation for a dynamic parallelism}
-\begin{itemize}
-  \item Many cores are here to stay. Need more automated methods to take advantage of. \cite{baumann2009multikernel}
-  \item OS schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
-  \item Applications are being increasingly run in containers / VMs on a single host
-  \item Centralized schedulers in distributed systems struggle to scale \cite{ousterhout2013sparrow}
-\end{itemize}
-
-\section{Performance of parallel programs under CPU contention}
-
-\begin{itemize}
-  \item speed-up curve
-  \item slow-down curve
-\end{itemize}
-
-\begin{figure}
-\centering
-  \includegraphics[width=8cm,height=4cm]{thread.png}
-  \caption{How groups of applications (same or mixed) do under contention at varying \# of threads}
-\end{figure}
-
-\subsection{Common strategies for dealing with unknown resources}
-\begin{itemize}
-  \item Overprovision number of threads and hope for the best. But this can cause problems (e.g., lock or resource contention)
-\end{itemize}
-
-\section{Design}
-\subsection{Thread library}
-Similar to Intel Thread Building Blocks, but dynamically scale number of workers across applications, rather than just across workers
-\begin{itemize}
-  \item Types of blocks: iterative / non-iterative parallelized operations
-  \item DAG
-  \item Unstructured
-\end{itemize}
-
-\begin{figure}
-\centering
-  \includegraphics[width=8cm,height=4cm]{overhead.png}
-  \caption{What is performance overhead of thread library over pthreads?}
-\end{figure}
-\subsection{Driver application}
-Track CPU utilization by application (any other metrics?)
-Change target parallelism (how to decide, when to decide, how much to change by, which to change)
-Change CPU share or quota
-\subsection{Client applications}
-
-\section{PARSEC and Splash2 Benchmarks}
-
-\section{Imeplementation}
-
-\section{Evaluation}
-\subsection{Workloads}
-Different classes of applications. Mixture of applications.
-
-\subsection{Comparison with other thread libraries}
-OS (pthreads), OpenMP, Intel TBB
-\subsection{Varying guarantees (CPU share / quota)}
-
-\subsection{Various machines}
-
-\section{Related work}
-\begin{itemize}
-  \item Intel TBB, OpenMP, Cilk (http://parsec.cs.princeton.edu/publications/contreras08tbb.pdf)
-  \item Scheduler activations
-  \item Multikernel
-  \item Exokernel
-  \item Hierarchical schedulers
-  \item Cache-aware / contention-aware / numa-aware schedulers
-  \item Arachne
-  \item Capriccio
-  \item Wasted cores
-\end{itemize}
+\input{tex/intro.tex}
+\input{tex/motivation.tex}
+\input{tex/performance.tex}
+\input{tex/determining.tex}
+\input{tex/design.tex}
+\input{tex/apps.tex}
+\input{tex/implementation.tex}
+\input{tex/evaluation.tex}
+\input{tex/related.tex}
 
 \section{Experience and future work}
 
@@ -167,6 +73,5 @@ OS (pthreads), OpenMP, Intel TBB
 
 \bibliography{citations}{}
 \bibliographystyle{acm}
-% \printbibliography
 
 \end{document}
