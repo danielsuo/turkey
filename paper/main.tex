@@ -13,6 +13,7 @@
 \documentclass[10pt,preprint]{sigplanconf}
 \usepackage{times}
 
+\usepackage{biblatex}
 \usepackage{datetime}
 \usepackage{url}
 \usepackage{hyperref}
@@ -20,12 +21,13 @@
 \conferenceinfo{SOSP'17}{October 29--31, 2017, Shanghai, China}
 \copyrightyear{2017}
 
+\usepackage[draft]{graphicx}
 
 % These only appear when the 'preprint' option is specified.
 % Enabling these will cause the first page of the document to fail the
 % format check on HotCRP :-(
-%\titlebanner{Under submission to SOSP 2017 - do not cite or distribute}
-%\preprintfooter{Draft of {\currenttime}, \today{}}
+\titlebanner{Under submission to SOSP 2017 - do not cite or distribute}
+\preprintfooter{Draft of {\currenttime}, \today{}}
 
 % No date in title area.
 \date{}
@@ -37,20 +39,127 @@
 % Actual document begins below.
 \begin{document}
 
-\title{A double-blind submission to SOSP 2017}
+\title{Tuning application performance with dynamically scalable parallelism}
 \maketitle
 
 \begin{abstract}
+The last decade saw economic and physical realities weigh down the famously exponential Moore's Law. To keep up with performance demands, chip designers turned towards many-core architectures and 
 
-Sample abstract.
+Yet it's not the case
 
+Many cores
+To get better performance, turn to parallelism
+However, hardware dependent
+Often don't know what hardware will be running and even if do, what resources (e.g., contention)
+Solution is to overprovision units of execution (e.g., thread / process)
+However, we show that overprovisioning under contention -> reduces overall system throughput and often reduces wall-clock execution time of individual applications
+Yet don't want to underprovisiong either
+By selectively and dynamically changing parallelism, we can improve a machine's throughput of parallel applications.
+Stronger guarantees from scheduler to application (monitor actual resource utilization). Insights from application to scheduler (e.g., some information about app?).
+
+
+By moving network appliance functionality from proprietary hardware to software, Network Function Virtualization promises to bring the advantages of cloud computing to network packet processing. However, the evolution of cloud computing (particularly for data analytics) has greatly benefited from application-independent methods for scaling and placement that achieve high efficiency while relieving programmers of these burdens. NFV has no such general management solutions. In this paper, we present a scalable and application-agnostic scheduling framework for packet processing, and compare its performance to current approaches.
 \end{abstract}
+
+\section{Questions}
+\begin{itemize}
+  \item How do developers typically provision number of threads? How do they determine the maximum?
+\end{itemize}
 
 \section{Introduction}
 
-Text of the paper.
+\subsection*{Contributions}
+\begin{itemize}
+  \item User-level scheduler for parallel applications
+  \item Thread library that can dynamically scale application parallelism
+\end{itemize}
+
+\section{Motivation for a []}
+\subsection{Hardware: many cores are here to say}
+\subsection{Hardware: systems are increasingly heterogeneous}
+https://www.sigops.org/sosp/sosp09/papers/baumann-sosp09.pdf
+\subsection{Software: the Linux scheduler struggles with growing complexity}
+https://hal.archives-ouvertes.fr/hal-01295194/document
+\subsection{Software: increasingly run many containers on a single host}
+\subsection{Software: centralized schedulers in distributed systems struggle to scale}
+https://cs.stanford.edu/~matei/papers/2013/sosp\_sparrow.pdf
+
+\subsection{Software: distributed systems typically use tasks to express parallelism}
+https://drive.google.com/file/d/0B\_10gtxnPV-\_SHgxNGtyOUZZQ2M/view
+
+\subsection{Software: schedulers and applications should exchange more information}
+https://github.com/PlatformLab/Arachne/wiki
+
+\subsection{Software: different applications w/ different goals; don't want to change kernel}
+
+\section{Performance of parallel programs under CPU contention}
+
+\begin{itemize}
+  \item speed-up curve
+  \item slow-down curve
+\end{itemize}
+
+\begin{figure}
+\centering
+  \includegraphics[width=8cm,height=4cm]{thread.png}
+  \caption{How groups of applications (same or mixed) do under contention at varying \# of threads}
+\end{figure}
+
+\subsection{Common strategies}
+\begin{itemize}
+  \item Overprovision number of threads and hope for the best. But this can cause problems (e.g., lock or resource contention)
+\end{itemize}
+
+\section{Design}
+\subsection{Thread library}
+Similar to Intel Thread Building Blocks, but dynamically scale number of workers across applications, rather than just across workers
+\begin{itemize}
+  \item Types of blocks: iterative / non-iterative parallelized operations
+  \item DAG
+  \item Unstructured
+\end{itemize}
+
+\begin{figure}
+\centering
+  \includegraphics[width=8cm,height=4cm]{overhead.png}
+  \caption{What is performance overhead of thread library over pthreads?}
+\end{figure}
+\subsection{Driver application}
+Track CPU utilization by application (any other metrics?)
+Change target parallelism (how to decide, when to decide, how much to change by, which to change)
+Change CPU share or quota
+\subsection{Client applications}
+
+\section{PARSEC and Splash2 Benchmarks}
+
+\section{Imeplementation}
+
+\section{Evaluation}
+\subsection{Comparison with other thread libraries}
+OS (pthreads), OpenMP, Intel TBB
+\subsection{Varying guarantees (CPU share / quota)}
+
+\subsection{Various machines}
+
+\section{Related work}
+\begin{itemize}
+  \item Intel TBB, OpenMP, Cilk (http://parsec.cs.princeton.edu/publications/contreras08tbb.pdf)
+  \item Scheduler activations
+  \item Multikernel
+  \item Exokernel
+  \item Hierarchical schedulers
+  \item Cache-aware / contention-aware / numa-aware schedulers
+  \item Arachne
+  \item Capriccio
+  \item Wasted cores
+\end{itemize}
+
+\section{Experience and future work}
+
+\section*{Acknowledgements}
 
 \bibliographystyle{acm}
-% \bibliography{xxx}
+\addbibresource{citations.bib}
+\printbibliography
 
 \end{document}
