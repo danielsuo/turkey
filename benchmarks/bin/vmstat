@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+adddate() {
+    while IFS= read -r line; do
+        echo "$(date) $line"
+    done
+}
+
+vmstat 1 -n | adddate
