@@ -1,0 +1,23 @@
+cxx_library(
+    name='server',
+    headers=['Server.h'],
+    srcs=['Server.cpp'],
+    deps=['//src:common'],
+    visibility=['PUBLIC'],
+)
+
+cxx_library(
+    name='common',
+    headers=['Common.h'],
+    visibility=['PUBLIC'],
+)
+
+cxx_binary(
+  name = 'main',
+  srcs = [
+    'main.cpp'
+  ],
+  deps = [
+    '//src:server',
+  ]
+)

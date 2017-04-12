@@ -1,0 +1,29 @@
+#!/bin/bash
+sudo ./run.py all -p |& awk -F , '
+$4 == 1 {
+  wall_time_1 += $6;
+  cpu_user_1 += $7;
+  cpu_sys_1 += $8;
+  n1++;
+}
+$4 == 32 {
+  wall_time_32 += $6;
+  cpu_user_32 += $7;
+  cpu_sys_32 += $8;
+  n32++;
+}
+END {
+  if (n1 > 0) {
+    print "1 ============";
+    print "wall time avg: " wall_time_1 / n1;
+    print "cpu user avg: " cpu_user_1 / n1;
+    print "cpu sys avg: " cpu_sys_1 / n1;
+  }
+  if (n32 > 0) {
+    print "32 ============";
+    print "wall time avg: " wall_time_32 / n32;
+    print "cpu user avg: " cpu_user_32 / n32;
+    print "cpu sys avg: " cpu_sys_32 / n32;
+  }
+}
+'
