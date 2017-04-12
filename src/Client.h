@@ -1,13 +1,13 @@
 #pragma once
-#include <boost/interprocess/allocators/allocator.hpp>
-#include <boost/interprocess/containers/map.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/sync/named_mutex.hpp>
-#include <utility>
+#include "Common.h"
 
 namespace Turkey {
 class Client {
 public:
   Client();
+  ~Client();
+
+  Client(const Client&) = delete;
+  Client& operator=(const Client&) = delete;
 }
 }

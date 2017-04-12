@@ -2,7 +2,7 @@
 #include <iostream>
 
 using namespace boost::interprocess;
-static constexpr int kSharedMemorySize = 65536;
+static constexpr int kSharedMemorySizeBytes = 65536;
 
 namespace Turkey {
 Server::Server() {
@@ -10,29 +10,29 @@ Server::Server() {
   named_mutex::remove("TurkeyMutex");
   shared_memory_object::remove("TurkeySharedMemory");
 
-  managed_shared_memory segment(create_only,
-                                "TurkeySharedMemory", // segment name
-                                kSharedMemorySize);   // segment size in bytes
+  segment_ = std::make_unique<managed_shared_memory>(
+      create_only,
+      "TurkeySharedMemory",
+      kSharedMemorySizeBytes);
 
-  ShmAllocator allocator(segment.get_segment_manager());
-  named_mutex mutex(create_only, "TurkeyMutex");
+  ShmAllocator allocator(segment_->get_segment_manager());
+  mutex_ = std::make_unique<named_mutex>(create_only, "TurkeyMutex");
 
   {
-    scoped_lock<named_mutex> lock(mutex);
-    segment.construct<RecommendationMap>("RecommendationMap") // object name
+    scoped_lock<named_mutex> lock(*mutex_);
+    segment_->construct<RecommendationMap>("RecommendationMap") // object name
         (std::less<int>(), allocator);
   }
 }
 
 void Server::get() const {
-  named_mutex mutex(open_only, "TurkeyMutex");
-  scoped_lock<named_mutex> lock(mutex);
-  managed_shared_memory segment(open_only, "TurkeySharedMemory");
-  const auto ret = segment.find<RecommendationMap>("RecommendationMap");
+  scoped_lock<named_mutex> lock(*mutex_);
+  const auto ret = segment_->find<RecommendationMap>("RecommendationMap");
   std::cout << ret.second << std::endl;
 }
 
 Server::~Server() {
+  // TODO define custom deleters for the members instead of handling here
   shared_memory_object::remove("TurkeySharedMemory");
   named_mutex::remove("TurkeyMutex");
 }
