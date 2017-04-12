@@ -10,7 +10,7 @@ public:
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
 
-  uint32_t pollRunnableThreads() const;
+  void get() const;
 
 private:
 };
