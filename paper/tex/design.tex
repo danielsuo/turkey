@@ -4,6 +4,9 @@ Not sufficient to set parallelism just at application start, need to scale up an
 \subsection{Mechanism for communicating}
 \begin{enumerate}
   \item Use kernel memory (must modify kernel)
+  \begin{itemize}
+    \item OS: schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
+  \end{itemize}
   \item User space
 \end{enumerate}
 
