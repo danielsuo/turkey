@@ -11,17 +11,17 @@ Server::Server() {
   shared_memory_object::remove("TurkeySharedMemory");
 
   segment_ = std::make_unique<managed_shared_memory>(
-      create_only,
-      "TurkeySharedMemory",
-      kSharedMemorySizeBytes);
+      create_only, "TurkeySharedMemory", kSharedMemorySizeBytes);
 
   ShmAllocator allocator(segment_->get_segment_manager());
   mutex_ = std::make_unique<named_mutex>(create_only, "TurkeyMutex");
 
   {
     scoped_lock<named_mutex> lock(*mutex_);
-    segment_->construct<RecommendationMap>("RecommendationMap") // object name
-        (std::less<int>(), allocator);
+    recommendationMap_ = std::unique_ptr<RecommendationMap>(
+        segment_->construct<RecommendationMap>(
+            "RecommendationMap") // object name
+        (std::less<int>(), allocator));
   }
 }
 
