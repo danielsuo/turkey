@@ -3,6 +3,7 @@
 \usepackage{datetime}
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage{amssymb}
 
 % TODO: remove draft
 \usepackage{graphicx}
@@ -29,7 +30,7 @@
 % Actual document begins below.
 \begin{document}
 
-\title{Tuning application performance with dynamically scalable parallelism}
+\title{The case for [dynamically scalable parallelism]}
 \maketitle
 
 \input{tex/abstract.tex}
@@ -43,31 +44,27 @@
 \begin{itemize}
   \item DS Paper outline
   \item MS AC Understand difference in performance for different levels of parallelism
-  \item DS YW Understand Intel TBB
-  \begin{itemize}
-    \item http://cas.ee.ic.ac.uk/people/dt10/teaching/2012/hpce/hpce-lec6-tbb-intro-handout-4up.pdf
-    \item https://drive.google.com/file/d/0B\_10gtxnPV-\_UFUyRGQ4MTQ4YTA/view?usp=sharing
-  \end{itemize}
-  \item Design interface between TBB and coordinator
-  \item Implement and integrate coordinator with TBB
-  \item Integrate TBB into applications
+  \item [\checkmark] Understand Intel TBB
+  \item Design interface between library and coordinator
+  \item Implement and integrate coordinator with library
+  \item Integrate library into applications
   \begin{itemize}
     \item http://wiki.cs.princeton.edu/index.php/PARSEC
   \end{itemize}
   \item Evaluations
+  \item Run ./bin/todo to find remaining todos in tex files
 \end{itemize}
 
 \input{tex/intro.tex}
-\input{tex/motivation.tex}
+% \input{tex/motivation.tex}
 \input{tex/performance.tex}
 \input{tex/determining.tex}
 \input{tex/design.tex}
 \input{tex/apps.tex}
-\input{tex/implementation.tex}
+% \input{tex/implementation.tex}
 \input{tex/evaluation.tex}
 \input{tex/related.tex}
-
-\section{Experience and future work}
+\input{tex/discussion.tex}
 
 \section*{Acknowledgements}
 

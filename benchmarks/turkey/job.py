@@ -3,7 +3,7 @@ import time
 import docker
 import subprocess
 
-from utils import *
+from .utils import *
 
 class Job:
     def __init__(self):
@@ -29,14 +29,17 @@ class Job:
 
 class Task:
     def __init__(self, app='blackscholes', input='simdev', threads=1,
-                 cpus=1024, mode='shares'):
+                 cpus=1024, mode='shares', docker=True, docker_tag='prod', config = ''):
 
-        self.prefix  = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
-        self.app     = app
-        self.input   = input
-        self.threads = threads
-        self.cpus    = cpus
-        self.mode    = mode
+        self.prefix     = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
+        self.app        = app
+        self.input      = input
+        self.threads    = threads
+        self.cpus       = cpus
+        self.mode       = mode
+        self.docker     = docker
+        self.docker_tag = docker_tag
+        self.config     = config
 
         self.real    = 0
         self.user    = 0
@@ -47,9 +50,9 @@ class Task:
         members = self.members()
         return ','.join([str(getattr(self, attr)) for attr in members])
 
-    def run(self, docker=True, out_dir='./'):
+    def run(self, out_dir='./'):
         path = self.generate_path(out_dir=out_dir)
-        args = self.generate_args(docker)
+        args = self.generate_args()
 
         # TODO: add logger that's configurable from CLI
         # print(args)
@@ -80,9 +83,9 @@ class Task:
     def generate_path(self, out_dir='./'):
         return os.path.join(out_dir, self.generate_file(out_dir=out_dir))
 
-    def generate_args(self, docker=True):
+    def generate_args(self):
         args = []
-        if docker:
+        if self.docker:
             args.extend(['sudo', 'docker', 'run', '--rm', '-i'])
 
             if self.mode != 'NA':
@@ -95,7 +98,7 @@ class Task:
                     args.append('--cpu-quota=%s --cpu-period=%s' %
                         (str(self.cpus[0]), str(self.cpus[1])))
 
-            args.append('danielsuo/parsec:prod')
+            args.append('danielsuo/parsec:%s' % self.docker_tag)
 
         else:
             # TODO: manage shares/quota with nice and cpulimit
@@ -110,5 +113,8 @@ class Task:
             '-p', self.app,
             '-n', str(self.threads)
         ])
+
+        if self.config != '':
+            args.extend(['-c', self.config])
 
         return args
