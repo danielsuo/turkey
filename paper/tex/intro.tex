@@ -1,24 +1,29 @@
 \section{Introduction}
-\subsection*{What's the problem}
+\subsection*{What's the context / what are the trends}
 \begin{itemize}
-  \item Parallel hardware + software hard to reason about
-  \item Too many combinations to hand-tune
-  \item Existing approach either over or under provision parallelism
+  \item Increasing number of cores. Many-core architectures are here to stay. \cite{baumann2009multikernel}
+  \item As a result, application developers must think about parallelism to get performance
+  \item Cloud becoming increasingly popular; run many containers / VMs on a single host and want performance guarantees for tenants (sophisticated orchestration / scheduling)
 \end{itemize}
-\subsection*{Why does it matter?}
+\subsection*{What happens today}
 \begin{itemize}
-  \item Parallelism is here to stay both in hardware and software
-  \item Challenges listed above make more important to have automated methods (we don't program in assembly anymore unless we have to)
+  \item Application: use parallel libraries (should discuss a little)
+  \item Application: assume have full machine (over-provision) because not easy to know what resources we have.
+  \item Application: different applications have different speed-up curves, which mean different overheads
+  \item OS: schedule individual threads (Linux). Some control with cgroups
+  \item OS: schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
 \end{itemize}
-\subsection*{Who cares?}
+\subsection*{What's are the issues}
 \begin{itemize}
-  \item Cloud providers / clusters pack many applications onto machines
-  \item In large applications that take up entire machine, easier to create many threads
-  \item In distributed systems, also easier since performance bottlenecks are elsewhere, but can see similar per-node improvements
+  \item Over-provisioning may low utilization on many core [INSERT SMALL EXAMPLE]
+  \item Also not taking advantage of best parallelism (slow-down in total CPU time)
+  \item share and quota (cgroup) not enough; want to change parallelism
+  \item Parallel hardware + software hard to reason about; too many combinations to hand-tune; need automated runtime methods
 \end{itemize}
 \subsection*{Contributions}
 \begin{itemize}
   \item Observe that dynamically scaling parallelism can improve system performance (throughput, latency)
-  \item User-level coordinator to determine appropriate level of parallelism for registered applications
+  \item Mechanism for coordinating among applications (is this a contribution?)
   \item Thread library that can dynamically scale application parallelism
+  \item User-level coordinator to determine appropriate level of parallelism for registered applications
 \end{itemize}

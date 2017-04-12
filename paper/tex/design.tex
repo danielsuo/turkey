@@ -1,6 +1,12 @@
 \section{Design}
 Not sufficient to set parallelism just at application start, need to scale up and down. Machine load may change over time. Application requirements may change within a single run
 
+\subsection{Mechanism for communicating}
+\begin{enumerate}
+  \item Use kernel memory (must modify kernel)
+  \item User space
+\end{enumerate}
+
 \subsection{Thread library}
 Similar to Intel Thread Building Blocks \cite{reinders2007intel}, but dynamically scale number of workers across applications, rather than just across workers
 \begin{itemize}
@@ -8,6 +14,12 @@ Similar to Intel Thread Building Blocks \cite{reinders2007intel}, but dynamicall
   \item DAG
   \item Unstructured
 \end{itemize}
+
+Global queue vs. fixed partition + work stealing
+
+Min/max number of threads set by application developer
+
+I/O and CPU pools treated differently in most libs
 
 \begin{figure}
 \centering

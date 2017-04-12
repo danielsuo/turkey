@@ -1,7 +1,0 @@
-\section{Motivation for a dynamic parallelism}
-\begin{itemize}
-  \item Many cores are here to stay. Need more automated methods to take advantage of. \cite{baumann2009multikernel}
-  \item OS schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
-  \item Applications are being increasingly run in containers / VMs on a single host
-  \item Centralized schedulers in distributed systems struggle to scale \cite{ousterhout2013sparrow}
-\end{itemize}
