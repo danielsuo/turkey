@@ -9,12 +9,12 @@ Parallelism and cotenancy are the future. However, people program as though ther
 \subsection*{Developers / OS have digested parallelism, but not cotenancy}
 \begin{itemize}
   \item Developers: assume have full machine (over-provision) because not easy to know what resources we have.
-  \item OS: schedule individual threads (Linux). Some control with cgroups to coordinate groups of threads.
+  \item OS: schedule individual threads (Linux). Some control with cgroups to coordinate groups of threads. (is this fair? probably should write a different way. Don't want to offend OS people by implying OS can't handle multiuser...)
 \end{itemize}
-\subsection*{What's are the issues}
+\subsection*{This can lead to poor utilization or excessive resource contention}
 \begin{itemize}
-  \item Over-provisioning may low utilization on many core
-  \item CPU share and quota (cgroup) not enough; need to change parallelism of applications to affect utilization
+  \item Over-provisioning may low utilization on many core. CPU share and quota (cgroup) not enough; need to change parallelism of applications to affect utilization
+  \item Without coordinating resource usage, system may thrash
   \item [TODO: INSERT SMALL EXAMPLE] since different applications have different overheads / slow-down in total CPU time
 \end{itemize}
 \subsection*{Contributions}
