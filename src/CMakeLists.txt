@@ -5,6 +5,7 @@ add_executable(
 
   main.cpp
   Server.cpp
+  ProcReader.cpp
 )
 
 add_executable(
