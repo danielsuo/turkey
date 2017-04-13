@@ -1,3 +1,4 @@
+#include "ProcReader.h"
 #include "Server.h"
 #include <chrono>
 #include <iostream>
@@ -11,6 +12,7 @@ int main(int argc, char* argv[]) {
   while (true) {
     std::this_thread::sleep_for(1s);
     server.get();
+    server.poll();
   }
   return 0;
 }
