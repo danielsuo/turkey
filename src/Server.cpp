@@ -2,6 +2,8 @@
 #include <iostream>
 
 using namespace boost::interprocess;
+
+static constexpr int kDefaultRec = 32;
 static constexpr int kSharedMemorySizeBytes = 65536;
 
 namespace Turkey {
@@ -18,21 +20,22 @@ Server::Server() {
 
   {
     scoped_lock<named_mutex> lock(*mutex_);
-    recommendationMap_ = std::unique_ptr<RecommendationMap>(
-        segment_->construct<RecommendationMap>(
-            "RecommendationMap") // object name
-        (std::less<int>(), allocator));
+    defaultRec_ = std::unique_ptr<int>(
+        segment_->construct<int>("DefaultRec")(kDefaultRec));
+
+    recVec_ = std::unique_ptr<RecVec>(
+        segment_->construct<RecVec>("RecVec")(allocator));
   }
 }
 
 void Server::get() const {
   scoped_lock<named_mutex> lock(*mutex_);
-  const auto ret = segment_->find<RecommendationMap>("RecommendationMap");
-  std::cout << ret.second << std::endl;
+  std::cout << recVec_->size() << std::endl;
 }
 
 Server::~Server() {
-  // TODO define custom deleters for the members instead of handling here
+  segment_->destroy<int>("DefaultRec");
+  segment_->destroy<RecVec>("RecVec");
   shared_memory_object::remove("TurkeySharedMemory");
   named_mutex::remove("TurkeyMutex");
 }
