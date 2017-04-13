@@ -7,6 +7,12 @@ static constexpr int kDefaultRec = 32;
 static constexpr int kSharedMemorySizeBytes = 65536;
 
 namespace Turkey {
+namespace {
+int someAlgorithm(int runnableThreads) {
+  // LOL
+  return 10;
+}
+} // anonymous
 Server::Server() {
   // Delete the shared memory object if one already exists
   named_mutex::remove("TurkeyMutex");
@@ -30,7 +36,16 @@ Server::Server() {
 
 void Server::get() const {
   scoped_lock<named_mutex> lock(*mutex_);
-  std::cout << recVec_->size() << std::endl;
+  std::cout << *defaultRec_ << std::endl;
+}
+
+void Server::poll() {
+  const auto runnableThreads = procReader_.getRunnableThreads();
+  const auto newRec = someAlgorithm(runnableThreads);
+  {
+    scoped_lock<named_mutex> lock(*mutex_);
+    *defaultRec_ = newRec;
+  }
 }
 
 Server::~Server() {
