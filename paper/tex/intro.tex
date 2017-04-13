@@ -1,29 +1,25 @@
 \section{Introduction}
-\subsection*{What's the context / what are the trends}
+Parallelism and cotenancy are the future. However, people program as though there is no cotenancy. This causes performance problems. Today, people statically partition. Utilization is not great and you don't get perfect isolation anyway.
+\subsection*{Parallelism and cotenancy are here to stay}
 \begin{itemize}
-  \item Increasing number of cores. Many-core architectures are here to stay. \cite{baumann2009multikernel}
+  \item Increasing number of cores \cite{baumann2009multikernel}
   \item As a result, application developers must think about parallelism to get performance
   \item Cloud becoming increasingly popular; run many containers / VMs on a single host and want performance guarantees for tenants (sophisticated orchestration / scheduling)
 \end{itemize}
-\subsection*{What happens today}
+\subsection*{Developers / OS have digested parallelism, but not cotenancy}
 \begin{itemize}
-  \item Application: use parallel libraries (should discuss a little)
-  \item Application: assume have full machine (over-provision) because not easy to know what resources we have.
-  \item Application: different applications have different speed-up curves, which mean different overheads
-  \item OS: schedule individual threads (Linux). Some control with cgroups
-  \item OS: schedulers already quite complex. Must serve many masters; hard to make changes without harming certain workloads. Don't want to change the kernel if we can improve performance in user space \cite{lozi2016linux}
+  \item Developers: assume have full machine (over-provision) because not easy to know what resources we have.
+  \item OS: schedule individual threads (Linux). Some control with cgroups to coordinate groups of threads. (is this fair? probably should write a different way. Don't want to offend OS people by implying OS can't handle multiuser...)
 \end{itemize}
-\subsection*{What's are the issues}
+\subsection*{This can lead to poor utilization or excessive resource contention}
 \begin{itemize}
-  \item Over-provisioning may low utilization on many core [INSERT SMALL EXAMPLE]
-  \item Also not taking advantage of best parallelism (slow-down in total CPU time)
-  \item share and quota (cgroup) not enough; want to change parallelism
-  \item Parallel hardware + software hard to reason about; too many combinations to hand-tune; need automated runtime methods
+  \item Over-provisioning may low utilization on many core. CPU share and quota (cgroup) not enough; need to change parallelism of applications to affect utilization
+  \item Without coordinating resource usage, system may thrash
+  \item [TODO: INSERT SMALL EXAMPLE] since different applications have different overheads / slow-down in total CPU time
 \end{itemize}
 \subsection*{Contributions}
 \begin{itemize}
   \item Observe that dynamically scaling parallelism can improve system performance (throughput, latency)
-  \item Mechanism for coordinating among applications (is this a contribution?)
   \item Thread library that can dynamically scale application parallelism
   \item User-level coordinator to determine appropriate level of parallelism for registered applications
 \end{itemize}
