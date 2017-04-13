@@ -10,13 +10,13 @@ Client::Client() {
   mutex_ = std::make_unique<named_mutex>(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(*mutex_);
-    // Get default rec
+
+    // Get default recommendation to use as starting value
     const auto rec = segment_->find<int>("DefaultRec").first;
     rec_ = *rec;
 
-    // Register client in the map
+    // Register client in the vector
     recVec_ = std::unique_ptr<RecVec>(segment_->find<RecVec>("RecVec").first);
-    // get the last, inc it
     id_ = recVec_->size();
     std::cout << id_ << std::endl;
     recVec_->push_back(rec_);
