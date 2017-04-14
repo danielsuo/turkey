@@ -6,8 +6,8 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
 
-# add_definitions (-DENABLE_THREADS)
-add_definitions (-DTBB_VERSION)
+add_definitions (-DENABLE_THREADS)
+# add_definitions (-DTBB_VERSION)
 
 # Get all source files
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**/* src/**)
