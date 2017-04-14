@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+INPUT_PATH=./apps/$1/inputs
+mkdir -p $INPUT_PATH
+wget -P $INPUT_PATH http://parsec.cs.princeton.edu/download/inputs/$1.tar.gz
+tar zxvf $INPUT_PATH/$1.tar.gz -C $INPUT_PATH
+rm -f $INPUT_PATH/$1.tar.gz

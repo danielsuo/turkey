@@ -1,6 +1,20 @@
 import re
 import os
 
+# blackscholes
+# bodytrack
+# canneal
+# dedup
+# facesim
+# ferret
+# fluidanimate
+# freqmine
+# raytrace
+# streamcluster
+# swaptions
+# vips
+# x264
+
 apps = [
     'blackscholes',
     'bodytrack',
