@@ -3,6 +3,8 @@
 # Clone repository
 # git clone https://github.com/danielsuo/turkey --recursive
 
+echo "TURKEY_HOME=~/turkey" >> ~/.bashrc
+
 # Basic setup
 sudo apt-get update
 sudo apt-get install -y \
@@ -27,7 +29,7 @@ sudo apt-get install -y htop iotop sysstat linux-tools-common linux-tools-generi
 echo "deb [trusted=yes] https://repo.iovisor.org/apt/xenial xenial-nightly main" | sudo tee /etc/apt/sources.list.d/iovisor.list
 sudo apt-get update
 sudo apt-get install bcc-tools
-echo 'PATH=/usr/share/bcc/tools:$PATH'
+echo 'PATH=/usr/share/bcc/tools:$PATH' >> ~/.bashrc
 
 # Add docker to apt
 sudo apt-get -y --no-install-recommends install apt-transport-https ca-certificates curl software-properties-common
@@ -93,3 +95,19 @@ sudo apt-get install -y \
 # make
 # sudo make install
 # popd
+
+# PARSEC dependencies
+sudo apt-get update && sudo apt-get install -y \
+  build-essential \
+  wget \
+  m4 \
+  libx11-dev \
+  libxtst-dev \
+  libxt-dev \
+  libxmu-headers \
+  libxmu-dev \
+  libtbb-dev \
+  pkg-config \
+  gettext \
+  x11proto-xext-dev \
+  libglu1-mesa-dev

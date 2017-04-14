@@ -1,5 +1,6 @@
-#!/bin/bash
-sudo ./run.py all -p |& awk -F , '
+#!/usr/bin/env bash
+
+./bin/parse.py "times" |& awk -F , '
 $4 == 1 {
   wall_time_1 += $6;
   cpu_user_1 += $7;
