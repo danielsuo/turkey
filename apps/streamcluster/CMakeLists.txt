@@ -13,8 +13,6 @@ add_definitions (-DTBB_VERSION)
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**/* src/**)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-message(${SOURCE_FILES})
-
 # Set target name and source files
 add_executable (${PROJECT_NAME} ${SOURCE_FILES})
 
