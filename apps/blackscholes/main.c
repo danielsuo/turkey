@@ -422,15 +422,6 @@ int main(int argc, char** argv) {
 #endif
   printf("Num of Options: %d\n", numOptions);
   printf("Num of Runs: %d\n", NUM_RUNS);
-#ifdef ENABLE_OPENMP
-  fprintf(stderr, "OPENMP!!!!\n");
-#else
-#ifdef ENABLE_TBB
-  fprintf(stderr, "LIBTBB!!!!\n");
-#else
-  fprintf(stderr, "something else alltogether?\n");
-#endif
-#endif
 
 #define PAD 256
 #define LINESIZE 64

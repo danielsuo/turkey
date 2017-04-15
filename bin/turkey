@@ -3,6 +3,12 @@
 import os
 import argparse
 
+from job import Job
+
+TURKEY_HOME = os.environ['TURKEY_HOME']
+
+# TODO: https://argcomplete.readthedocs.io/en/latest/
+
 parser = argparse.ArgumentParser(description='Turkey job runner')
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
@@ -14,11 +20,17 @@ compile.add_argument('app', help='App to compile')
 data = subparsers.add_parser('data', help='Download and unpack data')
 data.add_argument('app', help='App to data for')
 
+# Run subcommand
+run = subparsers.add_parser('run', help='Run job')
+run.add_argument('file', help='Job file')
+run.add_argument('-w', '--working-dir', help='Working directory', default=os.path.join(TURKEY_HOME, 'jobs'))
+run.add_argument('-o', '--out-dir', help='Output directory relative to working')
+run.add_argument('-t', '--time', help='Time individual jobs', action='store_true')
+
 # TODO: Clean subcommand
 clean = subparsers.add_parser('clean', help='Clean up directory')
 
 args = parser.parse_args()
-TURKEY_HOME = os.environ['TURKEY_HOME']
 
 if args.cmd == 'compile':
     cwd = os.getcwd()
@@ -30,3 +42,7 @@ if args.cmd == 'compile':
 
 elif args.cmd == 'data':
     os.system('./bin/data %s' % args.app)
+
+elif args.cmd == 'run':
+    job = Job(args)
+    job.run()
