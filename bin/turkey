@@ -14,6 +14,9 @@ compile.add_argument('app', help='App to compile')
 data = subparsers.add_parser('data', help='Download and unpack data')
 data.add_argument('app', help='App to data for')
 
+# TODO: Clean subcommand
+clean = subparsers.add_parser('clean', help='Clean up directory')
+
 args = parser.parse_args()
 TURKEY_HOME = os.environ['TURKEY_HOME']
 
