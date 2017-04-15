@@ -7,6 +7,7 @@ out/
 inputs/
 buck-out/
 CMakeFiles/
+tmp
 .buckd
 
 *.deb
