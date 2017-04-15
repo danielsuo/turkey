@@ -10,6 +10,7 @@ set (CMAKE_BUILD_TYPE Debug)
 
 add_definitions (-DHAVE_LIBPTHREAD)
 add_definitions (-DUSE_THREADS)
+add_definitions (-DHAVE_STDINT_H)
 
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/TrackingBenchmark/threads)
 
