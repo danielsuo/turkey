@@ -82,3 +82,18 @@ class Job:
 
         os.wait()
         os.system('stty sane')
+
+apps = [
+    'blackscholes',
+    'bodytrack',
+    'canneal',
+    'dedup',
+    'facesim',
+    'ferret',
+    'fluidanimate',
+    'freqmine',
+    'raytrace',
+    'streamcluster',
+    'swaptions',
+    'vips',
+    'x264']

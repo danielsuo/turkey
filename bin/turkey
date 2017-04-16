@@ -3,7 +3,7 @@
 import os
 import argparse
 
-from job import Job
+from job import Job, apps
 
 TURKEY_HOME = os.environ['TURKEY_HOME']
 
@@ -34,7 +34,8 @@ args = parser.parse_args()
 
 if args.cmd == 'compile':
     cwd = os.getcwd()
-    os.chdir('./apps/%s' % args.app)
+    if args.app in apps:
+        os.chdir('./apps/%s' % args.app)
     os.system('mkdir -p build')
     os.chdir('./build')
     os.system('cmake .. && make')
