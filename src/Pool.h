@@ -1,6 +1,6 @@
 #pragma once
-#include <wangle/concurrent/ThreadPoolExecutor.h>
+#include <wangle/concurrent/CPUThreadPoolExecutor.h>
 
 namespace Turkey {
-class Pool : public wangle::ThreadPoolExecutor {};
+class ThreadPool : public wangle::ThreadPoolExecutor {};
 }

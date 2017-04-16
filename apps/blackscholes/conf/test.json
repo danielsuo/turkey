@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s %(inputs)s/in_4.txt %(outputs)s/prices.txt"
+}

@@ -5,13 +5,16 @@ import subprocess
 
 # Run a single task
 class Task:
-    def __init__(self, tid, desc, job_dir, time_run=True):
-        self.id        = tid
+    def __init__(self, desc, out_dir, time_run=True, executable=None):
         self.start     = desc[0]
-        self.app       = desc[1]
-        self.conf_name = desc[2]
-        self.mode      = desc[3]
-        self.threads   = desc[4]
+        self.id        = desc[1]
+        self.app       = desc[2]
+        self.conf_name = desc[3]
+        self.mode      = desc[4]
+        self.threads   = desc[5]
+
+        self.out_dir   = out_dir
+        os.system('mkdir -p %s' % self.out_dir)
 
         self.app_dir = os.path.join(os.environ['TURKEY_HOME'], 'apps', self.app)
         self.conf_file = os.path.join(self.app_dir, 'conf', '%s.json' % self.conf_name)
@@ -19,14 +22,8 @@ class Task:
         with open(self.conf_file, 'r') as conf_file:
             self.conf = json.load(conf_file)
 
-        self.out_dir = os.path.join(
-            job_dir,
-            '%s_%d_%s_%s_%s_%s' % (self.start, self.id, self.app, self.conf_name, self.mode, self.threads)
-        )
-        os.system('mkdir -p %s' % self.out_dir)
         self.out_file = os.path.join(self.out_dir, 'task.out')
-
-        self.executable = os.path.join(self.app_dir, 'build', self.app)
+        self.executable = os.path.join(self.app_dir, 'build', executable or self.app)
 
         args = {
             'nthreads': self.threads,
@@ -50,9 +47,11 @@ class Job:
     def __init__(self, args):
         self.prefix      = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
         self.file        = args.file
+        self.working_dir = args.working_dir
+
         self.out_dir     = args.out_dir if args.out_dir != None else \
             self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
-        self.working_dir = args.working_dir
+        self.out_dir     = os.path.join(self.working_dir, self.out_dir)
 
         os.system('mkdir -p %s' % os.path.join(self.working_dir, self.out_dir))
 
@@ -66,8 +65,10 @@ class Job:
             if start not in self.tasks:
                 self.tasks[start] = []
 
-            self.tasks[start].append(Task(tid, tasks[tid],
-                os.path.join(self.working_dir, self.out_dir), time_run=args.time))
+            task = tasks[tid]
+            task.insert(1, str(tid))
+            task_dir = os.path.join(self.out_dir, '%s_%s_%s_%s_%s_%s' % list(task))
+            self.tasks[start].append(Task(tasks[tid], self.task_dir, time_run=args.time))
 
     def run(self):
         tasks_run = 0
