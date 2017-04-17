@@ -13,8 +13,9 @@ parser = argparse.ArgumentParser(description='Turkey job runner')
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 # Compile subcommand
-compile = subparsers.add_parser('compile', help='Compile specified app')
-compile.add_argument('-a', '--app', help='App to compile', default='all')
+build = subparsers.add_parser('build', help='Compile specified app')
+build.add_argument('-a', '--app', help='App to build', default='all')
+build.add_argument('-f', '--force', help='Force rebuild', action='store_false')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
@@ -41,7 +42,9 @@ clean = subparsers.add_parser('clean', help='Clean up directory')
 
 args = parser.parse_args()
 
-if args.cmd == 'compile':
+if args.cmd == 'build':
+    if args.force:
+        os.rmdir('./build')
     cwd = os.getcwd()
     os.system('mkdir -p build')
     os.chdir('./build')
