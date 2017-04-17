@@ -54,3 +54,4 @@
 ## Outstanding clean-up
 - CMakeFiles.txt
 - Install scripts
+- Vendor dependencies

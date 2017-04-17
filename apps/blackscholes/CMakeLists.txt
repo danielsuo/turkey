@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.5)
-project (blackscholes)
+project (blackscholes CXX)
 
 # Set global project finders
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)

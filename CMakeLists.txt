@@ -27,6 +27,9 @@ find_package (Threads REQUIRED)
 find_package (Folly REQUIRED)
 find_package (Wangle REQUIRED)
 
+# Build vendored libraries
+# add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng)
+
 # Set some convenience variables
 set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
 set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
