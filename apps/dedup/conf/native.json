@@ -1,0 +1,3 @@
+{
+  "args": "-c -p -v -t %(nthreads)s -i %(inputs)s/FC-6-x86_64-disc1.iso -o %(outputs)s/output.dat.ddp"
+}

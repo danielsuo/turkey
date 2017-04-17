@@ -1,0 +1,3 @@
+{
+  "args": "-c -p -v -t %(nthreads)s -i %(inputs)s/media.dat -o %(outputs)s/output.dat.ddp"
+}

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-sudo apt-get install -y \
+if [ $1 == "ubuntu" ]
+then
+  sudo apt-get install -y \
     g++ \
     automake \
     autoconf \
@@ -23,6 +25,12 @@ sudo apt-get install -y \
     libelf-dev \
     libdwarf-dev \
     libiberty-dev
+else
+  sudo yum install -y double-conversion double-conversion-devel
+  sudo yum install -y automake autoconf autogen libtool make scons
+  sudo yum install -y perl-Thread-Queue
+  sudo yum install -y boost boost-devel gflags gflags-devel glog glog-devel libevent libevent-devel epel-release lz4 lz4-devel lzma lzma-devel snappy snappy-devel zlib zlib-devel
+fi
 
 git clone https://github.com/facebook/folly tmp/folly
 pushd tmp/folly/folly

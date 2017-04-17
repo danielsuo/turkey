@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s 5 100 %(inputs)s/10.nets 1"
+}
