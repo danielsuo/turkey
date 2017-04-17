@@ -28,6 +28,7 @@ sudo apt-get install -y \
   double-conversion
 
 # CentOS
+# cmake3
 # devtoolset-6-gcc
 # devtoolset-6-gcc-c++
 # double-conversion

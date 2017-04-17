@@ -1,4 +1,4 @@
-# cmake_minimum_required (VERSION 2.8)
+# cmake_minimum_required (VERSION 3.5)
 # project (ferret)
 #
 # # Set global project finders

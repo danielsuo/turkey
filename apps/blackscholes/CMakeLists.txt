@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 project (blackscholes)
 
 # Set global project finders
@@ -16,7 +16,6 @@ add_definitions (-DENABLE_THREADS)
 
 # Include directories
 include_directories (${TURKEY_INCLUDE_DIR})
-message(${TURKEY_INCLUDE_DIR})
 
 # Set target name and source files
 add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
