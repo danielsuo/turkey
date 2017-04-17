@@ -44,10 +44,10 @@ args = parser.parse_args()
 
 if args.cmd == 'build':
     if args.force:
-        os.rmdir('./build')
+        os.rmdir(os.path.join(TURKEY_HOME, 'build'))
     cwd = os.getcwd()
     os.system('mkdir -p build')
-    os.chdir('./build')
+    os.chdir(os.path.join(TURKEY_HOME, 'build'))
     os.system('cmake .. -DMAKE=%s && make' % args.app)
     os.chdir(cwd)
 
