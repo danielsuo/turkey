@@ -1,5 +1,6 @@
 #pragma once
 #include "Client.h"
+#include <folly/experimental/FunctionScheduler.h>
 #include <iostream>
 #include <wangle/concurrent/CPUThreadPoolExecutor.h>
 
@@ -15,5 +16,6 @@ private:
   size_t currentNumThreads_;
   Client client_;
   wangle::CPUThreadPoolExecutor pool_;
+  folly::FunctionScheduler fs_;
 };
 }
