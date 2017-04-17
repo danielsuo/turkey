@@ -30,24 +30,20 @@ Server::Server() {
   }
 }
 
-void Server::get() const {
-  named_mutex mutex(open_only, "TurkeyMutex");
-  scoped_lock<named_mutex> lock(mutex);
-}
-
 void Server::poll() {
-
   const auto runnableThreads = procReader_.getRunnableThreads();
   const auto newRec = someAlgorithm(runnableThreads);
   managed_shared_memory segment(open_only, "TurkeySharedMemory");
   named_mutex mutex(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    auto defaultRec = segment.find<size_t>("DefaultRec");
+    auto defaultRec = segment.find<size_t>("DefaultRec").first;
+    *defaultRec = newRec;
   }
 }
 
 Server::~Server() {
+  LOG(INFO) << "Quitting server";
   named_mutex::remove("TurkeyMutex");
   shared_memory_object::remove("TurkeySharedMemory");
 }
