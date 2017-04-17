@@ -5,7 +5,7 @@
 using namespace boost::interprocess;
 
 namespace Turkey {
-Client::Client() {
+Client::Client(size_t defaultRec) : rec_(defaultRec) {
   try {
     managed_shared_memory segment(open_only, "TurkeySharedMemory");
     named_mutex mutex(open_only, "TurkeyMutex");
