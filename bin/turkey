@@ -26,7 +26,7 @@ run = subparsers.add_parser('run', help='Run job')
 run.add_argument('file', help='Job file')
 run.add_argument('-w', '--working-dir', help='Working directory', default=os.path.join(TURKEY_HOME, 'jobs'))
 run.add_argument('-o', '--out-dir', help='Output directory relative to working')
-run.add_argument('-t', '--time', help='Time individual jobs', action='store_true')
+run.add_argument('-t', '--time', help='Time individual jobs', action='store_false')
 
 # One-off run subcommand
 one = subparsers.add_parser('one', help='Run one app')
@@ -36,6 +36,7 @@ one.add_argument('-c', '--conf', help='Configuration to run', default='test')
 one.add_argument('-w', '--working-dir', help='Working directory', default=os.path.join(TURKEY_HOME, 'out'))
 one.add_argument('-o', '--out-dir', help='Output directory relative to working')
 one.add_argument('-e', '--executable', help='Executable if different from app name')
+one.add_argument('-s', '--output_to_stdout', help='Dump to stdout instead of file', action='store_false')
 
 # TODO: Clean subcommand
 clean = subparsers.add_parser('clean', help='Clean up directory')
@@ -62,7 +63,7 @@ elif args.cmd == 'one':
     if args.executable == None:
         args.executable = args.app
 
-    task = Task([0, 0, args.app, args.conf, None, args.num_threads], args.working_dir, executable=args.executable)
+    task = Task([0, 0, args.app, args.conf, None, args.num_threads], args.working_dir, executable=args.executable, output_to_stdout=args.output_to_stdout)
     task.run()
 
     os.wait()

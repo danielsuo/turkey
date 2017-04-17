@@ -25,7 +25,12 @@ sudo apt-get install -y \
   gettext \
   x11proto-xext-dev \
   libglu1-mesa-dev \
-  double-conversion
+  double-conversion \
+  libgsl-dev \
+  libgsl2 \
+  libjpeg-dev \
+  libcblas-dev
+
 
 # CentOS
 # cmake3
@@ -65,6 +70,9 @@ sudo apt-get install -y \
 # libXmu-devel
 # mesa-libGL-devel
 # xorg-x11-proto-dvel
+# gsl-devel
+# gsl
+# libjpeg-turbo-devel
 
 # Cgroup
 # sudo apt-get install -y libcgroup-dev cgroup-tools

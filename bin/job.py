@@ -5,7 +5,7 @@ import subprocess
 
 # Run a single task
 class Task:
-    def __init__(self, desc, out_dir, time_run=True, executable=None):
+    def __init__(self, desc, out_dir, time_run=True, executable=None, output_to_stdout=False):
         self.start     = desc[0]
         self.id        = desc[1]
         self.app       = desc[2]
@@ -24,6 +24,7 @@ class Task:
             self.conf = json.load(conf_file)
 
         self.out_file = os.path.join(self.out_dir, 'task.out')
+        self.output_to_stdout = output_to_stdout
         self.executable = os.path.join(self.exec_dir, executable or self.app)
 
         args = {
@@ -41,7 +42,10 @@ class Task:
     def run(self):
         print('Running %s' % self.out_file)
         with open(self.out_file, 'w') as out:
-            subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)
+            if self.output_to_stdout:
+                subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)
+            else:
+                subprocess.Popen(self.args)
 
 # Run a timeline of tasks
 class Job:
