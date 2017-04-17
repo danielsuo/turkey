@@ -48,7 +48,7 @@ if args.cmd == 'build':
     cwd = os.getcwd()
     os.system('mkdir -p build')
     os.chdir(os.path.join(TURKEY_HOME, 'build'))
-    os.system('cmake .. -DMAKE=%s && make' % args.app)
+    os.system('cmake .. -DMAKE=%s && make -j' % args.app)
     os.chdir(cwd)
 
 elif args.cmd == 'data':
