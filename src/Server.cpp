@@ -1,4 +1,5 @@
 #include "Server.h"
+#include <glog/logging.h>
 #include <iostream>
 
 using namespace boost::interprocess;
@@ -18,40 +19,37 @@ Server::Server() {
   named_mutex::remove("TurkeyMutex");
   shared_memory_object::remove("TurkeySharedMemory");
 
-  segment_ = std::make_unique<managed_shared_memory>(
-      create_only, "TurkeySharedMemory", kSharedMemorySizeBytes);
-
-  ShmAllocator allocator(segment_->get_segment_manager());
-  mutex_ = std::make_unique<named_mutex>(create_only, "TurkeyMutex");
-
+  managed_shared_memory segment(create_only, "TurkeySharedMemory",
+                                kSharedMemorySizeBytes);
+  ShmAllocator allocator(segment.get_segment_manager());
+  named_mutex mutex(create_only, "TurkeyMutex");
   {
-    scoped_lock<named_mutex> lock(*mutex_);
-    defaultRec_ = std::unique_ptr<int>(
-        segment_->construct<int>("DefaultRec")(kDefaultRec));
-
-    recVec_ = std::unique_ptr<RecVec>(
-        segment_->construct<RecVec>("RecVec")(allocator));
+    scoped_lock<named_mutex> lock(mutex);
+    defaultRec_ = segment.construct<int>("DefaultRec")(kDefaultRec);
+    recVec_ = segment.construct<RecVec>("RecVec")(allocator);
   }
 }
 
 void Server::get() const {
-  scoped_lock<named_mutex> lock(*mutex_);
-  std::cout << *defaultRec_ << std::endl;
+
+  named_mutex mutex(open_only, "TurkeyMutex");
+  scoped_lock<named_mutex> lock(mutex);
 }
 
 void Server::poll() {
+
   const auto runnableThreads = procReader_.getRunnableThreads();
   const auto newRec = someAlgorithm(runnableThreads);
+  managed_shared_memory segment(open_only, "TurkeySharedMemory");
+  named_mutex mutex(open_only, "TurkeyMutex");
   {
-    scoped_lock<named_mutex> lock(*mutex_);
-    *defaultRec_ = newRec;
+    scoped_lock<named_mutex> lock(mutex);
+    auto defaultRec = segment.find<int>("DefaultRec");
   }
 }
 
 Server::~Server() {
-  segment_->destroy<int>("DefaultRec");
-  segment_->destroy<RecVec>("RecVec");
-  shared_memory_object::remove("TurkeySharedMemory");
   named_mutex::remove("TurkeyMutex");
+  shared_memory_object::remove("TurkeySharedMemory");
 }
 }

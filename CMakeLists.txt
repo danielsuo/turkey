@@ -16,7 +16,7 @@ include_directories (
   ${WANGLE_INCLUDE_DIR}
 )
 
-set (COMMON_TURKEY_LIBS folly wangle rt ${CMAKE_THREAD_LIBS_INIT})
+set (COMMON_TURKEY_LIBS folly wangle glog rt ${CMAKE_THREAD_LIBS_INIT})
 
 # Pool library
 add_library (pool SHARED
