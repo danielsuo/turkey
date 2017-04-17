@@ -25,11 +25,13 @@ sudo apt-get install -y \
   gettext \
   x11proto-xext-dev \
   libglu1-mesa-dev \
-  double-conversion \
+  libdouble-conversion1v5 \
+  libdouble-conversion-dev \
   libgsl-dev \
   libgsl2 \
   libjpeg-dev \
-  libcblas-dev
+  libcblas-dev \
+  freeglut3-dev
 
 
 # CentOS
@@ -73,6 +75,7 @@ sudo apt-get install -y \
 # gsl-devel
 # gsl
 # libjpeg-turbo-devel
+# freeglut-devel
 
 # Cgroup
 # sudo apt-get install -y libcgroup-dev cgroup-tools
