@@ -24,8 +24,8 @@
 | fluidanimate    | X               |                 | X               |
 | freqmine        | X               |                 |                 |
 | streamcluster   | X               |                 | X               |
-| swaptions       |                 |                 | X               |
-| vips            |                 |                 |                 |
+| swaptions       | X               |                 | X               |
+| vips            | SKIP            |                 |                 |
 | x264            |                 |                 |                 |
 
 ### SPLASH-2
@@ -42,6 +42,9 @@
 | raytrace        |                 |                 |                 |
 | volrend         |                 |                 |                 |
 | water           |                 |                 |                 |
+
+## Outstanding feature
+- Modes (e.g., pthreads, tbb, turkey)
 
 ## Outstanding documentation
 - Job files
