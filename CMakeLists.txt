@@ -1,29 +1,64 @@
 cmake_minimum_required (VERSION 3.5)
 project (turkey)
 
-set(CMAKE_BUILD_TYPE Debug)
+# Set some CMake variables
+set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
 
+# Set some directories
+set (APP_DIR apps)
+
+# Set some configurable variables
+set (MAKE "all" CACHE STRING "Application to build (default is all)")
+
+# Find dem packages
 find_package (Boost REQUIRED)
 find_package (Threads REQUIRED)
 find_package (Folly REQUIRED)
 find_package (Wangle REQUIRED)
 
+# Include some directories
 include_directories (
-  ${CMAKE_CURRENT_SOURCE_DIR}/*
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*
   ${FOLLY_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${WANGLE_INCLUDE_DIR}
 )
 
-set (COMMON_TURKEY_LIBS folly wangle rt ${CMAKE_THREAD_LIBS_INIT})
+# Set some convenience variables
+set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
+set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
+set (APPS
+  blackscholes
+  bodytrack
+  canneal
+  dedup
+  dummy
+  facesim
+  ferret
+  freqmine
+  raytrace
+  streamcluster
+  swaptions
+  vips
+  x264
+)
 
 # Pool library
-add_library (pool SHARED
+add_library (${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
 )
-target_link_libraries (pool ${COMMON_TURKEY_LIBS})
+target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
+
+# Compiling client applications
+if (${MAKE} STREQUAL "all")
+  foreach (APP ${APPS})
+    add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
+  endforeach ()
+else ()
+  add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})
+endif ()
 
 add_executable (
   main
@@ -39,5 +74,5 @@ add_executable (
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
 )
-target_link_libraries (main ${COMMON_TURKEY_LIBS})
-target_link_libraries (main_client ${COMMON_TURKEY_LIBS})
+target_link_libraries (main ${TURKEY_LIB_DEPS})
+target_link_libraries (main_client ${TURKEY_LIB_DEPS})

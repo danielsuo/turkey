@@ -17,13 +17,14 @@ class Task:
         os.system('mkdir -p %s' % self.out_dir)
 
         self.app_dir = os.path.join(os.environ['TURKEY_HOME'], 'apps', self.app)
+        self.exec_dir = os.path.join(os.environ['TURKEY_HOME'], 'build/apps', self.app)
         self.conf_file = os.path.join(self.app_dir, 'conf', '%s.json' % self.conf_name)
 
         with open(self.conf_file, 'r') as conf_file:
             self.conf = json.load(conf_file)
 
         self.out_file = os.path.join(self.out_dir, 'task.out')
-        self.executable = os.path.join(self.app_dir, 'build', executable or self.app)
+        self.executable = os.path.join(self.exec_dir, executable or self.app)
 
         args = {
             'nthreads': self.threads,
