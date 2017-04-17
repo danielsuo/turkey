@@ -12,10 +12,10 @@ TURKEY_HOME = os.environ['TURKEY_HOME']
 parser = argparse.ArgumentParser(description='Turkey job runner')
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
-# Compile subcommand
-build = subparsers.add_parser('build', help='Compile specified app')
+# Build subcommand
+build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('-a', '--app', help='App to build', default='all')
-build.add_argument('-f', '--force', help='Force rebuild', action='store_false')
+build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
@@ -44,7 +44,7 @@ args = parser.parse_args()
 
 if args.cmd == 'build':
     if args.force:
-        os.rmdir(os.path.join(TURKEY_HOME, 'build'))
+        os.system('rm -rf %s' % os.path.join(TURKEY_HOME, 'build'))
     cwd = os.getcwd()
     os.system('mkdir -p build')
     os.chdir(os.path.join(TURKEY_HOME, 'build'))
