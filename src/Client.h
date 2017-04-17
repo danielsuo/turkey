@@ -10,10 +10,10 @@ public:
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
-  size_t getRec() { return rec_; };
+  size_t pollServer();
 
 private:
-
+  void registerWithServer();
   folly::Optional<int> id_;
   size_t rec_;
 };

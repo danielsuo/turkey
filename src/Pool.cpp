@@ -15,7 +15,7 @@ DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
 void DynamicThreadPool::updatePoolSize() {
   size_t numThreads;
   try {
-    numThreads = client_.getRec();
+    numThreads = client_.pollServer();
   } catch (const std::exception& ex) {
     LOG(ERROR) << "Error in Turkey Client: " << ex.what();
     return;
