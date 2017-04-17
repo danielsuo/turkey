@@ -14,8 +14,17 @@ sudo apt-get install -y \
   libtool \
   uuid-dev \
   pkg-config \
-  libboost-all-dev
-
+  libboost-all-dev \
+  m4 \
+  libx11-dev \
+  libxtst-dev \
+  libxt-dev \
+  libxmu-headers \
+  libxmu-dev \
+  libtbb-dev \
+  gettext \
+  x11proto-xext-dev \
+  libglu1-mesa-dev
 
 # Cgroup
 sudo apt-get install -y libcgroup-dev cgroup-tools
@@ -43,25 +52,6 @@ sudo apt-get install -y \
 
 # Install curl
 sudo apt-get install -y libcurl4-openssl-dev
-
-# Set up watchman (for remote development)
-curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
-sudo apt-get install -y nodejs automake autoconf python-dev libtool pkg-config
-sudo npm install -g nuclide
-
-git clone https://github.com/facebook/watchman.git vendor/watchman
-pushd vendor/watchman
-git checkout v4.8.0-rc1  # the latest stable release
-./autogen.sh
-./configure --enable-lenient
-make
-sudo make install
-popd
-
-echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
-echo "export NVM_DIR=\"$HOME/.nvm\"" >> ~/.bashrc
-echo "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"" >> ~/.bashrc
 
 # Perf dependencies
 sudo apt-get install -y \
@@ -93,19 +83,3 @@ sudo apt-get install -y \
 # make
 # sudo make install
 # popd
-
-# PARSEC dependencies
-sudo apt-get update && sudo apt-get install -y \
-  build-essential \
-  wget \
-  m4 \
-  libx11-dev \
-  libxtst-dev \
-  libxt-dev \
-  libxmu-headers \
-  libxmu-dev \
-  libtbb-dev \
-  pkg-config \
-  gettext \
-  x11proto-xext-dev \
-  libglu1-mesa-dev

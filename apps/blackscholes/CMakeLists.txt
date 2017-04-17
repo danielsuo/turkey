@@ -16,6 +16,7 @@ add_definitions (-DENABLE_THREADS)
 
 # Include directories
 include_directories (${TURKEY_INCLUDE_DIR})
+message(${TURKEY_INCLUDE_DIR})
 
 # Set target name and source files
 add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)

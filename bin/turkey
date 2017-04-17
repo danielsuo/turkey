@@ -43,8 +43,6 @@ args = parser.parse_args()
 
 if args.cmd == 'compile':
     cwd = os.getcwd()
-    if args.app in apps:
-        os.chdir('./apps/%s' % args.app)
     os.system('mkdir -p build')
     os.chdir('./build')
     os.system('cmake .. -DMAKE=%s && make' % args.app)

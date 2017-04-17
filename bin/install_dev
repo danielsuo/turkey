@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Set up watchman (for remote development)
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs automake autoconf python-dev libtool pkg-config
+sudo npm install -g nuclide
+
+git clone https://github.com/facebook/watchman.git vendor/watchman
+pushd vendor/watchman
+git checkout v4.8.0-rc1  # the latest stable release
+./autogen.sh
+./configure --enable-lenient
+make
+sudo make install
+popd
+
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+echo "export NVM_DIR=\"$HOME/.nvm\"" >> ~/.bashrc
+echo "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"" >> ~/.bashrc

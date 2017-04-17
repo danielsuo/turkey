@@ -17,17 +17,15 @@ find_package (Threads REQUIRED)
 find_package (Folly REQUIRED)
 find_package (Wangle REQUIRED)
 
-# Include some directories
-include_directories (
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/*
+# Set some convenience variables
+set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
+set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
+set (TURKEY_INCLUDE_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${FOLLY_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${WANGLE_INCLUDE_DIR}
 )
-
-# Set some convenience variables
-set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
-set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 set (APPS
   blackscholes
   bodytrack
@@ -43,6 +41,9 @@ set (APPS
   vips
   x264
 )
+
+# Include some directories
+include_directories (${TURKEY_INCLUDE_DIR})
 
 # Pool library
 add_library (${PROJECT_NAME} SHARED
