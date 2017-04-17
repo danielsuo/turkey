@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.5)
 
+# Set some CMake variables
+set (CMAKE_BUILD_TYPE Debug)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
+
 # Some fugly hackery for CentOS
 include (${CMAKE_MODULE_PATH}/SysInfo.cmake)
 if (${LINUX_NAME} STREQUAL "CentOS")
@@ -10,10 +14,6 @@ endif()
 project (turkey)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-
-# Set some CMake variables
-set (CMAKE_BUILD_TYPE Debug)
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
 
 # Set some directories
 set (APP_DIR apps)
