@@ -12,7 +12,7 @@ Client::Client(size_t defaultRec) : rec_(defaultRec) {
     scoped_lock<named_mutex> lock(mutex);
 
     // Get default recommendation to use as starting value
-    const auto rec = segment.find<int>("DefaultRec").first;
+    const auto rec = segment.find<size_t>("DefaultRec").first;
     rec_ = *rec;
 
     // Register client in the vector

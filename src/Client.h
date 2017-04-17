@@ -10,10 +10,11 @@ public:
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
-  int getRec() { return rec_; };
+  size_t getRec() { return rec_; };
 
 private:
+
   folly::Optional<int> id_;
-  int rec_;
+  size_t rec_;
 };
 }

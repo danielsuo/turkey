@@ -12,14 +12,14 @@ ProcReader::ProcReader() {
   }
 }
 
-int ProcReader::getRunnableThreads() {
+size_t ProcReader::getRunnableThreads() {
   std::string line;
   while (std::getline(istream_, line)) {
     std::istringstream lineStream(line);
     std::string category;
     lineStream >> category;
     if (category == "procs_running") {
-      int r;
+      size_t r;
       lineStream >> r;
       return r;
     }
