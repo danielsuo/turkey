@@ -19,12 +19,11 @@ include_directories (
 set (COMMON_TURKEY_LIBS folly wangle rt ${CMAKE_THREAD_LIBS_INIT})
 
 # Pool library
-add_library (pool SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp)
+add_library (pool SHARED
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+)
 target_link_libraries (pool ${COMMON_TURKEY_LIBS})
-
-# Client library
-add_library (client SHARED ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp)
-target_link_libraries (client ${COMMON_TURKEY_LIBS})
 
 add_executable (
   main

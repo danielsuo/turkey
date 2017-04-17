@@ -18,7 +18,7 @@ find_path(
 )
 
 find_library(
-    TURKEY_LIBRARY client pool
+    TURKEY_LIBRARY pool
     HINTS
         $ENV{TURKEY_HOME}/build
 )
