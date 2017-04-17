@@ -27,6 +27,44 @@ sudo apt-get install -y \
   libglu1-mesa-dev \
   double-conversion
 
+# CentOS
+# devtoolset-6-gcc
+# devtoolset-6-gcc-c++
+# double-conversion
+# double-conversion-devel
+# autogen
+# scons
+# perl-Thread-Queue
+# boost
+# boost-devel
+# gflags
+# gflags-devel
+# glog
+# glog-devel
+# libevent
+# libevent-devel
+# epel-release
+# lz4
+# lz4-devel
+# lzma
+# lzma-devel
+# snappy
+# snappy-devel
+# zlib
+# zlib-devel
+# uuid-devel
+# tbb-devel
+# libX11
+# libX11-devel
+# libXtst
+# libXtst-devel
+# libXt
+# libXt-devel
+# libXmu
+# libXmu-devel
+# mesa-libGL-devel
+# xorg-x11-proto-dvel
+
 # Cgroup
 # sudo apt-get install -y libcgroup-dev cgroup-tools
 

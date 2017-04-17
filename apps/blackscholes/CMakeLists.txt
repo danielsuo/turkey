@@ -20,7 +20,7 @@ message(${TURKEY_INCLUDE_DIR})
 
 # Set target name and source files
 add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-add_executable (main_pool ${CMAKE_CURRENT_SOURCE_DIR}/main_pool.cpp)
+add_executable (${PROJECT_NAME}_pool ${CMAKE_CURRENT_SOURCE_DIR}/main_pool.cpp)
 
 target_link_libraries(
     ${PROJECT_NAME}
@@ -30,7 +30,7 @@ target_link_libraries(
 )
 
 target_link_libraries(
-    main_pool
+    ${PROJECT_NAME}_pool
     ${TURKEY_LIBRARIES}
     m
     ${CMAKE_THREAD_LIBS_INIT}
