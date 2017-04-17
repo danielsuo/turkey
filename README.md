@@ -12,7 +12,7 @@
 - TODO
 
 ## Application status
-
+### PARSEC
 | Application     | Compiled        | Turkey          | TBB             |
 | --------------- | :-------------: | :-------------: | :-------------: |
 | blackscholes    | X               |                 | X               |
@@ -21,13 +21,27 @@
 | dedup           | X               |                 |                 |
 | facesim         | X               |                 |                 |
 | ferret          | X               |                 |                 |
-| fluidanimate    |                 |                 | X               |
+| fluidanimate    | X               |                 | X               |
 | freqmine        | X               |                 |                 |
-| raytrace        |                 |                 |                 |
 | streamcluster   | X               |                 | X               |
 | swaptions       |                 |                 | X               |
 | vips            |                 |                 |                 |
 | x264            |                 |                 |                 |
+
+### SPLASH-2
+| Application     | Compiled        | Turkey          | TBB             |
+| --------------- | :-------------: | :-------------: | :-------------: |
+| barnes          |                 |                 |                 |
+| cholesky        |                 |                 |                 |
+| fft             |                 |                 |                 |
+| fmm             |                 |                 |                 |
+| lu              |                 |                 |                 |
+| ocean           |                 |                 |                 |
+| radiosity       |                 |                 |                 |
+| radix           |                 |                 |                 |
+| raytrace        |                 |                 |                 |
+| volrend         |                 |                 |                 |
+| water           |                 |                 |                 |
 
 ## Outstanding documentation
 - Job files
