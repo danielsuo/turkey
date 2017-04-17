@@ -4,7 +4,8 @@
 namespace Turkey {
 
 DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
-    : currentNumThreads_(defaultNumThreads), pool_(defaultNumThreads) {}
+    : currentNumThreads_(defaultNumThreads), client_(defaultNumThreads),
+      pool_(defaultNumThreads) {}
 
 void DynamicThreadPool::updatePoolSize() {
   size_t numThreads;

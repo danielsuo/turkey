@@ -6,6 +6,6 @@
 #include <utility>
 
 typedef boost::interprocess::allocator<
-    int, boost::interprocess::managed_shared_memory::segment_manager>
+    size_t, boost::interprocess::managed_shared_memory::segment_manager>
     ShmAllocator;
-typedef boost::interprocess::vector<int, ShmAllocator> RecVec;
+typedef boost::interprocess::vector<size_t, ShmAllocator> RecVec;

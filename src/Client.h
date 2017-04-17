@@ -1,18 +1,20 @@
 #pragma once
 #include "Common.h"
+#include <folly/Optional.h>
 
 namespace Turkey {
 class Client {
 public:
-  explicit Client();
+  explicit Client(size_t defaultRec);
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
-  int getRec() { return rec_; };
+  size_t getRec() { return rec_; };
 
 private:
-  int id_;
-  int rec_;
+
+  folly::Optional<int> id_;
+  size_t rec_;
 };
 }

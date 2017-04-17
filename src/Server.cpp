@@ -25,13 +25,12 @@ Server::Server() {
   named_mutex mutex(create_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    defaultRec_ = segment.construct<int>("DefaultRec")(kDefaultRec);
+    defaultRec_ = segment.construct<size_t>("DefaultRec")(kDefaultRec);
     recVec_ = segment.construct<RecVec>("RecVec")(allocator);
   }
 }
 
 void Server::get() const {
-
   named_mutex mutex(open_only, "TurkeyMutex");
   scoped_lock<named_mutex> lock(mutex);
 }
@@ -44,7 +43,7 @@ void Server::poll() {
   named_mutex mutex(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    auto defaultRec = segment.find<int>("DefaultRec");
+    auto defaultRec = segment.find<size_t>("DefaultRec");
   }
 }
 
