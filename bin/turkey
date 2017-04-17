@@ -63,3 +63,6 @@ elif args.cmd == 'one':
 
     task = Task([0, 0, args.app, args.conf, None, args.num_threads], args.working_dir, executable=args.executable)
     task.run()
+
+    os.wait()
+    os.system('stty sane')
