@@ -19,8 +19,8 @@
 | bodytrack       | X               |                 | X               |
 | canneal         | X               |                 |                 |
 | dedup           | X               |                 |                 |
-| facesim         |                 |                 |                 |
-| ferret          |                 |                 |                 |
+| facesim         | X               |                 |                 |
+| ferret          | X               |                 |                 |
 | fluidanimate    |                 |                 | X               |
 | freqmine        | X               |                 |                 |
 | raytrace        |                 |                 |                 |
@@ -33,3 +33,7 @@
 - Job files
 - Conf files
 - Job outputs
+
+## Outstanding clean-up
+- CMakeFiles.txt
+- Install scripts
