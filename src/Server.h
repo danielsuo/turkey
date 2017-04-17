@@ -11,7 +11,6 @@ public:
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
 
-  void get() const;
   void poll();
 
 private:
