@@ -44,6 +44,7 @@ set (APPS
   dummy
   facesim
   ferret
+  fluidanimate
   freqmine
   raytrace
   streamcluster
