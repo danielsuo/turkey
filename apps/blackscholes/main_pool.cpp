@@ -457,7 +457,8 @@ int main(int argc, char** argv) {
   free(nums);
 #else
   auto tids = std::vector<int>(nThreads);
-  wangle::CPUThreadPoolExecutor pool(nThreads, 1); // 1 priority
+  Turkey::DynamicThreadPool dtp(nThreads);
+  auto& pool = dtp.getPool();
   for (i = 0; i < nThreads; i++) {
     tids[i] = i;
 

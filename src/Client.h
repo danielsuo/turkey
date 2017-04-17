@@ -9,6 +9,8 @@ public:
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
+  int getRec() { return rec_; };
+
 private:
   int id_;
   int rec_;
