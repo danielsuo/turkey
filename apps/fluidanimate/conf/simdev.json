@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s 3 %(inputs)s/in_15K.fluid %(outputs)s/out.fluid"
+}
