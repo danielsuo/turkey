@@ -14,7 +14,7 @@ subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 # Compile subcommand
 compile = subparsers.add_parser('compile', help='Compile specified app')
-compile.add_argument('app', help='App to compile')
+compile.add_argument('-a', '--app', help='App to compile', default='all')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
@@ -47,7 +47,7 @@ if args.cmd == 'compile':
         os.chdir('./apps/%s' % args.app)
     os.system('mkdir -p build')
     os.chdir('./build')
-    os.system('cmake .. && make')
+    os.system('cmake .. -DMAKE=%s && make' % args.app)
     os.chdir(cwd)
 
 elif args.cmd == 'data':
@@ -66,3 +66,5 @@ elif args.cmd == 'one':
 
     os.wait()
     os.system('stty sane')
+else:
+    print(parser.print_help())
