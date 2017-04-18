@@ -4,14 +4,6 @@ cmake_minimum_required (VERSION 3.5)
 set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
 
-# Some fugly hackery for CentOS
-include (${CMAKE_MODULE_PATH}/SysInfo.cmake)
-if (${LINUX_NAME} STREQUAL "CentOS")
-  message ("IN CENTOS")
-  set (CMAKE_C_COMPILER "/opt/rh/devtoolset-6/root/usr/bin/gcc")
-  set (CMAKE_CXX_COMPILER "/opt/rh/devtoolset-6/root/usr/bin/g++")
-endif()
-
 project (turkey)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
@@ -25,11 +17,8 @@ set (MAKE "all" CACHE STRING "Application to build (default is all)")
 # Find dem packages
 find_package (Boost REQUIRED)
 find_package (Threads REQUIRED)
-# find_package (Folly REQUIRED)
-# find_package (Wangle REQUIRED)
 
 # Build vendored libraries
-# add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/folly)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/wangle)
 

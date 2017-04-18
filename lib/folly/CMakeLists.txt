@@ -9,8 +9,8 @@ ExternalProject_Add (${FOLLY_EXTERNAL_PROJECT}
     GIT_REPOSITORY "https://github.com/danielsuo/folly.git"
     GIT_TAG "master"
     UPDATE_COMMAND ""
-    CONFIGURE_COMMAND cd ${FOLLY_SOURCE_DIR} && autoreconf -ivf configure.ac && ./configure --prefix=${CMAKE_CURRENT_BINARY_DIR}
-    BUILD_COMMAND cd ${FOLLY_SOURCE_DIR} && make -j
+    CONFIGURE_COMMAND export CC=${CMAKE_C_COMPILER} && export CXX=${CMAKE_CXX_COMPILER} && cd ${FOLLY_SOURCE_DIR} && autoreconf -ivf configure.ac && ./configure --prefix=${CMAKE_CURRENT_BINARY_DIR}
+    BUILD_COMMAND export CC=${CMAKE_C_COMPILER} && export CXX=${CMAKE_CXX_COMPILER} && cd ${FOLLY_SOURCE_DIR} && make -j
     INSTALL_COMMAND cd ${FOLLY_SOURCE_DIR} && make install
 )
 
