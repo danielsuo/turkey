@@ -70,7 +70,7 @@ elif args.cmd == 'build':
     os.chdir(cwd)
 
 elif args.cmd == 'data':
-    data_executable = os.path.join(TURKEY_HOME, '/bin/data')
+    data_executable = os.path.join(TURKEY_HOME, 'bin/data')
     if args.app in apps:
         os.system('%s %s' % (data_executable, args.app))
     else:
