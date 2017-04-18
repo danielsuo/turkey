@@ -13,7 +13,6 @@ typedef boost::interprocess::allocator<
     std::pair<const boost::uuids::uuid, size_t>,
     boost::interprocess::managed_shared_memory::segment_manager>
     ShmemAllocator;
-typedef boost::interprocess::vector<size_t, ShmemAllocator> RecVec;
 typedef boost::interprocess::map<boost::uuids::uuid, size_t,
                                  std::less<boost::uuids::uuid>, ShmemAllocator>
     RecMap;
