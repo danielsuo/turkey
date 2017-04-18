@@ -10,6 +10,7 @@ DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
   using namespace std::chrono_literals;
   fs_.addFunction(std::bind(&DynamicThreadPool::updatePoolSize, this), 500ms,
                   "updatePoolSize");
+  fs_.start();
 }
 
 void DynamicThreadPool::updatePoolSize() {
