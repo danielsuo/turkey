@@ -1,5 +1,5 @@
 #include "ProcReader.h"
-
+#include <glog/logging.h>
 #include <sstream>
 
 static const std::string kProcStatPath = "/proc/stat";
@@ -13,6 +13,8 @@ ProcReader::ProcReader() {
 }
 
 size_t ProcReader::getRunnableThreads() {
+  // Reset file seek to the beginning
+  istream_.seekg(0);
   std::string line;
   while (std::getline(istream_, line)) {
     std::istringstream lineStream(line);

@@ -1,11 +1,13 @@
 #include "Server.h"
 #include <glog/logging.h>
+#include <glog/stl_logging.h>
 #include <iostream>
 
 using namespace boost::interprocess;
 
 static constexpr int kDefaultRec = 32;
 static constexpr int kSharedMemorySizeBytes = 65536;
+static constexpr int kMaxTimeSeriesSize = 1024;
 
 namespace Turkey {
 namespace {
@@ -31,15 +33,25 @@ Server::Server() {
   }
 }
 
+void Server::updateTimeSeries(size_t r) {
+  if (rTimeSeries_.size() >= kMaxTimeSeriesSize) {
+    rTimeSeries_.pop_front();
+  }
+  rTimeSeries_.push_back(r);
+}
+
 void Server::poll() {
   const auto runnableThreads = procReader_.getRunnableThreads();
+
+  updateTimeSeries(runnableThreads);
+
   const auto newRec = someAlgorithm(runnableThreads);
   managed_shared_memory segment(open_only, "TurkeySharedMemory");
   named_mutex mutex(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
     auto map = segment.find<RecMap>("RecMap").first;
-    LOG(INFO) << map->size();
+    LOG(INFO) << rTimeSeries_;
     for (auto item : *map) {
       LOG(INFO) << item.first;
       LOG(INFO) << item.second;
