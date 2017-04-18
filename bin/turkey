@@ -22,6 +22,7 @@ client = subparsers.add_parser('client', help='Do dummy client stuff')
 build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('-a', '--app', help='App to build', default='all')
 build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
+build.add_argument('-e', '--cmake-executable', help='Path to cmake', default='cmake')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
@@ -53,16 +54,18 @@ args = parser.parse_args()
 if args.cmd == 'server':
     subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_server')])
     os.wait()
+
 elif args.cmd == 'client':
     subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_client')])
     os.wait()
+
 elif args.cmd == 'build':
     if args.force:
         os.system('rm -rf %s' % os.path.join(TURKEY_HOME, 'build'))
     cwd = os.getcwd()
     os.system('mkdir -p build')
     os.chdir(os.path.join(TURKEY_HOME, 'build'))
-    os.system('cmake .. -DMAKE=%s && make -j' % args.app)
+    os.system('%s .. -DMAKE=%s && make -j' % (args.cmake_executable, args.app))
     os.chdir(cwd)
 
 elif args.cmd == 'data':
