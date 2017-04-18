@@ -11,25 +11,22 @@ set (CMAKE_BUILD_TYPE Debug)
 # Find packages
 find_package (Threads)
 
-# Set definitions
-add_definitions (-DENABLE_THREADS)
-
 # Include directories
 include_directories (${TURKEY_INCLUDE_DIR})
 
-# Set target name and source files
-add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-add_executable (${PROJECT_NAME}_pool ${CMAKE_CURRENT_SOURCE_DIR}/main_pool.cpp)
-
+# PTHREAD
+add_executable (${PROJECT_NAME}_pthread ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
+target_compile_definitions (${PROJECT_NAME}_pthread PUBLIC -DENABLE_THREADS)
 target_link_libraries(
-    ${PROJECT_NAME}
-    ${TURKEY_LIBRARIES}
+    ${PROJECT_NAME}_pthread
     m
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
+# TURKEY
+add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
 target_link_libraries(
-    ${PROJECT_NAME}_pool
+    ${PROJECT_NAME}_turkey
     ${TURKEY_LIBRARIES}
     m
     ${CMAKE_THREAD_LIBS_INIT}

@@ -25,7 +25,7 @@ class Task:
 
         self.out_file = os.path.join(self.out_dir, 'task.out')
         self.output_to_stdout = output_to_stdout
-        self.executable = os.path.join(self.exec_dir, executable or self.app)
+        self.executable = os.path.join(self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
 
         args = {
             'nthreads': self.threads,
@@ -40,7 +40,7 @@ class Task:
             self.args.insert(0, 'time')
 
     def run(self):
-        print('Running %s' % self.out_file)
+        print('Running %s, output to %s' % (self.executable, self.out_file))
         with open(self.out_file, 'w') as out:
             if self.output_to_stdout:
                 subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)

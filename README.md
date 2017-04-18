@@ -1,5 +1,7 @@
 # Turkey
 
+[TODO](https://docs.google.com/document/d/1c7FWr20b7X3C0umUbcWgD6-azkyj5Yhzmg3Ah-hwTuU/edit)
+
 ## Getting started
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
@@ -25,7 +27,7 @@
 | freqmine        | X               |                 |                 |
 | streamcluster   | X               |                 | X               |
 | swaptions       | X               |                 | X               |
-| vips            | SKIP            |                 |                 |
+| vips            |                 |                 |                 |
 | x264            |                 |                 |                 |
 
 ### SPLASH-2

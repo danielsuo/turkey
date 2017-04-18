@@ -76,18 +76,18 @@ else ()
 endif ()
 
 add_executable (
-  main
+  ${PROJECT_NAME}_server
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
 )
 
 add_executable (
-  main_client
+  ${PROJECT_NAME}_client
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
 )
-target_link_libraries (main ${TURKEY_LIB_DEPS})
-target_link_libraries (main_client ${TURKEY_LIB_DEPS})
+target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
+target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS})
