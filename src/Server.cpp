@@ -21,12 +21,13 @@ Server::Server() {
 
   managed_shared_memory segment(create_only, "TurkeySharedMemory",
                                 kSharedMemorySizeBytes);
-  ShmAllocator allocator(segment.get_segment_manager());
+  ShmemAllocator allocator(segment.get_segment_manager());
   named_mutex mutex(create_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    defaultRec_ = segment.construct<size_t>("DefaultRec")(kDefaultRec);
-    recVec_ = segment.construct<RecVec>("RecVec")(allocator);
+    segment.construct<size_t>("DefaultRec")(kDefaultRec);
+    segment.construct<RecMap>("RecMap")(std::less<boost::uuids::uuid>(),
+                                        allocator);
   }
 }
 
@@ -37,8 +38,12 @@ void Server::poll() {
   named_mutex mutex(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    auto defaultRec = segment.find<size_t>("DefaultRec").first;
-    *defaultRec = newRec;
+    auto map = segment.find<RecMap>("RecMap").first;
+    LOG(INFO) << map->size();
+    for (auto item : *map) {
+      LOG(INFO) << item.first;
+      LOG(INFO) << item.second;
+    }
   }
 }
 

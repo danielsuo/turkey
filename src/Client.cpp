@@ -3,9 +3,11 @@
 #include <iostream>
 
 using namespace boost::interprocess;
+using namespace boost::uuids;
 
 namespace Turkey {
-Client::Client(size_t defaultRec) : rec_(defaultRec) {
+Client::Client(size_t defaultRec)
+    : rec_(defaultRec), id_(boost::uuids::random_generator()()) {
   registerWithServer();
   pollServer();
 }
@@ -21,9 +23,11 @@ void Client::registerWithServer() {
     rec_ = *rec;
 
     // Register client in the vector
-    auto recVec = segment.find<RecVec>("RecVec").first;
-    id_ = recVec->size();
-    recVec->push_back(rec_);
+    auto recMap = segment.find<RecMap>("RecMap").first;
+    recMap->insert(std::pair<const uuid, size_t>(id_, rec_));
+
+    registered_ = true;
+    LOG(INFO) << "Client registered. UUID: " << id_ << ". Rec: " << rec_;
   } catch (const std::exception& ex) {
     LOG(INFO) << "Interprocess exception: " << ex.what();
     // TODO any remediation?
@@ -31,7 +35,7 @@ void Client::registerWithServer() {
 }
 
 size_t Client::pollServer() {
-  if (!id_) {
+  if (!registered_) {
     registerWithServer();
   }
   try {
@@ -39,12 +43,12 @@ size_t Client::pollServer() {
     named_mutex mutex(open_only, "TurkeyMutex");
     scoped_lock<named_mutex> lock(mutex);
 
-    auto recVec = segment.find<RecVec>("RecVec").first;
+    auto recMap = segment.find<RecMap>("RecMap").first;
 
-    if (id_) {
+    if (registered_) {
       // TODO what happens when server crashes and restarts? need some
       // invalidation
-      rec_ = recVec->at(*id_);
+      // rec_ = recMap->at(id_);
     }
   } catch (const std::exception& ex) {
     LOG(INFO) << "Interprocess exception: " << ex.what();

@@ -14,7 +14,8 @@ public:
 
 private:
   void registerWithServer();
-  folly::Optional<int> id_;
+  boost::uuids::uuid id_;
   size_t rec_;
+  bool registered_ = false;
 };
 }
