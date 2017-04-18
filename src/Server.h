@@ -15,7 +15,5 @@ public:
 
 private:
   ProcReader procReader_;
-  size_t* defaultRec_;
-  RecVec* recVec_;
 };
 }
