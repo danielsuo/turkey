@@ -37,6 +37,7 @@ class Task:
         self.args.insert(0, self.executable)
 
         if time_run:
+            self.args.insert(0, '-p')
             self.args.insert(0, 'time')
 
     def run(self):
