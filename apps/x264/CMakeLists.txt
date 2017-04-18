@@ -34,3 +34,5 @@
 #     m
 #     ${CMAKE_THREAD_LIBS_INIT}
 # )
+#
+# add_dependencies (${PROJECT_NAME} turkey)

@@ -19,3 +19,5 @@ target_link_libraries(
     m
     ${CMAKE_THREAD_LIBS_INIT}
 )
+
+add_dependencies (${PROJECT_NAME} turkey)

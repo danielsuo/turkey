@@ -58,3 +58,5 @@
 # )
 #
 # set (CPPZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-cppzmq-prefix/src/turkey-cppzmq PARENT_SCOPE)
+#
+# add_dependencies (${PROJECT_NAME} turkey)

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.5)
-project (streamcluster)
+project (streamcluster CXX)
 
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
 
@@ -24,3 +24,5 @@ target_link_libraries(
     tbb
     ${CMAKE_THREAD_LIBS_INIT}
 )
+
+add_dependencies (${PROJECT_NAME} turkey)

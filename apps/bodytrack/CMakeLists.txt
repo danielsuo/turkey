@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 3.5)
 project (bodytrack)
 
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -rdynamic -fpermissive -w")
 
 # Set compiler flags
@@ -31,3 +30,5 @@ target_link_libraries(
     threads
     ${CMAKE_THREAD_LIBS_INIT}
 )
+
+add_dependencies (${PROJECT_NAME} turkey)
