@@ -15,6 +15,8 @@ subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 # Server commands
 server = subparsers.add_parser('server', help='Handle server stuff')
+# Client (the dummy one) commands
+client = subparsers.add_parser('client', help='Do dummy client stuff')
 
 # Build subcommand
 build = subparsers.add_parser('build', help='Build specified app')
@@ -49,7 +51,10 @@ clean = subparsers.add_parser('clean', help='Clean up directory')
 args = parser.parse_args()
 
 if args.cmd == 'server':
-    subprocess.Popen([os.path.join(TURKEY_HOME, 'build/main')])
+    subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_server')])
+    os.wait()
+elif args.cmd == 'client':
+    subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_client')])
     os.wait()
 elif args.cmd == 'build':
     if args.force:
