@@ -33,9 +33,12 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/folly)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/wangle)
 
 # Set some convenience variables
-set (TURKEY_DEPS ${FOLLY_EXTERNAL_PROJECT})
+set (TURKEY_DEPS ${FOLLY_EXTERNAL_PROJECT} ${WANGLE_EXTERNAL_PROJECT})
 set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
 set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
+
+link_directories (${FOLLY_LIBRARY_DIR} ${WANGLE_LIBRARY_DIR})
+
 set (TURKEY_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${FOLLY_INCLUDE_DIR}

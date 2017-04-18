@@ -30,14 +30,17 @@ sudo apt-get install -y \
   libgsl-dev \
   libgsl2 \
   libjpeg-dev \
-  libcblas-dev \
   freeglut3-dev \
   libglib2.0-dev \
   libxml2-dev \
   libpango1.0-dev \
   libpng-dev \
   zlib1g-dev \
-  libsdl-dev
+  libsdl-dev \
+  libgflags-dev \
+  libgoogle-glog-dev \
+  libssl-dev \
+  libevent-dev
 
 
 # CentOS
@@ -86,6 +89,7 @@ sudo apt-get install -y \
 # libxml2-devel
 # pango-devel
 # SDL-devel
+# openssl-devel
 
 # Cgroup
 # sudo apt-get install -y libcgroup-dev cgroup-tools
