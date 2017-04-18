@@ -63,13 +63,19 @@ elif args.cmd == 'build':
     if args.force:
         os.system('rm -rf %s' % os.path.join(TURKEY_HOME, 'build'))
     cwd = os.getcwd()
+    os.chdir(TURKEY_HOME)
     os.system('mkdir -p build')
     os.chdir(os.path.join(TURKEY_HOME, 'build'))
     os.system('%s .. -DMAKE=%s && make -j' % (args.cmake_executable, args.app))
     os.chdir(cwd)
 
 elif args.cmd == 'data':
-    os.system('./bin/data %s' % args.app)
+    data_executable = os.path.join(TURKEY_HOME, '/bin/data')
+    if args.app in apps:
+        os.system('%s %s' % (data_executable, args.app))
+    else:
+        for app in apps:
+            os.system('%s %s' % (data_executable, app))
 
 elif args.cmd == 'run':
     job = Job(args)

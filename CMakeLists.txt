@@ -59,6 +59,9 @@ set (APPS
 # Include some directories
 include_directories (${TURKEY_INCLUDE_DIR})
 
+# Add external libraries
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/folly)
+
 # Pool library
 add_library (${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
