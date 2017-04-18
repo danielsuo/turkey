@@ -7,6 +7,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{TURKEY_HOME}/cmake)
 # Some fugly hackery for CentOS
 include (${CMAKE_MODULE_PATH}/SysInfo.cmake)
 if (${LINUX_NAME} STREQUAL "CentOS")
+  message ("IN CENTOS")
   set (CMAKE_C_COMPILER "/opt/rh/devtoolset-6/root/usr/bin/gcc")
   set (CMAKE_CXX_COMPILER "/opt/rh/devtoolset-6/root/usr/bin/g++")
 endif()
