@@ -63,6 +63,7 @@ include_directories (${TURKEY_INCLUDE_DIR})
 add_library (${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Common.cpp
 )
 target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
 
@@ -72,7 +73,9 @@ if (${MAKE} STREQUAL "all")
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
   endforeach ()
 else ()
-  add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})
+  if (${MAKE} IN_LIST APPS)
+    add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})
+  endif()
 endif ()
 
 add_executable (
@@ -80,6 +83,7 @@ add_executable (
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Common.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
 )
 
@@ -88,6 +92,7 @@ add_executable (
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Common.cpp
 )
-target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
-target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS})
+target_link_libraries (${PROJECT_NAME}_server ${PROJECT_NAME} ${TURKEY_LIB_DEPS})
+target_link_libraries (${PROJECT_NAME}_client ${PROJECT_NAME} ${TURKEY_LIB_DEPS})

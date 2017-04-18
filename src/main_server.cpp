@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
   std::cout << "Starting server" << std::endl;
   while (true) {
     // do real work here...
+
     std::this_thread::sleep_for(1s);
     server.poll();
     if (quit.load())

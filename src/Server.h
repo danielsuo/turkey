@@ -3,6 +3,16 @@
 #include "ProcReader.h"
 
 namespace Turkey {
+
+// Client meta data
+class ClientInfo {};
+
+// Hold stats for one client from one poll
+class ClientStats {};
+
+// Hold stats for system from one poll
+class SystemStats {};
+
 class Server {
 public:
   Server();
@@ -14,6 +24,11 @@ public:
   void poll();
 
 private:
+  void pollClientStats();
+  void pollSystemStats();
+
+  int lastIDSeen_;
+
   ProcReader procReader_;
   size_t* defaultRec_;
   RecVec* recVec_;
