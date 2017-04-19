@@ -52,9 +52,11 @@ size_t Client::pollServer() {
     auto recMap = segment.find<RecMap>("RecMap").first;
 
     if (registered_) {
-      // TODO what happens when server crashes and restarts? need some
-      // invalidation
-      rec_ = recMap->at(id_);
+      // TODO take the default
+      const auto defaultRec = segment.find<size_t>("DefaultRec").first;
+      RecInfo rec;
+      rec.rec = *defaultRec;
+      rec_ = rec;
     }
   } catch (const std::exception& ex) {
     LOG(INFO) << "Interprocess exception: " << ex.what();

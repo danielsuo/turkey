@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "Pool.h"
+#include <folly/futures/Future.h>
 
 #ifdef ENABLE_PARSEC_HOOKS
 #include <hooks.h>
@@ -324,16 +325,16 @@ int main(int argc, char** argv) {
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_begin();
 #endif
-  auto chunks = std::vector<int>(kNumWorkChunks);
   Turkey::DynamicThreadPool dtp(nThreads);
   auto& pool = dtp.getPool();
+  auto chunks = std::vector<int>(kNumWorkChunks);
+  std::vector<folly::Future<folly::Unit>> futs;
   for (i = 0; i < kNumWorkChunks; i++) {
     chunks[i] = i;
-
-    auto func = [&chunks, i]() { bs_thread((void*)&chunks[i]); };
-    pool.add(func);
+    futs.push_back(folly::via(&pool).then(
+        [&chunks, i]() { bs_thread((void*)&chunks[i]); }));
   }
-  pool.join();
+  folly::collectAll(futs).wait();
 
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_end();

@@ -17,6 +17,7 @@ void DynamicThreadPool::updatePoolSize() {
   size_t numThreads;
   try {
     numThreads = client_.pollServer();
+    LOG(INFO) << "Server rec: " << numThreads;
   } catch (const std::exception& ex) {
     LOG(ERROR) << "Error in Turkey Client: " << ex.what();
     return;
@@ -27,6 +28,9 @@ void DynamicThreadPool::updatePoolSize() {
     return;
   }
 
+  LOG(INFO) << "Setting threads: " << numThreads;
+
   pool_.setNumThreads(numThreads);
+  currentNumThreads_ = numThreads;
 }
 }
