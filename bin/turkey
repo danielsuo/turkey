@@ -25,6 +25,7 @@ build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('-a', '--app', help='App to build', default='all')
 build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
 build.add_argument('-e', '--cmake-executable', help='Path to cmake', default='cmake')
+build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
@@ -79,7 +80,7 @@ elif args.cmd == 'build':
     os.chdir(TURKEY_HOME)
     os.system('mkdir -p build')
     os.chdir(os.path.join(TURKEY_HOME, 'build'))
-    os.system('%s .. -DMAKE=%s && make' % (args.cmake_executable, args.app))
+    os.system('%s .. -DMAKE=%s && make %s' % (args.cmake_executable, args.app, '-j' if args.parallel else ''))
     os.chdir(cwd)
 
 elif args.cmd == 'data':
