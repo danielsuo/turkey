@@ -51,7 +51,9 @@ void Server::poll() {
   named_mutex mutex(open_only, "TurkeyMutex");
   {
     scoped_lock<named_mutex> lock(mutex);
-    auto map = segment.find<RecMap>("RecMap").first;
+    // Update default recommendation
+    auto defaultRec = segment.find<size_t>("DefaultRec").first;
+    *defaultRec = newRec;
   }
 }
 
