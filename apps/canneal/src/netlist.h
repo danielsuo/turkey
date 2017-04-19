@@ -65,7 +65,7 @@ protected:
   std::vector<netlist_elem> _elements; // store the actual elements here
   std::vector<std::vector<location_t>>
       _locations; // store the actual locations here
-  std::map<std::string, netlist_elem*> _elem_names;
+  // std::map<std::string, netlist_elem*> _elem_names;
   netlist_elem* create_elem_if_necessary(std::string& name);
   // due to the pointers, perhaps I should make the copy operator protected to
   // prevent copying
