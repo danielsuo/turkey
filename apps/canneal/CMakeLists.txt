@@ -26,6 +26,7 @@ target_link_libraries(
     ${PROJECT_NAME}_pthread
     m
     ${CMAKE_THREAD_LIBS_INIT}
+    ${TURKEY_LIBRARIES}
 )
 
 target_link_libraries(
