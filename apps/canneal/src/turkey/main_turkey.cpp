@@ -27,7 +27,6 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 // SUCH DAMAGE.
 
-
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
@@ -42,8 +41,8 @@
 #include <hooks.h>
 #endif
 
-#include "annealer_types.h"
 #include "annealer_thread_turkey.h"
+#include "annealer_types.h"
 #include "netlist.h"
 #include "rng.h"
 
@@ -51,85 +50,87 @@ using namespace std;
 
 void* entry_pt(void*);
 
-
-
-int main (int argc, char * const argv[]) {
+int main(int argc, char* const argv[]) {
 #ifdef PARSEC_VERSION
 #define __PARSEC_STRING(x) #x
 #define __PARSEC_XSTRING(x) __PARSEC_STRING(x)
-        cout << "PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION) << endl << flush;
+  cout << "PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION)
+       << endl
+       << flush;
 #else
-        cout << "PARSEC Benchmark Suite" << endl << flush;
-#endif //PARSEC_VERSION
+  cout << "PARSEC Benchmark Suite" << endl << flush;
+#endif // PARSEC_VERSION
 #ifdef ENABLE_PARSEC_HOOKS
-	__parsec_bench_begin(__parsec_canneal);
+  __parsec_bench_begin(__parsec_canneal);
 #endif
 
-	srandom(3);
+  srandom(3);
 
-	if(argc != 5 && argc != 6) {
-		cout << "Usage: " << argv[0] << " NTHREADS NSWAPS TEMP NETLIST [NSTEPS]" << endl;
-		exit(1);
-	}
+  if (argc != 5 && argc != 6) {
+    cout << "Usage: " << argv[0] << " NTHREADS NSWAPS TEMP NETLIST [NSTEPS]"
+         << endl;
+    exit(1);
+  }
 
-	//argument 1 is numthreads
-	int num_threads = atoi(argv[1]);
-	cout << "Threadcount: " << num_threads << endl;
+  // argument 1 is numthreads
+  int num_threads = atoi(argv[1]);
+  cout << "Threadcount: " << num_threads << endl;
 #ifndef ENABLE_THREADS
-	if (num_threads != 1){
-		cout << "NTHREADS must be 1 (serial version)" <<endl;
-		exit(1);
-	}
+  if (num_threads != 1) {
+    cout << "NTHREADS must be 1 (serial version)" << endl;
+    exit(1);
+  }
 #endif
 
-	//argument 2 is the num moves / temp
-	int swaps_per_temp = atoi(argv[2]);
-	cout << swaps_per_temp << " swaps per temperature step" << endl;
+  // argument 2 is the num moves / temp
+  int swaps_per_temp = atoi(argv[2]);
+  cout << swaps_per_temp << " swaps per temperature step" << endl;
 
-	//argument 3 is the start temp
-	int start_temp =  atoi(argv[3]);
-	cout << "start temperature: " << start_temp << endl;
+  // argument 3 is the start temp
+  int start_temp = atoi(argv[3]);
+  cout << "start temperature: " << start_temp << endl;
 
-	//argument 4 is the netlist filename
-	string filename(argv[4]);
-	cout << "netlist filename: " << filename << endl;
+  // argument 4 is the netlist filename
+  string filename(argv[4]);
+  cout << "netlist filename: " << filename << endl;
 
-	//argument 5 (optional) is the number of temperature steps before termination
-	int number_temp_steps = -1;
-        if(argc == 6) {
-		number_temp_steps = atoi(argv[5]);
-		cout << "number of temperature steps: " << number_temp_steps << endl;
-        }
+  // argument 5 (optional) is the number of temperature steps before termination
+  int number_temp_steps = -1;
+  if (argc == 6) {
+    number_temp_steps = atoi(argv[5]);
+    cout << "number of temperature steps: " << number_temp_steps << endl;
+  }
 
-	//now that we've read in the commandline, run the program
-	netlist my_netlist(filename);
+  // now that we've read in the commandline, run the program
+  netlist my_netlist(filename);
 
-	annealer_thread_turkey a_thread(&my_netlist,num_threads,swaps_per_temp,start_temp,number_temp_steps);
+  annealer_thread_turkey a_thread(&my_netlist, num_threads, swaps_per_temp,
+                                  start_temp, number_temp_steps);
 
 #ifdef ENABLE_PARSEC_HOOKS
-	__parsec_roi_begin();
+  __parsec_roi_begin();
 #endif
 #ifdef ENABLE_THREADS
-	// std::vector<pthread_t> threads(num_threads);
-	// void* thread_in = static_cast<void*>(&a_thread);
-	// for(int i=0; i<num_threads; i++){
-	// 	pthread_create(&threads[i], NULL, entry_pt,thread_in);
-	// }
-	// for (int i=0; i<num_threads; i++){
-	// 	pthread_join(threads[i], NULL);
-	// }
+// std::vector<pthread_t> threads(num_threads);
+// void* thread_in = static_cast<void*>(&a_thread);
+// for(int i=0; i<num_threads; i++){
+// 	pthread_create(&threads[i], NULL, entry_pt,thread_in);
+// }
+// for (int i=0; i<num_threads; i++){
+// 	pthread_join(threads[i], NULL);
+// }
 #else
-	a_thread.Run();
+  a_thread.Run();
 #endif
 #ifdef ENABLE_PARSEC_HOOKS
-	__parsec_roi_end();
+  __parsec_roi_end();
 #endif
 
   fprintf(stderr, "Final routing is: %0.2f\n", my_netlist.total_routing_cost());
 
 #ifdef ENABLE_PARSEC_HOOKS
-	__parsec_bench_end();
+  __parsec_bench_end();
 #endif
 
-	return 0;
+  return 0;
 }
