@@ -54,7 +54,7 @@ size_t Client::pollServer() {
     if (registered_) {
       // TODO what happens when server crashes and restarts? need some
       // invalidation
-      // rec_ = recMap->at(id_);
+      rec_ = recMap->at(id_);
     }
   } catch (const std::exception& ex) {
     LOG(INFO) << "Interprocess exception: " << ex.what();

@@ -25,6 +25,7 @@ Server::Server() {
                                 kSharedMemorySizeBytes);
   ShmemAllocator allocator(segment.get_segment_manager());
   named_mutex mutex(create_only, "TurkeyMutex");
+
   {
     scoped_lock<named_mutex> lock(mutex);
     segment.construct<size_t>("DefaultRec")(kDefaultRec);
@@ -51,7 +52,6 @@ void Server::poll() {
   {
     scoped_lock<named_mutex> lock(mutex);
     auto map = segment.find<RecMap>("RecMap").first;
-    LOG(INFO) << rTimeSeries_;
   }
 }
 
