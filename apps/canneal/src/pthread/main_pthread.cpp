@@ -125,7 +125,7 @@ int main (int argc, char * const argv[]) {
 	__parsec_roi_end();
 #endif
 
-	cout << "Final routing is: " << my_netlist.total_routing_cost() << endl;
+  fprintf(stderr, "Final routing is: %0.2f\n", my_netlist.total_routing_cost());
 
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_bench_end();

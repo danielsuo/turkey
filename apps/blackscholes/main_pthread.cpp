@@ -366,12 +366,12 @@ int main(int argc, char** argv) {
   char* outputFile = argv[3];
 
   // Read input data from file
-  file = fopen(inputFile, "r");
+  file = fopen(inputFile, "rb");
   if (file == NULL) {
     printf("ERROR: Unable to open file %s.\n", inputFile);
     exit(1);
   }
-  rv = fscanf(file, "%i", &numOptions);
+  rv = fread(&numOptions, sizeof(numOptions), 1, file);
   if (rv != 1) {
     printf("ERROR: Unable to read from file %s.\n", inputFile);
     fclose(file);
@@ -393,17 +393,18 @@ int main(int argc, char** argv) {
   // alloc spaces for the option data
   data = (OptionData*)malloc(numOptions * sizeof(OptionData));
   prices = (fptype*)malloc(numOptions * sizeof(fptype));
-  for (loopnum = 0; loopnum < numOptions; ++loopnum) {
-    rv = fscanf(file, "%f %f %f %f %f %f %c %f %f", &data[loopnum].s,
-                &data[loopnum].strike, &data[loopnum].r, &data[loopnum].divq,
-                &data[loopnum].v, &data[loopnum].t, &data[loopnum].OptionType,
-                &data[loopnum].divs, &data[loopnum].DGrefval);
-    if (rv != 9) {
-      printf("ERROR: Unable to read from file %s.\n", inputFile);
-      fclose(file);
-      exit(1);
-    }
-  }
+  fread(data, sizeof(OptionData), numOptions, file);
+  // for (loopnum = 0; loopnum < numOptions; ++loopnum) {
+  //   rv = fscanf(file, "%f %f %f %f %f %f %c %f %f", &data[loopnum].s,
+  //               &data[loopnum].strike, &data[loopnum].r, &data[loopnum].divq,
+  //               &data[loopnum].v, &data[loopnum].t, &data[loopnum].OptionType,
+  //               &data[loopnum].divs, &data[loopnum].DGrefval);
+  //   if (rv != 9) {
+  //     printf("ERROR: Unable to read from file %s.\n", inputFile);
+  //     fclose(file);
+  //     exit(1);
+  //   }
+  // }
   rv = fclose(file);
   if (rv != 0) {
     printf("ERROR: Unable to close file %s.\n", inputFile);
