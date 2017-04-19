@@ -4,20 +4,35 @@ project (canneal)
 # Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
 
+find_package (Threads)
+
 add_definitions (-DENABLE_THREADS)
 
 # Get all source files
-file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**/* src/**)
+file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/atomic/* src/**)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Set target name and source files
-add_executable (${PROJECT_NAME} ${SOURCE_FILES})
+add_executable (${PROJECT_NAME}_pthread
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/pthread/main_pthread.cpp
+  ${SOURCE_FILES}
+)
+add_executable (${PROJECT_NAME}_turkey
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/main_turkey.cpp
+  ${SOURCE_FILES}
+)
 
-find_package (Threads)
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_pthread
     m
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-add_dependencies (${PROJECT_NAME} turkey)
+target_link_libraries(
+    ${PROJECT_NAME}_turkey
+    m
+    ${CMAKE_THREAD_LIBS_INIT}
+)
+
+add_dependencies (${PROJECT_NAME}_pthread turkey)
+add_dependencies (${PROJECT_NAME}_turkey turkey)
