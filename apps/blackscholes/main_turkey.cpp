@@ -55,6 +55,7 @@ fptype* volatility;
 fptype* otime;
 int numError = 0;
 int nThreads;
+int kNumWorkChunks = 1024;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -203,8 +204,8 @@ int bs_thread(void* tid_ptr) {
   fptype price;
   fptype priceDelta;
   int tid = *(int*)tid_ptr;
-  int start = tid * (numOptions / nThreads);
-  int end = start + (numOptions / nThreads);
+  int start = tid * (numOptions / kNumWorkChunks);
+  int end = start + (numOptions / kNumWorkChunks);
 
   for (j = 0; j < NUM_RUNS; j++) {
     for (i = start; i < end; i++) {
@@ -267,6 +268,11 @@ int main(int argc, char** argv) {
            "number of options.\n");
     nThreads = numOptions;
   }
+  if (kNumWorkChunks > numOptions) {
+    printf("WARNING: Not enough work, reducing number of chunks to match "
+           "number of options.\n");
+    kNumWorkChunks = numOptions;
+  }
 
   // alloc spaces for the option data
   data = (OptionData*)malloc(numOptions * sizeof(OptionData));
@@ -318,14 +324,13 @@ int main(int argc, char** argv) {
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_begin();
 #endif
-
-  auto tids = std::vector<int>(nThreads);
+  auto chunks = std::vector<int>(kNumWorkChunks);
   Turkey::DynamicThreadPool dtp(nThreads);
   auto& pool = dtp.getPool();
-  for (i = 0; i < nThreads; i++) {
-    tids[i] = i;
+  for (i = 0; i < kNumWorkChunks; i++) {
+    chunks[i] = i;
 
-    auto func = [&tids, i]() { bs_thread((void*)&tids[i]); };
+    auto func = [&chunks, i]() { bs_thread((void*)&chunks[i]); };
     pool.add(func);
   }
   pool.join();
