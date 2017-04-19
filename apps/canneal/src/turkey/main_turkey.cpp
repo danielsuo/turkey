@@ -106,7 +106,6 @@ int main(int argc, char* const argv[]) {
 
   annealer_thread_turkey a_thread(&my_netlist, num_threads, swaps_per_temp,
                                   start_temp, number_temp_steps);
-                LOG(INFO) << "wut";
   a_thread.start();
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_begin();
