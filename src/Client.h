@@ -15,7 +15,7 @@ public:
 private:
   void registerWithServer();
   boost::uuids::uuid id_;
-  size_t rec_;
+  RecInfo rec_;
   bool registered_ = false;
 };
 }

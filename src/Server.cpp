@@ -52,10 +52,6 @@ void Server::poll() {
     scoped_lock<named_mutex> lock(mutex);
     auto map = segment.find<RecMap>("RecMap").first;
     LOG(INFO) << rTimeSeries_;
-    for (auto item : *map) {
-      LOG(INFO) << item.first;
-      LOG(INFO) << item.second;
-    }
   }
 }
 

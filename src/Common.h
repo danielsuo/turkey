@@ -9,10 +9,15 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <utility>
 
+struct RecInfo {
+  size_t rec;
+  size_t STUB_appStats;
+};
+
 typedef boost::interprocess::allocator<
-    std::pair<const boost::uuids::uuid, size_t>,
+    std::pair<const boost::uuids::uuid, RecInfo>,
     boost::interprocess::managed_shared_memory::segment_manager>
     ShmemAllocator;
-typedef boost::interprocess::map<boost::uuids::uuid, size_t,
+typedef boost::interprocess::map<boost::uuids::uuid, RecInfo,
                                  std::less<boost::uuids::uuid>, ShmemAllocator>
     RecMap;

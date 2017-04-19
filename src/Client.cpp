@@ -7,7 +7,11 @@ using namespace boost::uuids;
 
 namespace Turkey {
 Client::Client(size_t defaultRec)
-    : rec_(defaultRec), id_(boost::uuids::random_generator()()) {
+    :id_(boost::uuids::random_generator()()) {
+  RecInfo rec;
+  rec.rec = defaultRec;
+  rec_ = rec;
+
   registerWithServer();
   pollServer();
 }
@@ -19,15 +23,17 @@ void Client::registerWithServer() {
     scoped_lock<named_mutex> lock(mutex);
 
     // Get default recommendation to use as starting value
-    const auto rec = segment.find<size_t>("DefaultRec").first;
-    rec_ = *rec;
+    const auto defaultRec = segment.find<size_t>("DefaultRec").first;
+    RecInfo rec;
+    rec.rec = *defaultRec;
+    rec_ = rec;
 
     // Register client in the vector
     auto recMap = segment.find<RecMap>("RecMap").first;
-    recMap->insert(std::pair<const uuid, size_t>(id_, rec_));
+    recMap->insert(std::pair<const uuid, RecInfo>(id_, rec_));
 
     registered_ = true;
-    LOG(INFO) << "Client registered. UUID: " << id_ << ". Rec: " << rec_;
+    LOG(INFO) << "Client registered. UUID: " << id_ << ". Rec: " << rec_.rec;
   } catch (const std::exception& ex) {
     LOG(INFO) << "Interprocess exception: " << ex.what();
     // TODO any remediation?
@@ -54,6 +60,6 @@ size_t Client::pollServer() {
     LOG(INFO) << "Interprocess exception: " << ex.what();
     // TODO any remediation?
   }
-  return rec_;
+  return rec_.rec;
 }
 }
