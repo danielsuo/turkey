@@ -17,18 +17,7 @@
 #ifdef ENABLE_THREADS
 #include <pthread.h>
 #define MAX_THREAD 1024
-
-#ifdef TBB_VERSION
-#include "tbb/task_scheduler_init.h"
-#include "tbb/blocked_range.h"
-#include "tbb/parallel_for.h"
-#include "tbb/cache_aligned_allocator.h"
-tbb::cache_aligned_allocator<FTYPE> memory_ftype;
-tbb::cache_aligned_allocator<parm> memory_parm;
-#define TBB_GRAINSIZE 1
-#endif // TBB_VERSION
 #endif //ENABLE_THREADS
-
 
 #ifdef ENABLE_PARSEC_HOOKS
 #include <hooks.h>
@@ -37,9 +26,9 @@ tbb::cache_aligned_allocator<parm> memory_parm;
 int NUM_TRIALS = DEFAULT_NUM_TRIALS;
 int nThreads = 1;
 int nSwaptions = 1;
-int iN = 11; 
+int iN = 11;
 //FTYPE dYears = 5.5;
-int iFactors = 3; 
+int iFactors = 3;
 parm *swaptions;
 
 long seed = 1979; //arbitrary (but constant) default value (birth year of Christian Bienia)
@@ -50,20 +39,31 @@ FTYPE *dSumSimSwaptionPrice_global_ptr;
 FTYPE *dSumSquareSimSwaptionPrice_global_ptr;
 int chunksize;
 
+#ifdef ENABLE_TBB
+#include "tbb/blocked_range.h"
+#include "tbb/parallel_for.h"
+#include "tbb/task_scheduler_init.h"
+#include "tbb/tick_count.h"
+#include "tbb/cache_aligned_allocator.h"
+tbb::cache_aligned_allocator<FTYPE> memory_ftype;
+tbb::cache_aligned_allocator<parm> memory_parm;
+using namespace std;
+using namespace tbb;
 
-#ifdef TBB_VERSION
 struct Worker {
-  Worker(){}
+  Worker() {}
+  Worker(Worker& w, tbb::split) {}
+
   void operator()(const tbb::blocked_range<int> &range) const {
     FTYPE pdSwaptionPrice[2];
     int begin = range.begin();
     int end   = range.end();
 
     for(int i=begin; i!=end; i++) {
-      int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike, 
-					   swaptions[i].dCompounding, swaptions[i].dMaturity, 
+      int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike,
+					   swaptions[i].dCompounding, swaptions[i].dMaturity,
 					   swaptions[i].dTenor, swaptions[i].dPaymentInterval,
-					   swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears, 
+					   swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears,
 					   swaptions[i].pdYield, swaptions[i].ppdFactors,
 					   swaption_seed+i, NUM_TRIALS, BLOCK_SIZE, 0);
       assert(iSuccess == 1);
@@ -71,14 +71,11 @@ struct Worker {
       swaptions[i].dSimSwaptionStdError = pdSwaptionPrice[1];
 
     }
-     
-
-
   }
 };
 
-#endif //TBB_VERSION
-
+#define TBB_GRAINSIZE 1
+#endif // ENABLE_TBB
 
 void * worker(void *arg){
   int tid = *((int *)arg);
@@ -101,10 +98,10 @@ void * worker(void *arg){
     end = nSwaptions;
 
   for(int i=beg; i < end; i++) {
-     int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike, 
-                                       swaptions[i].dCompounding, swaptions[i].dMaturity, 
+     int iSuccess = HJM_Swaption_Blocking(pdSwaptionPrice,  swaptions[i].dStrike,
+                                       swaptions[i].dCompounding, swaptions[i].dMaturity,
                                        swaptions[i].dTenor, swaptions[i].dPaymentInterval,
-                                       swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears, 
+                                       swaptions[i].iN, swaptions[i].iFactors, swaptions[i].dYears,
                                        swaptions[i].pdYield, swaptions[i].ppdFactors,
                                        swaption_seed+i, NUM_TRIALS, BLOCK_SIZE, 0);
      assert(iSuccess == 1);
@@ -126,7 +123,7 @@ void print_usage(char *name) {
   fprintf(stderr,"\t-sd [random number seed]\n");
 }
 
-//Please note: Whenever we type-cast to (int), we add 0.5 to ensure that the value is rounded to the correct number. 
+//Please note: Whenever we type-cast to (int), we add 0.5 to ensure that the value is rounded to the correct number.
 //For instance, if X/Y = 0.999 then (int) (X/Y) will equal 0 and not 1 (as (int) rounds down).
 //Adding 0.5 ensures that this does not happen. Therefore we use (int) (X/Y + 0.5); instead of (int) (X/Y);
 
@@ -134,13 +131,13 @@ int main(int argc, char *argv[])
 {
 	int iSuccess = 0;
 	int i,j;
-	
+
 	FTYPE **factors=NULL;
 
 #ifdef PARSEC_VERSION
 #define __PARSEC_STRING(x) #x
 #define __PARSEC_XSTRING(x) __PARSEC_STRING(x)
-        printf("PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION)"\n"); 
+        printf("PARSEC Benchmark Suite Version "__PARSEC_XSTRING(PARSEC_VERSION)"\n");
 	fflush(NULL);
 #else
         printf("PARSEC Benchmark Suite\n");
@@ -149,7 +146,7 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_bench_begin(__parsec_swaptions);
 #endif
-	
+
         if(argc == 1)
         {
           print_usage(argv[0]);
@@ -158,9 +155,9 @@ int main(int argc, char *argv[])
 
         for (int j=1; j<argc; j++) {
 	  if (!strcmp("-sm", argv[j])) {NUM_TRIALS = atoi(argv[++j]);}
-	  else if (!strcmp("-nt", argv[j])) {nThreads = atoi(argv[++j]);} 
-	  else if (!strcmp("-ns", argv[j])) {nSwaptions = atoi(argv[++j]);} 
-	  else if (!strcmp("-sd", argv[j])) {seed = atoi(argv[++j]);} 
+	  else if (!strcmp("-nt", argv[j])) {nThreads = atoi(argv[++j]);}
+	  else if (!strcmp("-ns", argv[j])) {nSwaptions = atoi(argv[++j]);}
+	  else if (!strcmp("-sd", argv[j])) {seed = atoi(argv[++j]);}
           else {
             fprintf(stderr,"Error: Unknown option: %s\n", argv[j]);
             print_usage(argv[0]);
@@ -179,7 +176,7 @@ int main(int argc, char *argv[])
 
 #ifdef ENABLE_THREADS
 
-#ifdef TBB_VERSION
+#ifdef ENABLE_TBB
 	tbb::task_scheduler_init init(nThreads);
 #else
 	pthread_t      *threads;
@@ -193,7 +190,7 @@ int main(int argc, char *argv[])
 	threads = (pthread_t *) malloc(nThreads * sizeof(pthread_t));
 	pthread_attr_init(&pthread_custom_attr);
 
-#endif // TBB_VERSION
+#endif // ENABLE_TBB
 
 	if ((nThreads < 1) || (nThreads > MAX_THREAD))
 	{
@@ -244,10 +241,10 @@ int main(int argc, char *argv[])
 	factors[2][7]= -.000750;
 	factors[2][8]= -.001000;
 	factors[2][9]= -.001250;
-	
+
         // setting up multiple swaptions
-        swaptions = 
-#ifdef TBB_VERSION
+        swaptions =
+#ifdef ENABLE_TBB
 	  (parm *)memory_parm.allocate(sizeof(parm)*nSwaptions, NULL);
 #else
 	  (parm *)malloc(sizeof(parm)*nSwaptions);
@@ -285,11 +282,11 @@ int main(int argc, char *argv[])
 
 #ifdef ENABLE_THREADS
 
-#ifdef TBB_VERSION
+#ifdef ENABLE_TBB
 	Worker w;
 	tbb::parallel_for(tbb::blocked_range<int>(0,nSwaptions,TBB_GRAINSIZE),w);
 #else
-	
+
 	int threadIDs[nThreads];
         for (i = 0; i < nThreads; i++) {
           threadIDs[i] = i;
@@ -301,7 +298,7 @@ int main(int argc, char *argv[])
 
 	free(threads);
 
-#endif // TBB_VERSION	
+#endif // ENABLE_TBB
 
 #else
 	int threadID=0;
@@ -313,7 +310,7 @@ int main(int argc, char *argv[])
 #endif
 
         for (i = 0; i < nSwaptions; i++) {
-          fprintf(stderr,"Swaption %d: [SwaptionPrice: %.10lf StdError: %.10lf] \n", 
+          fprintf(stderr,"Swaption %d: [SwaptionPrice: %.10lf StdError: %.10lf] \n",
                    i, swaptions[i].dSimSwaptionMeanPrice, swaptions[i].dSimSwaptionStdError);
 
         }
@@ -324,11 +321,11 @@ int main(int argc, char *argv[])
         }
 
 
-#ifdef TBB_VERSION
+#ifdef ENABLE_TBB
 	memory_parm.deallocate(swaptions, sizeof(parm));
 #else
         free(swaptions);
-#endif // TBB_VERSION
+#endif // ENABLE_TBB
 
 	//***********************************************************
 

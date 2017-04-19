@@ -10,13 +10,13 @@ add_definitions (-DENABLE_THREADS)
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**)
 
 # Set target name and source files
-add_executable (${PROJECT_NAME} ${SOURCE_FILES})
+add_executable (${PROJECT_NAME}_pthread ${SOURCE_FILES})
 
 find_package (Threads)
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_pthread
     m
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-add_dependencies (${PROJECT_NAME} turkey)
+# add_dependencies (${PROJECT_NAME}_turkey turkey)

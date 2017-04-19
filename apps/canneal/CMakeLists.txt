@@ -34,8 +34,7 @@ target_link_libraries(
     ${CMAKE_THREAD_LIBS_INIT}
     ${TURKEY_LIBRARIES}
 )
-
-add_dependencies (${PROJECT_NAME}_pthread turkey)
+target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
 add_dependencies (${PROJECT_NAME}_turkey turkey)
 
 # Utility

@@ -25,15 +25,41 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 # file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**)
 
 # Set target name and source files
-add_executable (${PROJECT_NAME}
+add_executable (${PROJECT_NAME}_pthread
   ${CMAKE_CURRENT_SOURCE_DIR}/src/pthreads.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
+)
+add_executable (${PROJECT_NAME}_turkey
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
+)
+add_executable (${PROJECT_NAME}_tbb
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/tbb.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
 )
 
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_pthread
+    glut
+    GL
+    GLU
+    m
+    ${CMAKE_THREAD_LIBS_INIT}
+)
+target_link_libraries(
+    ${PROJECT_NAME}_turkey
     ${TURKEY_LIBRARIES}
+    glut
+    GL
+    GLU
+    m
+    ${CMAKE_THREAD_LIBS_INIT}
+)
+target_link_libraries(
+    ${PROJECT_NAME}_tbb
     tbb
     glut
     GL
@@ -42,4 +68,6 @@ target_link_libraries(
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-add_dependencies (${PROJECT_NAME} turkey)
+target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+
+add_dependencies (${PROJECT_NAME}_turkey turkey)
