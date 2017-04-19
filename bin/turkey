@@ -11,6 +11,7 @@ from job import Job, Task, apps
 
 parser = argparse.ArgumentParser(description='Turkey job runner')
 parser.add_argument('-q', '--turkey-home', help='Turkey home directory')
+
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 # Server commands
@@ -34,6 +35,7 @@ run = subparsers.add_parser('run', help='Run job')
 run.add_argument('file', help='Job file')
 run.add_argument('-w', '--working-dir', help='Working directory')
 run.add_argument('-o', '--out-dir', help='Output directory relative to working')
+run.add_argument('-i', '--in-dir', help='Input directory relative to working. Where app directory lives')
 run.add_argument('-t', '--time', help='Time individual jobs', action='store_false')
 
 # One-off run subcommand
@@ -43,6 +45,7 @@ one.add_argument('-n', '--num-threads', help='Number of threads', type=int, defa
 one.add_argument('-c', '--conf', help='Configuration to run', default='test')
 one.add_argument('-w', '--working-dir', help='Working directory')
 one.add_argument('-o', '--out-dir', help='Output directory relative to working')
+one.add_argument('-i', '--in-dir', help='Input directory relative to working. WHere app directory lives')
 one.add_argument('-e', '--executable', help='Executable if different from app name')
 one.add_argument('-s', '--output_to_stdout', help='Dump to stdout instead of file', action='store_true')
 one.add_argument('-m', '--mode', help='Which thread library to use', default='pthread')
@@ -91,6 +94,9 @@ elif args.cmd == 'run':
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
 
+    if args.in_dir == None:
+        args.in_dir = TURKEY_HOME
+
     job = Job(args)
     job.run()
 
@@ -101,7 +107,14 @@ elif args.cmd == 'one':
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'out')
 
-    task = Task([0, 0, args.app, args.conf, args.mode, args.num_threads], args.working_dir, executable=args.executable, output_to_stdout=args.output_to_stdout, TURKEY_HOME=TURKEY_HOME)
+    if args.out_dir == None:
+        args.out_dir = '.'
+
+    if args.in_dir == None:
+        args.in_dir = TURKEY_HOME
+
+    out_dir = os.path.join(args.working_dir, args.out_dir)
+    task = Task([0, 0, args.app, args.conf, args.mode, args.num_threads], out_dir, args.in_dir, executable=args.executable, output_to_stdout=args.output_to_stdout, TURKEY_HOME=TURKEY_HOME)
     task.run()
 
     os.wait()

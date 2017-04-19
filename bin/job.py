@@ -5,7 +5,7 @@ import subprocess
 
 # Run a single task
 class Task:
-    def __init__(self, desc, out_dir, time_run=True, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
+    def __init__(self, desc, out_dir, in_dir, time_run=True, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
         self.start     = desc[0]
         self.id        = desc[1]
         self.app       = desc[2]
@@ -13,10 +13,11 @@ class Task:
         self.mode      = desc[4]
         self.threads   = desc[5]
 
+        self.in_dir    = in_dir
         self.out_dir   = out_dir
         os.system('mkdir -p %s' % self.out_dir)
 
-        self.app_dir = os.path.join(TURKEY_HOME, 'apps', self.app)
+        self.app_dir = os.path.join(self.in_dir, 'apps', self.app)
         self.exec_dir = os.path.join(TURKEY_HOME, 'build/apps', self.app)
         self.conf_file = os.path.join(self.app_dir, 'conf', '%s.json' % self.conf_name)
 
@@ -74,8 +75,9 @@ class Job:
 
             task = tasks[tid]
             task.insert(1, str(tid))
-            task_dir = os.path.join(self.out_dir, '%s_%s_%s_%s_%s_%s' % list(task))
-            self.tasks[start].append(Task(tasks[tid], self.task_dir, time_run=args.time, TURKEY_HOME=args.turkey_home))
+            out_dir = os.path.join(self.out_dir, '%s_%s_%s_%s_%s_%s' % list(task))
+            
+            self.tasks[start].append(Task(tasks[tid], out_dir, args.in_dir, time_run=args.time, TURKEY_HOME=args.turkey_home))
 
     def run(self):
         tasks_run = 0
