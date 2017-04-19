@@ -35,25 +35,23 @@
 
 #include "AtomicPtr.h"
 #include "location_t.h"
-#include "annealer_types.h" 
+#include "annealer_types.h"
 
 using threads::AtomicPtr;
 
 class netlist_elem{
-public:	
+public:
 	netlist_elem();
 	routing_cost_t routing_cost_given_loc(location_t loc);
 	routing_cost_t swap_cost(location_t* old_loc, location_t* new_loc);
 
 public:
-	std::string item_name;
 	std::vector<netlist_elem*> fanin;
 	std::vector<netlist_elem*> fanout;
 	AtomicPtr<location_t> present_loc;
-	
+
 protected:
 };
 
 
 #endif
-

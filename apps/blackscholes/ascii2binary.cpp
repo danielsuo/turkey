@@ -31,8 +31,8 @@ int main(int argc, char* argv[]) {
     exit(-1);
   }
 
-  // ascii2binary(argv[1], argv[2]);
-  binary2ascii(argv[2], argv[1]);
+  ascii2binary(argv[1], argv[2]);
+  // binary2ascii(argv[2], argv[1]);
 }
 
 void ascii2binary(const char* input_file, const char* output_file) {
@@ -110,12 +110,13 @@ void binary2ascii(const char* input_file, const char* output_file) {
   data = (OptionData*)malloc(numOptions * sizeof(OptionData));
   fread(data, sizeof(OptionData), numOptions, file);
 
-  // for (int i = 0; i < numOptions; i++) {
-    // fprintf(stderr, "%f %f %f %f %f %f %c %f %f\n", data[i].s,
-    //             data[i].strike, data[i].r, data[i].divq,
-    //             data[i].v, data[i].t, data[i].OptionType,
-    //             data[i].divs, data[i].DGrefval);
-  // }
+  for (int i = 0; i < numOptions; i++) {
+    fprintf(stderr, "%f %f %f %f %f %f %c %f %f\n", data[i].s,
+                data[i].strike, data[i].r, data[i].divq,
+                data[i].v, data[i].t, data[i].OptionType,
+                data[i].divs, data[i].DGrefval);
+  }
 
+  fclose(file);
   free(data);
 }

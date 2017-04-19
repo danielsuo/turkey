@@ -45,12 +45,15 @@ void netlist::release(netlist_elem* elem) { return; }
 //*****************************************************************************************
 routing_cost_t netlist::total_routing_cost() {
   routing_cost_t rval = 0;
-  for (std::map<std::string, netlist_elem*>::iterator iter =
-           _elem_names.begin();
-       iter != _elem_names.end(); ++iter) {
-    netlist_elem* elem = iter->second;
-    rval += elem->routing_cost_given_loc(*(elem->present_loc.Get()));
+  for (auto elem : _elements) {
+    rval += elem.routing_cost_given_loc(*(elem.present_loc.Get()));
   }
+  // for (std::map<std::string, netlist_elem*>::iterator iter =
+  //          _elem_names.begin();
+  //      iter != _elem_names.end(); ++iter) {
+  //   netlist_elem* elem = iter->second;
+  //   rval += elem->routing_cost_given_loc(*(elem->present_loc.Get()));
+  // }
   return rval / 2; // since routing_cost calculates both input and output
                    // routing, we have double counted
 }
@@ -131,25 +134,51 @@ netlist_elem* netlist::netlist_elem_from_loc(location_t& loc) {
 //*****************************************************************************************
 //
 //*****************************************************************************************
-netlist_elem* netlist::netlist_elem_from_name(std::string& name) {
-  return (_elem_names[name]);
-}
+// netlist_elem* netlist::netlist_elem_from_name(std::string& name) {
+//   return (_elem_names[name]);
+// }
 
 //*****************************************************************************************
 //  TODO add errorchecking
 // ctor.  Takes a properly formatted input file, and converts it into a
 //*****************************************************************************************
-netlist::netlist(const std::string& filename) {
-  ifstream fin(filename.c_str());
-  assert(fin.is_open()); // were there any errors on opening?
+struct element {
+  int32_t id;
+  int32_t type;
+  int32_t n[5];
+};
 
-  // read the chip_array paramaters
-  fin >> _num_elements >> _max_x >> _max_y;
+netlist::netlist(const std::string& filename) {
+  FILE* file;
+  file = fopen(filename.c_str(), "rb");
+  if (file == NULL) {
+    printf("ERROR: Unable to open file %s.\n", filename.c_str());
+    exit(1);
+  }
+
+  fread(&_num_elements, sizeof(unsigned), 1, file);
+  fread(&_max_x, sizeof(unsigned), 1, file);
+  fread(&_max_y, sizeof(unsigned), 1, file);
+
   _chip_size = _max_x * _max_y;
   assert(_num_elements < _chip_size);
 
   // create a chip of the right size
-  _elements.resize(_chip_size);
+  _elements.resize(_chip_size, netlist_elem());
+
+  // for (int i = 0; i < _num_elements; i++) {
+  //
+  // }
+
+  element* data = (element*)malloc(_num_elements * sizeof(element));
+  fread(data, sizeof(element), _num_elements, file);
+  //
+  // ifstream fin(filename.c_str());
+  // assert(fin.is_open()); // were there any errors on opening?
+  //
+  // // read the chip_array paramaters
+  // fin >> _num_elements >> _max_x >> _max_y;
+
 
   cout << "locs created" << endl;
   // create the location elements
@@ -169,36 +198,51 @@ netlist::netlist(const std::string& filename) {
   }   // for (int x = 0; x < _max_x; x++)
   cout << "locs assigned" << endl;
 
-  int i = 0;
-  while (!fin.eof()) {
-    i++;
+  for (int i = 0; i < _num_elements; i++) {
     if ((i % 100000) == 0) {
       cout << "Just saw element: " << i << endl;
     }
-    std::string name;
-    fin >> name;
-    netlist_elem* present_elem = create_elem_if_necessary(
-        name); // the element that we are presently working on
-    // use create if necessary because it might have been created as a previous
-    // elements fanin
 
-    // set the basic info for the element
-    present_elem->item_name = name; // its name
+    for (int j = 0; j < 5; j++) {
+      int id = data[i].n[j] - 1;
 
-    int type;    // its type TODO errorcheck here
-    fin >> type; // presently, don't actually use this
+      _elements[i].fanin.push_back(&_elements.at(id));
+      _elements[id].fanout.push_back(&_elements.at(i));
+    }
+  }
+  // int i = 0;
+  // while (!fin.eof()) {
+  //   i++;
+  //   if ((i % 100000) == 0) {
+  //     cout << "Just saw element: " << i << endl;
+  //   }
+  //   std::string name;
+  //   fin >> name;
+  //   netlist_elem* present_elem = create_elem_if_necessary(
+  //       name); // the element that we are presently working on
+  //   // use create if necessary because it might have been created as a previous
+  //   // elements fanin
+  //
+  //   // set the basic info for the element
+  //   present_elem->item_name = name; // its name
+  //
+  //   int type;    // its type TODO errorcheck here
+  //   fin >> type; // presently, don't actually use this
+  //
+  //   std::string fanin_name;
+  //   while (fin >> fanin_name) {
+  //     if (fanin_name == "END") {
+  //       break; // last element in fanin
+  //     } // otherwise, make present elem the fanout of fanin_elem, and vice versa
+  //     netlist_elem* fanin_elem = create_elem_if_necessary(fanin_name);
+  //     present_elem->fanin.push_back(fanin_elem);
+  //     fanin_elem->fanout.push_back(present_elem);
+  //   } // while (fin >> fanin_name)
+  // }   // while (!fin.eof())
+  cout << "netlist created. " << _num_elements << " elements." << endl;
 
-    std::string fanin_name;
-    while (fin >> fanin_name) {
-      if (fanin_name == "END") {
-        break; // last element in fanin
-      } // otherwise, make present elem the fanout of fanin_elem, and vice versa
-      netlist_elem* fanin_elem = create_elem_if_necessary(fanin_name);
-      present_elem->fanin.push_back(fanin_elem);
-      fanin_elem->fanout.push_back(present_elem);
-    } // while (fin >> fanin_name)
-  }   // while (!fin.eof())
-  cout << "netlist created. " << i - 1 << " elements." << endl;
+  fclose(file);
+  free(data);
 }
 
 //*****************************************************************************************
@@ -206,36 +250,36 @@ netlist::netlist(const std::string& filename) {
 // both
 // earlier and later in the input file, we must handle both cases
 //*****************************************************************************************
-netlist_elem* netlist::create_elem_if_necessary(std::string& name) {
-  static unsigned unused_elem = 0; // the first unused element
-  netlist_elem* rval;
-  // check whether we already have a netlist element with that name
-  std::map<std::string, netlist_elem*>::iterator iter = _elem_names.find(name);
-  if (iter == _elem_names.end()) {
-    rval = &_elements.at(unused_elem); // if not, get one from the _elements
-                                       // pool
-    _elem_names[name] = rval;          // put it in the map
-    unused_elem++;
-  } else {
-    // if it is in the map, just get a pointer to it
-    rval = iter->second;
-  }
-  return rval;
-}
+// netlist_elem* netlist::create_elem_if_necessary(std::string& name) {
+//   static unsigned unused_elem = 0; // the first unused element
+//   netlist_elem* rval;
+//   // check whether we already have a netlist element with that name
+//   std::map<std::string, netlist_elem*>::iterator iter = _elem_names.find(name);
+//   if (iter == _elem_names.end()) {
+//     rval = &_elements.at(unused_elem); // if not, get one from the _elements
+//                                        // pool
+//     _elem_names[name] = rval;          // put it in the map
+//     unused_elem++;
+//   } else {
+//     // if it is in the map, just get a pointer to it
+//     rval = iter->second;
+//   }
+//   return rval;
+// }
 
 //*****************************************************************************************
 // simple dump file
 // not threadsafe
 //*****************************************************************************************
-void netlist::print_locations(const std::string& filename) {
-  ofstream fout(filename.c_str());
-  assert(fout.is_open());
-
-  for (std::map<std::string, netlist_elem*>::iterator iter =
-           _elem_names.begin();
-       iter != _elem_names.end(); ++iter) {
-    netlist_elem* elem = iter->second;
-    fout << elem->item_name << "\t" << elem->present_loc.Get()->x << "\t"
-         << elem->present_loc.Get()->y << std::endl;
-  }
-}
+// void netlist::print_locations(const std::string& filename) {
+//   ofstream fout(filename.c_str());
+//   assert(fout.is_open());
+//
+//   for (std::map<std::string, netlist_elem*>::iterator iter =
+//            _elem_names.begin();
+//        iter != _elem_names.end(); ++iter) {
+//     netlist_elem* elem = iter->second;
+//     fout << elem->item_name << "\t" << elem->present_loc.Get()->x << "\t"
+//          << elem->present_loc.Get()->y << std::endl;
+//   }
+// }

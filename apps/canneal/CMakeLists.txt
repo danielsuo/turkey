@@ -38,3 +38,6 @@ target_link_libraries(
 
 add_dependencies (${PROJECT_NAME}_pthread turkey)
 add_dependencies (${PROJECT_NAME}_turkey turkey)
+
+# Utility
+add_executable (${PROJECT_NAME}_ascii2binary ${CMAKE_CURRENT_SOURCE_DIR}/src/tools/ascii2binary.cpp)
