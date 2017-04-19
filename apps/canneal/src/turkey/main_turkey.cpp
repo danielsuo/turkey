@@ -43,7 +43,7 @@
 #endif
 
 #include "annealer_types.h"
-#include "annealer_thread.h"
+#include "annealer_thread_turkey.h"
 #include "netlist.h"
 #include "rng.h"
 
@@ -104,20 +104,20 @@ int main (int argc, char * const argv[]) {
 	//now that we've read in the commandline, run the program
 	netlist my_netlist(filename);
 
-	annealer_thread a_thread(&my_netlist,num_threads,swaps_per_temp,start_temp,number_temp_steps);
+	annealer_thread_turkey a_thread(&my_netlist,num_threads,swaps_per_temp,start_temp,number_temp_steps);
 
 #ifdef ENABLE_PARSEC_HOOKS
 	__parsec_roi_begin();
 #endif
 #ifdef ENABLE_THREADS
-	std::vector<pthread_t> threads(num_threads);
-	void* thread_in = static_cast<void*>(&a_thread);
-	for(int i=0; i<num_threads; i++){
-		pthread_create(&threads[i], NULL, entry_pt,thread_in);
-	}
-	for (int i=0; i<num_threads; i++){
-		pthread_join(threads[i], NULL);
-	}
+	// std::vector<pthread_t> threads(num_threads);
+	// void* thread_in = static_cast<void*>(&a_thread);
+	// for(int i=0; i<num_threads; i++){
+	// 	pthread_create(&threads[i], NULL, entry_pt,thread_in);
+	// }
+	// for (int i=0; i<num_threads; i++){
+	// 	pthread_join(threads[i], NULL);
+	// }
 #else
 	a_thread.Run();
 #endif
@@ -132,10 +132,4 @@ int main (int argc, char * const argv[]) {
 #endif
 
 	return 0;
-}
-
-void* entry_pt(void* data)
-{
-	annealer_thread* ptr = static_cast<annealer_thread*>(data);
-	ptr->Run();
 }
