@@ -42,11 +42,12 @@ class Task:
 
     def run(self):
         print('Running %s, output to %s' % (self.executable, self.out_file))
-        with open(self.out_file, 'w') as out:
-            if self.output_to_stdout:
+
+        if self.output_to_stdout:
+            subprocess.Popen(self.args)
+        else:
+            with open(self.out_file, 'w') as out:
                 subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)
-            else:
-                subprocess.Popen(self.args)
 
 # Run a timeline of tasks
 class Job:
