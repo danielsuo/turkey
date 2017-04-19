@@ -11,9 +11,17 @@ static constexpr int kMaxTimeSeriesSize = 1024;
 
 namespace Turkey {
 namespace {
+int kNum = 0;
 int someAlgorithm(int runnableThreads) {
-  // LOL
-  return 10;
+  kNum++;
+  if (kNum > 20) {
+    kNum = 0;
+  }
+  if (kNum > 10) {
+    return 1;
+  } else {
+    return 32;
+  }
 }
 } // anonymous
 Server::Server() {
@@ -43,6 +51,7 @@ void Server::updateTimeSeries(size_t r) {
 
 void Server::poll() {
   const auto runnableThreads = procReader_.getRunnableThreads();
+  LOG(INFO) << "r: " << runnableThreads;
 
   updateTimeSeries(runnableThreads);
 
@@ -54,6 +63,7 @@ void Server::poll() {
     // Update default recommendation
     auto defaultRec = segment.find<size_t>("DefaultRec").first;
     *defaultRec = newRec;
+    LOG(INFO) << "rec: " << newRec;
   }
 }
 
