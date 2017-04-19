@@ -328,6 +328,8 @@ int main(int argc, char** argv) {
 #endif
   Turkey::DynamicThreadPool dtp(nThreads);
   auto& pool = dtp.getPool();
+  // Start the dynamic scheduler
+  dtp.start();
   auto chunks = std::vector<int>(kNumWorkChunks);
   std::vector<folly::Future<folly::Unit>> futs;
   for (i = 0; i < kNumWorkChunks; i++) {
