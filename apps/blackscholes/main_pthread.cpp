@@ -505,8 +505,11 @@ int main(int argc, char** argv) {
     omp_set_num_threads(nThreads);
     bs_thread(&tid);
   }
+  fprintf(stderr, "Using OpenMP\n");
+
 #else // ENABLE_OPENMP
 #ifdef ENABLE_TBB
+  fprintf(stderr, "Using TBB\n");
   tbb::task_scheduler_init init(nThreads);
 
   int tid = 0;

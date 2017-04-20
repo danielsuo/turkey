@@ -25,10 +25,10 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/src)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/image)
 
 # Set target name and source files
-add_executable (${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmark/ferret-turkey.c)
+add_executable (${PROJECT_NAME}_pthread ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmark/ferret-turkey.c)
 
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_pthread
     ${TURKEY_LIBRARIES}
     ferret-image
     ferret-src
@@ -39,4 +39,4 @@ target_link_libraries(
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-add_dependencies (${PROJECT_NAME} turkey)
+# add_dependencies (${PROJECT_NAME}_turkey turkey)
