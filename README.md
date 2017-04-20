@@ -17,13 +17,13 @@
 ### PARSEC
 | Application     | Compiled        | Turkey          | TBB             |
 | --------------- | :-------------: | :-------------: | :-------------: |
-| blackscholes    | X               |                 | X               |
+| blackscholes    | X               | X               | X               |
 | bodytrack       | X               |                 | X               |
-| canneal         | X               |                 |                 |
+| canneal         | X               | X               |                 |
 | dedup           | X               |                 |                 |
 | facesim         | X               |                 |                 |
 | ferret          | X               |                 |                 |
-| fluidanimate    | X               |                 | X               |
+| fluidanimate    | X               | X               | X               |
 | freqmine        | X               |                 |                 |
 | streamcluster   | X               |                 | X               |
 | swaptions       | X               |                 | X               |
