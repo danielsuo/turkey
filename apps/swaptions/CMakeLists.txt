@@ -16,7 +16,12 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**)
 
 # Set target name and source files
-add_executable (${PROJECT_NAME}_pthread ${SOURCE_FILES})
+add_executable (
+${PROJECT_NAME}_pthread
+${CMAKE_CURRENT_SOURCE_DIR}/src/pthread/HJM_Securities.cpp
+
+${SOURCE_FILES}
+)
 set_target_properties (${PROJECT_NAME}_pthread PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
 target_link_libraries(
     ${PROJECT_NAME}_pthread
@@ -24,20 +29,12 @@ target_link_libraries(
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
-add_executable (${PROJECT_NAME}_tbb ${SOURCE_FILES})
-set_target_properties (${PROJECT_NAME}_tbb PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
-set_target_properties (${PROJECT_NAME}_tbb PROPERTIES COMPILE_DEFINITIONS "ENABLE_TBB")
-target_include_directories (${PROJECT_NAME}_tbb PUBLIC ${TBB_INCLUDE_DIRS})
-target_link_libraries(
-    ${PROJECT_NAME}_tbb
-    tbb
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
+add_executable (${PROJECT_NAME}_turkey
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/HJM_Securities.cpp
+  ${SOURCE_FILES}
 )
-
-add_executable (${PROJECT_NAME}_turkey ${SOURCE_FILES})
 target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
-set_target_properties (${PROJECT_NAME}_turkey PROPERTIES COMPILE_DEFINITIONS "TURKEY_VERSION")
+set_target_properties (${PROJECT_NAME}_turkey PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
 target_link_libraries(
     ${PROJECT_NAME}_turkey
     ${TURKEY_LIBRARIES}
