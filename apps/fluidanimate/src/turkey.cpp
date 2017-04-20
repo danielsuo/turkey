@@ -17,13 +17,13 @@
 #include <assert.h>
 #include <float.h>
 
+#include "Pool.h"
+#include "folly/futures/Future.h"
+
 #include "fluid.hpp"
 #include "cellpool.hpp"
 #include "parsec_barrier.hpp"
 
-#ifdef ENABLE_VISUALIZATION
-#include "fluidview.hpp"
-#endif
 
 #ifdef ENABLE_PARSEC_HOOKS
 #include <hooks.h>
@@ -269,10 +269,6 @@ void InitSim(char const *fileName, unsigned int threadnum)
       pthread_mutex_init(&mutex[i][j], NULL);
   }
   pthread_barrier_init(&barrier, NULL, NUM_GRIDS);
-#ifdef ENABLE_VISUALIZATION
-  //visualization barrier is used by all NUM_GRIDS worker threads and 1 master thread
-  pthread_barrier_init(&visualization_barrier, NULL, NUM_GRIDS+1);
-#endif
   //make sure Cell structure is multiple of estiamted cache line size
   assert(sizeof(Cell) % CACHELINE_SIZE == 0);
   //make sure helper Cell structure is in sync with real Cell structure
@@ -1150,49 +1146,14 @@ void AdvanceFrameMT(int tid)
 #endif
 }
 
-#ifndef ENABLE_VISUALIZATION
-void *AdvanceFramesMT(void *args)
+void *AdvanceFramesMT(const thread_args& targs)
 {
-  thread_args *targs = (thread_args *)args;
-
-  for(int i = 0; i < targs->frames; ++i) {
-    AdvanceFrameMT(targs->tid);
+  for(int i = 0; i < targs.frames; ++i) {
+    AdvanceFrameMT(targs.tid);
   }
 
   return NULL;
 }
-#else
-//Frame advancement function for worker threads
-void *AdvanceFramesMT(void *args)
-{
-  thread_args *targs = (thread_args *)args;
-
-#if 1
-  while(1)
-#else
-  for(int i = 0; i < targs->frames; ++i)
-#endif
-  {
-    pthread_barrier_wait(&visualization_barrier);
-    //Phase 1: Compute frame, visualization code blocked
-    AdvanceFrameMT(targs->tid);
-    pthread_barrier_wait(&visualization_barrier);
-    //Phase 2: Visualize, worker threads blocked
-  }
-
-  return NULL;
-}
-
-//Frame advancement function for master thread (executes serial visualization code)
-void AdvanceFrameVisualization()
-{
-    //End of phase 2: Worker threads blocked, visualization code busy (last frame)
-    pthread_barrier_wait(&visualization_barrier);
-    //Phase 1: Visualization thread blocked, worker threads busy (next frame)
-    pthread_barrier_wait(&visualization_barrier);
-    //Begin of phase 2: Worker threads blocked, visualization code busy (next frame)
-}
-#endif //ENABLE_VISUALIZATION
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1227,38 +1188,42 @@ int main(int argc, char *argv[])
     std::cerr << "<framenum> must at least be 1" << std::endl;
     return -1;
   }
+  Turkey::DynamicThreadPool dtp(threadnum);
+  const auto numThreads = dtp.updatePoolSize();
+  std::cout << "turkey mode, threadnum being ignored. numThreads = "
+            << numThreads << std::endl;
 
 #ifdef ENABLE_CFL_CHECK
   std::cout << "WARNING: Check for Courant–Friedrichs–Lewy condition enabled. Do not use for performance measurements." << std::endl;
 #endif
 
-  InitSim(argv[3], threadnum);
-#ifdef ENABLE_VISUALIZATION
-  InitVisualizationMode(&argc, argv, &AdvanceFrameVisualization, &numCells, &cells, &cnumPars);
-#endif
+  InitSim(argv[3], numThreads);
 
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_begin();
 #endif
 #if defined(WIN32)
-  thread_args* targs = (thread_args*)alloca(sizeof(thread_args)*threadnum);
+  thread_args* targs = (thread_args*)alloca(sizeof(thread_args)*numThreads);
 #else
-  thread_args targs[threadnum];
+  thread_args targs[numThreads];
 #endif
-  for(int i = 0; i < threadnum; ++i) {
+  auto& pool = dtp.getPool();
+  std::vector<folly::Future<folly::Unit>> futs;
+
+  for(int i = 0; i < numThreads; ++i) {
     targs[i].tid = i;
     targs[i].frames = framenum;
-    pthread_create(&thread[i], &attr, AdvanceFramesMT, &targs[i]);
+    futs.push_back(folly::via(&pool).then([&targs, i](){
+      AdvanceFramesMT(targs[i]);
+    }));
   }
+  folly::collectAll(futs).wait();
 
   // *** PARALLEL PHASE *** //
 #ifdef ENABLE_VISUALIZATION
   Visualize();
 #endif
 
-  for(int i = 0; i < threadnum; ++i) {
-    pthread_join(thread[i], NULL);
-  }
 #ifdef ENABLE_PARSEC_HOOKS
   __parsec_roi_end();
 #endif

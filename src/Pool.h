@@ -10,7 +10,7 @@ public:
   explicit DynamicThreadPool(size_t defaultNumThreads);
 
   void start();
-  void updatePoolSize();
+  size_t updatePoolSize();
   wangle::CPUThreadPoolExecutor& getPool() { return pool_; }
 
 private:
