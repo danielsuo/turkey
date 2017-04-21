@@ -2,11 +2,13 @@
 
 import os
 import sys
+import time
 import argparse
 import subprocess
 import pathos.multiprocessing as mp
+from random import randint
 
-from turkey import Job, Task, apps
+from turkey import Job, Task, apps, pthread, tbb
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -31,6 +33,16 @@ build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
 data.add_argument('app', help='App to data for')
+
+# Generate subcommand
+gen = subparsers.add_parser('gen', help='Generate job files for run command')
+gen.add_argument('-a', '--apps', help='List of applications to generate from', default='pthread')
+gen.add_argument('-p', '--prefix', help='Job name prefix', default='job')
+gen.add_argument('-j', '--num-jobs', help='Number of jobs to generate', type=int, default=100)
+gen.add_argument('-t', '--num-tasks', help='Number of tasks per job to generate', type=int, default=100)
+gen.add_argument('-n', '--num-threads', help='Number of threads to launch each task with', type=int, default=1)
+gen.add_argument('-c', '--conf', help='Configuration to run', default='test')
+gen.add_argument('-s', '--start-time-strategy', help='How to assign job start times', default=0)
 
 # Run subcommand
 run = subparsers.add_parser('run', help='Run job')
@@ -95,6 +107,18 @@ elif args.cmd == 'data':
         for app in apps:
             os.system('%s %s' % (data_executable, app))
 
+elif args.cmd == 'gen':
+    subset = pthread
+    if args.apps == 'tbb':
+        subset = tbb
+
+    working_dir = os.path.join(TURKEY_HOME, 'jobs')
+    for i in range(args.num_jobs):
+        with open(os.path.join(working_dir, '%s-%08d.job' % (args.prefix, i)), 'w') as job_file:
+            for j in range(args.num_tasks):
+                task_index = randint(0, len(subset) - 1)
+                job_file.write(','.join([str(0), subset[task_index], args.conf, args.apps, str(args.num_threads)]) + '\n')
+
 elif args.cmd == 'run':
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
@@ -109,8 +133,6 @@ elif args.cmd == 'run':
         pool.map(lambda task: task.run(wait=True), job.task_array)
     else:
         job.run()
-
-    # os.wait()
 
 elif args.cmd == 'one':
     if args.executable == None:
