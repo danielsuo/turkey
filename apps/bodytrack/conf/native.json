@@ -1,3 +1,7 @@
 {
-  "args": "%(inputs)s/sequenceB_261 4 261 4000 5 0 %(nthreads)s"
+  "args": "%(inputs)s/sequenceB_261 4 261 4000 5 0 %(nthreads)s",
+  "ignore": [
+    "outputs"
+  ],
+  "input_file": "%(inputs)s/sequenceB_261"
 }

@@ -1,3 +1,7 @@
 {
-  "args": "%(nthreads)s 15000 2000 %(inputs)s/native.bin 6000"
+  "args": "%(nthreads)s 15000 2000 %(inputs)s/native.bin 6000",
+  "ignore": [
+    "outputs"
+  ],
+  "input_file": "%(inputs)s/native.bin"
 }

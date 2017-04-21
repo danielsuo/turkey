@@ -1,3 +1,4 @@
 {
-  "args": "%(inputs)s/corel lsh %(inputs)s/queries 50 20 %(nthreads)s %(outputs)s/output.txt"
+  "args": "%(inputs)s/corel lsh %(inputs)s/queries 50 20 %(nthreads)s %(outputs)s/output.txt",
+  "input_file": "%(inputs)s"
 }

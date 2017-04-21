@@ -1,3 +1,6 @@
 {
-  "args": "10 20 128 1000000 200000 5000 none %(outputs)s/output.txt %(nthreads)"
+  "args": "10 20 128 1000000 200000 5000 none %(outputs)s/output.txt %(nthreads)s",
+  "ignore": [
+    "inputs"
+  ]
 }
