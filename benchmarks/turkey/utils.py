@@ -41,6 +41,7 @@ inputs = [
 
 pthread = [app for app in apps if app not in ['ferret', 'freqmine', 'raytrace', 'vips', 'x264']]
 tbb = ['blackscholes', 'bodytrack', 'fluidanimate', 'streamcluster', 'swaptions']
+speedup = ['blackscholes', 'fluidanimate']
 
 threads = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 cpus_32 = ['0', '0-1', '0-3', '0-7', '0-15', '0-31']
