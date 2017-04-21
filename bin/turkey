@@ -67,6 +67,15 @@ one.add_argument('-e', '--executable', help='Executable if different from app na
 one.add_argument('-s', '--output_to_stdout', help='Dump to stdout instead of file', action='store_true')
 one.add_argument('-m', '--mode', help='Which thread library to use', default='pthread')
 
+# qsub cluster commands
+qsub = subparsers.add_parser('qsub', help='Run qsub jobs')
+qsub.add_argument('-a', '--apps', help='List of applications to generate from', default='pthread')
+qsub.add_argument('-p', '--prefix', help='Job name prefix', default='job')
+qsub.add_argument('-n', '--num_workers', help='Maximum number of simultaneous jobs', type=int, default=5)
+qsub.add_argument('-c', '--num_cores', help='Maximum number of simultaneous jobs', type=int, default=272)
+qsub.add_argument('-r', '--run-script', help='Run script')
+qsub.add_argument('-y', '--array-bounds', help='Range of jobs to run', default='0-99')
+
 # TODO: Clean subcommand
 clean = subparsers.add_parser('clean', help='Clean up directory')
 
@@ -89,6 +98,10 @@ if args.cmd == 'server':
 elif args.cmd == 'client':
     subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_client')])
     os.wait()
+
+elif args.cmd = 'qsub':
+    args.run_script = args.run_script or os.path.join(TURKEY_HOME, 'cluster/run.sh')
+    os.system('qsub -lselect=1:ncpus=%d -lplace=excl -t %s -v apps=%s,prefix=%s,workers=%d %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, args.run_script))
 
 elif args.cmd == 'build':
     if args.force:
@@ -159,6 +172,5 @@ elif args.cmd == 'one':
     task.run()
 
     os.wait()
-    os.system('stty sane')
 else:
     print(parser.print_help())

@@ -1,8 +1,5 @@
 #!/bin/sh
 
-#PBS -e $PBS_O_WORKDIR/out/$PBS_JOBID.err
-#PBS -o $PBS_O_WORKDIR/out/$PBS_JOBID.out
-
 NNODES=`uniq $PBS_NODEFILE | wc -l`
 
 echo ------------------------------------------------------
@@ -25,4 +22,6 @@ echo ------------------------------------------------------
 
 cp -R $PBS_O_HOME/turkey $TMPDIR
 source activate idp
-~/turkey/bin/turkey one blackscholes -c native -n 32 -i $TMPDIR/turkey -o $PBS_JOBID
+
+jobname=${prefix}-`printf "%08d" ${PBS_ARRAYID}`
+~/turkey/bin/turkey run ~/turkey/jobs/${apps}/${jobname}.job -i $TMPDIR/turkey -o $PBS_JOBID/${jobname} -n ${workers}
