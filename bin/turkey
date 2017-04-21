@@ -51,7 +51,7 @@ run.add_argument('-w', '--working-dir', help='Working directory')
 run.add_argument('-o', '--out-dir', help='Output directory relative to working')
 run.add_argument('-i', '--in-dir', help='Input directory relative to working. Where app directory lives')
 run.add_argument('-t', '--time', help='Time individual jobs', action='store_false')
-run.add_argument('-a', '--add-all', help='Dump all simultaneously into queue and let pool sort out', action='store_false')
+run.add_argument('-a', '--add-all', help='Dump all simultaneously into queue and let pool sort out', action='store_true')
 run.add_argument('-n', '--num_workers', help='Maximum number of simultaneous jobs', type=int, default=1)
 run.add_argument('-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
