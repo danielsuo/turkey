@@ -52,6 +52,7 @@ class Task:
 
         if wait:
             os.wait()
+            os.system('date')
 
 # Run a timeline of tasks
 class Job:

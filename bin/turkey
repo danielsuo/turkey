@@ -52,7 +52,8 @@ run.add_argument('-o', '--out-dir', help='Output directory relative to working')
 run.add_argument('-i', '--in-dir', help='Input directory relative to working. Where app directory lives')
 run.add_argument('-t', '--time', help='Time individual jobs', action='store_false')
 run.add_argument('-a', '--add-all', help='Dump all simultaneously into queue and let pool sort out', action='store_false')
-run.add_argument('-m', '--max-simultaneous', help='Maximum number of simultaneous jobs', type=int, default=5)
+run.add_argument('-w', '--num_workers', help='Maximum number of simultaneous jobs', type=int, default=5)
+run.add_argument('-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
 # One-off run subcommand
 one = subparsers.add_parser('one', help='Run one app')
@@ -120,6 +121,9 @@ elif args.cmd == 'gen':
                 job_file.write(','.join([str(0), subset[task_index], args.conf, args.apps, str(args.num_threads)]) + '\n')
 
 elif args.cmd == 'run':
+    if args.time:
+        os.system('date')
+
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
 
@@ -128,9 +132,12 @@ elif args.cmd == 'run':
 
     job = Job(args)
     if args.add_all:
-        print(args.max_simultaneous)
-        pool = mp.Pool(min(job.ntasks, args.max_simultaneous))
-        pool.map(lambda task: task.run(wait=True), job.task_array)
+        pool_size = min(job.ntasks, args.num_workers)
+        pool = mp.Pool(pool_size)
+        if args.turkey_mode:
+            pool.map(lambda task: task.run(threads=int(mp.cpu_count() / pool_size), wait=True), job.task_array)
+        else:
+            pool.map(lambda task: task.run(wait=True), job.task_array)
     else:
         job.run()
 
