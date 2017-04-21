@@ -75,6 +75,7 @@ qsub.add_argument('-n', '--num_workers', help='Maximum number of simultaneous jo
 qsub.add_argument('-c', '--num_cores', help='Maximum number of simultaneous jobs', type=int, default=272)
 qsub.add_argument('-r', '--run-script', help='Run script')
 qsub.add_argument('-j', '--array-bounds', help='Range of jobs to run', default='0-99')
+qsub.add_argument('-b', '--batch', help='Array job (with flag) or individual qsub', action='store_true')
 
 # TODO: Clean subcommand
 clean = subparsers.add_parser('clean', help='Clean up directory')
@@ -101,7 +102,11 @@ elif args.cmd == 'client':
 
 elif args.cmd == 'qsub':
     args.run_script = args.run_script or os.path.join(TURKEY_HOME, 'cluster/run.sh')
-    os.system('qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, args.run_script))
+
+    if args.batch:
+        os.system('qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, args.run_script))
+    else:
+        os.system('qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, args.run_script))
 
 elif args.cmd == 'build':
     if args.force:

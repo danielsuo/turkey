@@ -39,7 +39,7 @@ inputs = [
     'native'
 ]
 
-pthread = [app for app in apps if app not in ['ferret', 'raytrace', 'vips', 'x264']]
+pthread = [app for app in apps if app not in ['ferret', 'freqmine', 'raytrace', 'vips', 'x264']]
 tbb = ['blackscholes', 'bodytrack', 'fluidanimate', 'streamcluster', 'swaptions']
 
 threads = [1, 2, 4, 8, 16, 32, 64, 128, 256]
