@@ -1,120 +1,116 @@
 import os
 import time
-import docker
+import json
 import subprocess
 
-from .utils import *
+# Run a single task
+class Task:
+    def __init__(self, desc, out_dir, in_dir, time_run=True, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
+        self.start     = desc[0]
+        self.id        = desc[1]
+        self.app       = desc[2]
+        self.conf_name = desc[3]
+        self.mode      = desc[4]
+        self.threads   = desc[5]
 
+        self.in_dir    = in_dir
+        self.out_dir   = out_dir
+        os.system('mkdir -p %s' % self.out_dir)
+
+        self.app_dir = os.path.join(self.in_dir, 'apps', self.app)
+        self.exec_dir = os.path.join(TURKEY_HOME, 'build/apps', self.app)
+        self.conf_file = os.path.join(self.app_dir, 'conf', '%s.json' % self.conf_name)
+
+        with open(self.conf_file, 'r') as conf_file:
+            self.conf = json.load(conf_file)
+
+        self.out_file = os.path.join(self.out_dir, 'task.out')
+        self.output_to_stdout = output_to_stdout
+        self.executable = os.path.join(self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
+
+        args = {
+            'nthreads': self.threads,
+            'inputs': os.path.join(self.app_dir, 'inputs'),
+            'outputs': self.out_dir
+        }
+
+        self.args = (self.conf['args'] % args).split(' ')
+        self.args.insert(0, self.executable)
+
+        if time_run:
+            self.args.insert(0, '-p')
+            self.args.insert(0, 'time')
+
+    def run(self, wait=False):
+        print('Running %s, output to %s' % (self.executable, self.out_file))
+
+        if self.output_to_stdout:
+            subprocess.Popen(self.args)
+        else:
+            with open(self.out_file, 'w') as out:
+                subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)
+
+        if wait:
+            os.wait()
+
+# Run a timeline of tasks
 class Job:
-    def __init__(self):
-        self.tasks = []
+    def __init__(self, args):
+        self.prefix      = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
+        self.file        = args.file
+        self.working_dir = args.working_dir
 
-    def run(self, out_dir='./'):
-        for task in self.tasks:
-            task.run(out_dir=out_dir)
+        self.out_dir     = args.out_dir if args.out_dir != None else \
+            self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
+        self.out_dir     = os.path.join(self.working_dir, self.out_dir)
+
+        os.system('mkdir -p %s' % os.path.join(self.working_dir, self.out_dir))
+
+        with open(self.file, 'r') as file:
+            tasks = [task.strip().split(',') for task in file.readlines()]
+
+        self.tasks       = {}
+        self.task_array  = []
+        self.ntasks      = len(tasks)
+
+        for tid in range(len(tasks)):
+            start = tasks[tid][0]
+            if start not in self.tasks:
+                self.tasks[start] = []
+
+            task = tasks[tid]
+            task.insert(1, str(tid))
+            out_dir = os.path.join(self.out_dir, '%s_%s_%s_%s_%s_%s' % tuple(task))
+
+            task = Task(tasks[tid], out_dir, args.in_dir, time_run=args.time, TURKEY_HOME=args.turkey_home)
+            self.tasks[start].append(task)
+            self.task_array.append(task)
+
+    def run(self):
+        tasks_run = 0
+        curr_time = 0
+        while tasks_run < self.ntasks:
+            if str(curr_time) in self.tasks:
+                for task in self.tasks[str(curr_time)]:
+                    task.run()
+                    tasks_run += 1
+            curr_time += 1
+            time.sleep(1)
 
         os.wait()
         os.system('stty sane')
 
-    @classmethod
-    def from_duplicated_task(cls, task, num_dups=1):
-        job = cls()
-        for i in range(num_dups):
-            job.tasks.append(Task(**task))
-            if task['mode'] == 'set':
-                job.tasks[i].cpus = '%d' % (i / 2)
-            job.tasks[i].prefix += '-%04d' % i
-
-        return job
-
-class Task:
-    def __init__(self, app='blackscholes', input='simdev', threads=1,
-                 cpus=1024, mode='shares', docker=True, docker_tag='prod', config = ''):
-
-        self.prefix     = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
-        self.app        = app
-        self.input      = input
-        self.threads    = threads
-        self.cpus       = cpus
-        self.mode       = mode
-        self.docker     = docker
-        self.docker_tag = docker_tag
-        self.config     = config
-
-        self.real    = 0
-        self.user    = 0
-        self.sys     = 0
-        self.total   = 0
-
-    def __str__(self):
-        members = self.members()
-        return ','.join([str(getattr(self, attr)) for attr in members])
-
-    def run(self, out_dir='./'):
-        path = self.generate_path(out_dir=out_dir)
-        args = self.generate_args()
-
-        # TODO: add logger that's configurable from CLI
-        # print(args)
-
-        with open(path, 'w') as out:
-            subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
-
-    def parse(self, out_dir='./'):
-        params = parse_file(self.generate_file(out_dir=out_dir), out_dir=out_dir)
-
-        self.real = params['real']
-        self.user = params['user']
-        self.sys  = params['sys']
-
-        self.total = self.user + self.sys
-
-    def members(self):
-        return [attr for attr in dir(self) if not callable(getattr(self, attr)) and not attr.startswith("__")]
-
-    def generate_file(self, out_dir='./'):
-        filename =  '%s_%s_%s_%s_%s.out' % (self.prefix,
-                                            self.app,
-                                            self.input,
-                                            str(self.threads),
-                                            str(self.cpus))
-        return filename
-
-    def generate_path(self, out_dir='./'):
-        return os.path.join(out_dir, self.generate_file(out_dir=out_dir))
-
-    def generate_args(self):
-        args = []
-        if self.docker:
-            args.extend(['sudo', 'docker', 'run', '--rm', '-i'])
-
-            if self.mode != 'NA':
-                if self.mode == 'set':
-                    args.append('--cpuset-cpus=%s' % self.cpus)
-                elif self.mode == 'shares':
-                    args.append('--cpu-shares=%s' % str(self.cpus))
-                # TODO: fix this; not currently working
-                elif self.mode == 'quota':
-                    args.append('--cpu-quota=%s --cpu-period=%s' %
-                        (str(self.cpus[0]), str(self.cpus[1])))
-
-            args.append('danielsuo/parsec:%s' % self.docker_tag)
-
-        else:
-            # TODO: manage shares/quota with nice and cpulimit
-            if self.cpus == 'set':
-                args.extend(['taskset', '-c', str(self.cpus)])
-
-            args.append(os.path.join(os.environ['PARSEC_HOME'], 'bin/parsecmgmt'))
-
-        args.extend([
-            '-a', 'run',
-            '-i', self.input,
-            '-p', self.app,
-            '-n', str(self.threads)
-        ])
-
-        if self.config != '':
-            args.extend(['-c', self.config])
-
-        return args
+apps = [
+    'blackscholes',
+    'bodytrack',
+    'canneal',
+    'dedup',
+    'facesim',
+    'ferret',
+    'fluidanimate',
+    'freqmine',
+    'raytrace',
+    'streamcluster',
+    'swaptions',
+    'vips',
+    'x264']

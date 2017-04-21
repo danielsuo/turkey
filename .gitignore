@@ -1,3 +1,4 @@
+*.sh
 .DS_Store
 *~
 .idea
@@ -9,6 +10,7 @@ buck-out/
 CMakeFiles/
 tmp
 .buckd
+venv
 
 *.deb
 

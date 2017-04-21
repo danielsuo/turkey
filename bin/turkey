@@ -4,8 +4,9 @@ import os
 import sys
 import argparse
 import subprocess
+import pathos.multiprocessing as mp
 
-from job import Job, Task, apps
+from turkey import Job, Task, apps
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -38,6 +39,8 @@ run.add_argument('-w', '--working-dir', help='Working directory')
 run.add_argument('-o', '--out-dir', help='Output directory relative to working')
 run.add_argument('-i', '--in-dir', help='Input directory relative to working. Where app directory lives')
 run.add_argument('-t', '--time', help='Time individual jobs', action='store_false')
+run.add_argument('-a', '--add-all', help='Dump all simultaneously into queue and let pool sort out', action='store_false')
+run.add_argument('-m', '--max-simultaneous', help='Maximum number of simultaneous jobs', type=int, default=5)
 
 # One-off run subcommand
 one = subparsers.add_parser('one', help='Run one app')
@@ -59,7 +62,8 @@ args = parser.parse_args()
 if args.turkey_home == None:
     try:
         TURKEY_HOME = os.environ['TURKEY_HOME']
-    except KeyError, e:
+        args.turkey_home = TURKEY_HOME
+    except KeyError as e:
         print('ERROR: could not find TURKEY_HOME in environment. Please specify with -q.')
         sys.exit()
 else:
@@ -99,7 +103,14 @@ elif args.cmd == 'run':
         args.in_dir = TURKEY_HOME
 
     job = Job(args)
-    job.run()
+    if args.add_all:
+        print(args.max_simultaneous)
+        pool = mp.Pool(min(job.ntasks, args.max_simultaneous))
+        pool.map(lambda task: task.run(wait=True), job.task_array)
+    else:
+        job.run()
+
+    # os.wait()
 
 elif args.cmd == 'one':
     if args.executable == None:

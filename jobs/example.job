@@ -1,2 +1,8 @@
-0,blackscholes,native,pthread,2
-5,blackscholes,native,pthread,2
+0,blackscholes,native,pthread,32
+0,blackscholes,native,pthread,32
+0,canneal,native,pthread,32
+0,canneal,native,pthread,32
+0,dedup,native,pthread,32
+0,dedup,native,pthread,32
+0,swaptions,native,pthread,32
+0,swaptions,native,pthread,32
