@@ -109,7 +109,7 @@ elif args.cmd == 'qsub':
         bounds = [int(bound) for bound in args.array_bounds.split('-')]
         for i in range(bounds[1]-bounds[0] + 1):
             args.run_script = args.run_script or os.path.join(TURKEY_HOME, 'cluster/run.sh')
-            os.system('qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d %s' % (args.num_cores, args.apps, args.prefix, args.num_workers, args.run_script, i))
+            os.system('qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d %s' % (args.num_cores, args.apps, args.prefix, args.num_workers, i, args.run_script))
 
 elif args.cmd == 'build':
     if args.force:
