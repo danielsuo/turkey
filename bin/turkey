@@ -75,7 +75,8 @@ qsub.add_argument('-n', '--num_workers', help='Maximum number of simultaneous jo
 qsub.add_argument('-c', '--num_cores', help='Maximum number of simultaneous jobs', type=int, default=mp.cpu_count())
 qsub.add_argument('-r', '--run-script', help='Run script')
 qsub.add_argument('-j', '--array-bounds', help='Range of jobs to run', default='0-99')
-qsub.add_argument('-b', '--batch', help='Array job (without flag) or individual qsub', action='store_true')
+qsub.add_argument('-l', '--loop', help='Array job (without flag) or individual qsub', action='store_true')
+qsub.add_argument('-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
 # TODO: Clean subcommand
 clean = subparsers.add_parser('clean', help='Clean up directory')
@@ -102,14 +103,18 @@ elif args.cmd == 'client':
 
 elif args.cmd == 'qsub':
 
-    if args.batch:
+    turkey = ''
+    if args.turkey_mode:
+        turkey = '-u'
+
+    if not args.loop:
         args.run_script = args.run_script or os.path.join(TURKEY_HOME, 'cluster/array.sh')
-        os.system('qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, args.run_script))
+        os.system('qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d,mode=%s %s' % (args.num_cores, args.array_bounds, args.apps, args.prefix, args.num_workers, turkey, args.run_script))
     else:
         bounds = [int(bound) for bound in args.array_bounds.split('-')]
         for i in range(bounds[1]-bounds[0] + 1):
             args.run_script = args.run_script or os.path.join(TURKEY_HOME, 'cluster/run.sh')
-            os.system('qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d %s' % (args.num_cores, args.apps, args.prefix, args.num_workers, i, args.run_script))
+            os.system('qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d,mode=%s %s' % (args.num_cores, args.apps, args.prefix, args.num_workers, i, turkey, args.run_script))
 
 elif args.cmd == 'build':
     if args.force:

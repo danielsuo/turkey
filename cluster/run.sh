@@ -24,4 +24,4 @@ cp -R $PBS_O_HOME/turkey $TMPDIR
 source activate idp
 
 jobname=${prefix}-`printf "%08d" ${index}`
-~/turkey/bin/turkey run ~/turkey/jobs/${apps}/${jobname}.job -i $TMPDIR/turkey -o $PBS_JOBID/${jobname} -n ${workers}
+~/turkey/bin/turkey run ~/turkey/jobs/${apps}/${jobname}.job -i $TMPDIR/turkey -o $PBS_JOBID/${jobname} -n ${workers} ${mode} 
