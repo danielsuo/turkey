@@ -5,7 +5,7 @@ import subprocess
 
 # Run a single task
 class Task:
-    def __init__(self, desc, out_dir, in_dir, time_run=True, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
+    def __init__(self, desc, out_dir, in_dir, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
         self.start     = desc[0]
         self.id        = desc[1]
         self.app       = desc[2]
@@ -28,27 +28,27 @@ class Task:
         self.output_to_stdout = output_to_stdout
         self.executable = os.path.join(self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
 
+    def run(self, threads=None, time_run=True, wait=False):
+        print('Running %s, output to %s' % (self.executable, self.out_file))
+
         args = {
-            'nthreads': self.threads,
+            'nthreads': threads or self.threads,
             'inputs': os.path.join(self.app_dir, 'inputs'),
             'outputs': self.out_dir
         }
 
-        self.args = (self.conf['args'] % args).split(' ')
-        self.args.insert(0, self.executable)
+        args = (self.conf['args'] % args).split(' ')
+        args.insert(0, self.executable)
 
         if time_run:
-            self.args.insert(0, '-p')
-            self.args.insert(0, 'time')
-
-    def run(self, wait=False):
-        print('Running %s, output to %s' % (self.executable, self.out_file))
+            args.insert(0, '-p')
+            args.insert(0, 'time')
 
         if self.output_to_stdout:
-            subprocess.Popen(self.args)
+            subprocess.Popen(args)
         else:
             with open(self.out_file, 'w') as out:
-                subprocess.Popen(self.args, stdin=open(os.devnull), stdout=out, stderr=out)
+                subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
 
         if wait:
             os.wait()
@@ -63,6 +63,7 @@ class Job:
         self.out_dir     = args.out_dir if args.out_dir != None else \
             self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
         self.out_dir     = os.path.join(self.working_dir, self.out_dir)
+        self.time        = args.time
 
         os.system('mkdir -p %s' % os.path.join(self.working_dir, self.out_dir))
 
@@ -82,7 +83,7 @@ class Job:
             task.insert(1, str(tid))
             out_dir = os.path.join(self.out_dir, '%s_%s_%s_%s_%s_%s' % tuple(task))
 
-            task = Task(tasks[tid], out_dir, args.in_dir, time_run=args.time, TURKEY_HOME=args.turkey_home)
+            task = Task(tasks[tid], out_dir, args.in_dir, TURKEY_HOME=args.turkey_home)
             self.tasks[start].append(task)
             self.task_array.append(task)
 
@@ -92,7 +93,7 @@ class Job:
         while tasks_run < self.ntasks:
             if str(curr_time) in self.tasks:
                 for task in self.tasks[str(curr_time)]:
-                    task.run()
+                    task.run(time_run=self.time)
                     tasks_run += 1
             curr_time += 1
             time.sleep(1)
