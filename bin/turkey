@@ -133,7 +133,8 @@ elif args.cmd == 'gen':
 
     working_dir = os.path.join(TURKEY_HOME, 'jobs')
     for i in range(args.num_jobs):
-        with open(os.path.join(working_dir, '%s-%08d.job' % (args.prefix, i)), 'w') as job_file:
+        os.system('mkdir -p %s' % os.path.join(working_dir, args.apps))
+        with open(os.path.join(working_dir, args.apps, '%s-%08d.job' % (args.prefix, i)), 'w') as job_file:
             for j in range(args.num_tasks):
                 task_index = randint(0, len(subset) - 1)
                 job_file.write(','.join([str(0), subset[task_index], args.conf, args.apps, str(args.num_threads)]) + '\n')
