@@ -1,0 +1,4 @@
+{
+  "args": "%(nthreads)s 500 %(inputs)s/in_500K.fluid %(outputs)s/out.fluid",
+  "input_file": "%(inputs)s/in_500K.fluid"
+}

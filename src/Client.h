@@ -1,19 +1,21 @@
 #pragma once
 #include "Common.h"
+#include <folly/Optional.h>
 
 namespace Turkey {
 class Client {
 public:
-  Client();
+  explicit Client(size_t defaultRec);
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
+  size_t pollServer();
+
 private:
-  int id_;
-  int rec_;
-  std::unique_ptr<boost::interprocess::managed_shared_memory> segment_;
-  std::unique_ptr<boost::interprocess::named_mutex> mutex_;
-  std::unique_ptr<RecVec> recVec_;
+  void registerWithServer();
+  boost::uuids::uuid id_;
+  RecInfo rec_;
+  bool registered_ = false;
 };
 }

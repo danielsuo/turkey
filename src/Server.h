@@ -1,7 +1,7 @@
 #pragma once
 #include "Common.h"
 #include "ProcReader.h"
-
+#include <queue>
 namespace Turkey {
 class Server {
 public:
@@ -11,14 +11,12 @@ public:
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
 
-  void get() const;
   void poll();
 
 private:
+  void updateTimeSeries(size_t r);
+
   ProcReader procReader_;
-  std::unique_ptr<int> defaultRec_;
-  std::unique_ptr<boost::interprocess::managed_shared_memory> segment_;
-  std::unique_ptr<boost::interprocess::named_mutex> mutex_;
-  std::unique_ptr<RecVec> recVec_;
+  std::deque<size_t> rTimeSeries_;
 };
 }

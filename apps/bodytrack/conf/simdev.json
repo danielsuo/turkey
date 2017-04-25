@@ -1,0 +1,3 @@
+{
+  "args": "%(inputs)s/sequenceB_261 4 1 100 3 0 %(nthreads)s"
+}

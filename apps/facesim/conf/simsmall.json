@@ -1,0 +1,3 @@
+{
+  "args": "-timing -threads %(nthreads)s -input_dir %(inputs)s -output_dir %(outputs)s"
+}

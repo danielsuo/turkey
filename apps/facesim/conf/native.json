@@ -1,0 +1,5 @@
+{
+  "args": "-timing -lastframe 100 -threads %(nthreads)s -input_dir %(inputs)s -output_dir %(outputs)s",
+  "input_file": "%(inputs)s",
+  "max_threads": 128
+}

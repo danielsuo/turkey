@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s %(inputs)s/simlarge.bin %(outputs)s/prices.txt"
+}

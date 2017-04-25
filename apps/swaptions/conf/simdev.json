@@ -1,0 +1,3 @@
+{
+  "args": "-ns 3 -sm 50 -nt %(nthreads)s"
+}

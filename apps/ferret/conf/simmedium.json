@@ -1,0 +1,3 @@
+{
+  "args": "%(inputs)s/corel lsh %(inputs)s/queries 10 20 %(nthreads)s %(outputs)s/output.txt"
+}

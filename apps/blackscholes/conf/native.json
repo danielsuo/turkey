@@ -1,0 +1,4 @@
+{
+  "args": "%(nthreads)s %(inputs)s/native.bin %(outputs)s/prices.txt",
+  "input_file": "%(inputs)s/native.bin"
+}

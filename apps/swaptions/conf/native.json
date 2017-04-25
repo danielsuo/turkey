@@ -1,0 +1,7 @@
+{
+  "args": "-ns 512 -sm 1000000 -nt %(nthreads)s",
+  "ignore": [
+    "inputs",
+    "outputs"
+  ]
+}

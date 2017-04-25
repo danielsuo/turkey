@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s %(inputs)s/simdev.bin %(outputs)s/prices.txt"
+}

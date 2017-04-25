@@ -6,7 +6,7 @@ class ProcReader {
 public:
   ProcReader();
 
-  int getRunnableThreads();
+  size_t getRunnableThreads();
 
 private:
   std::ifstream istream_;

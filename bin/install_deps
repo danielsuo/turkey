@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+
+# Clone repository
+# git clone https://github.com/danielsuo/turkey --recursive
+
+# Basic setup
+sudo apt-get update
+sudo apt-get install -y \
+  git \
+  build-essential \
+  cmake \
+  autoconf \
+  automake \
+  libtool \
+  uuid-dev \
+  pkg-config \
+  libboost-all-dev \
+  m4 \
+  libx11-dev \
+  libxtst-dev \
+  libxt-dev \
+  libxmu-headers \
+  libxmu-dev \
+  libtbb-dev \
+  gettext \
+  x11proto-xext-dev \
+  libglu1-mesa-dev \
+  libdouble-conversion1v5 \
+  libdouble-conversion-dev \
+  libgsl-dev \
+  libgsl2 \
+  libjpeg-dev \
+  freeglut3-dev \
+  libglib2.0-dev \
+  libxml2-dev \
+  libpango1.0-dev \
+  libpng-dev \
+  zlib1g-dev \
+  libsdl-dev \
+  libgflags-dev \
+  libgoogle-glog-dev \
+  libssl-dev \
+  libevent-dev \
+  gtk-doc-tools \
+  swig \
+  libcurl4-openssl-dev
+
+
+# CentOS
+# cmake3
+# devtoolset-6-gcc
+# devtoolset-6-gcc-c++
+# double-conversion
+# double-conversion-devel
+# autogen
+# scons
+# perl-Thread-Queue
+# boost
+# boost-devel
+# gflags
+# gflags-devel
+# glog
+# glog-devel
+# libevent
+# libevent-devel
+# epel-release
+# lz4
+# lz4-devel
+# lzma
+# lzma-devel
+# snappy
+# snappy-devel
+# zlib
+# zlib-devel
+# uuid-devel
+# tbb-devel
+# libX11
+# libX11-devel
+# libXtst
+# libXtst-devel
+# libXt
+# libXt-devel
+# libXmu
+# libXmu-devel
+# mesa-libGL-devel
+# xorg-x11-proto-dvel
+# gsl-devel
+# gsl
+# libjpeg-turbo-devel
+# freeglut-devel
+# glib2-devel
+# libxml2-devel
+# pango-devel
+# SDL-devel
+# openssl-devel
+# gtk-doc-tools
+# swig
+
+# Cgroup
+# sudo apt-get install -y libcgroup-dev cgroup-tools
+
+# Monitoring
+# sudo apt-get install -y htop iotop sysstat linux-tools-common linux-tools-generic
+
+# Install curl
+# sudo apt-get install -y libcurl4-openssl-dev
+
+# Perf dependencies
+# sudo apt-get install -y \
+#   flex \
+#   bison \
+#   libelf-dev \
+#   libaudit-dev \
+#   libdw-dev \
+#   libunwind* \
+#   python-dev \
+#   binutils-dev \
+#   libnuma-dev \
+#   libgtk2.0-dev \
+#   libbfd-dev \
+#   libelf1 \
+#   libperl-dev \
+#   libnuma-dev \
+#   libslang2 libslang2-dev \
+#   libunwind8 libunwind8-dev \
+#   binutils-multiarch-dev \
+#   elfutils \
+#   libiberty-dev \
+#   libssl-dev \
+#   liblzma-dev \
+#   systemtap-sdt-dev
+
+# git clone https://github.com/torvalds/linux
+# pushd linux/tools/perf
+# make
+# sudo make install
+# popd

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+git clone https://github.com/facebook/wangle tmp/wangle
+
+pushd tmp/wangle/wangle
+cmake .
+make -j
+ctest
+sudo make install
+popd

@@ -1,0 +1,3 @@
+{
+  "args": "%(nthreads)s 10000 2000 %(inputs)s/simsmall.bin 32"
+}

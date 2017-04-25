@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+if [ $1 == "ubuntu" ]
+then
+  sudo apt-get install -y \
+    g++ \
+    automake \
+    autoconf \
+    autoconf-archive \
+    libtool \
+    libboost-all-dev \
+    libevent-dev \
+    libdouble-conversion-dev \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    liblz4-dev \
+    liblzma-dev \
+    libsnappy-dev \
+    make \
+    zlib1g-dev \
+    binutils-dev \
+    libjemalloc-dev \
+    libssl-dev \
+    libunwind8-dev \
+    libelf-dev \
+    libdwarf-dev \
+    libiberty-dev
+else
+  sudo yum install -y double-conversion double-conversion-devel
+  sudo yum install -y automake autoconf autogen libtool make scons
+  sudo yum install -y perl-Thread-Queue
+  sudo yum install -y boost boost-devel gflags gflags-devel glog glog-devel libevent libevent-devel epel-release lz4 lz4-devel lzma lzma-devel snappy snappy-devel zlib zlib-devel
+fi
+
+git clone https://github.com/facebook/folly tmp/folly
+pushd tmp/folly/folly
+
+pushd test && \
+rm -rf gtest && \
+wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
+tar zxf release-1.8.0.tar.gz && \
+rm -f release-1.8.0.tar.gz && \
+mv googletest-release-1.8.0 gtest
+popd
+
+autoreconf -ivf
+./configure
+make -j
+make -j check
+sudo make install
+
+popd
