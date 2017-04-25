@@ -43,6 +43,7 @@ sudo apt-get install -y \
   libevent-dev \
   gtk-doc-tools \
   swig \
+  libcurl4-openssl-dev
 
 
 # CentOS
