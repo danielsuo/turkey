@@ -1,0 +1,37 @@
+\documentclass[10pt]{sigplanconf}
+\input{tex/preamble.tex}
+
+\newcommand{\mech}{ARS}
+\newcommand{\mechfull}{Application Resource Scheduler}
+
+\begin{document}
+
+\title{The Case for Cooperative Resource Sharing for Parallel Applications on Manycore Processors}
+\maketitle
+
+\section*{To fix/add}
+\begin{itemize}
+    \item 256 threads in experiments (over-provisioned)
+    \item Why does contention happen?
+    \item Scheduling algorithm details
+    \item Other scheduling algorithms
+    \item Expand related work
+    \item Fix references
+    \item How to modify parallelism in applications?
+    \item Open source? How would we make this usable?
+\end{itemize}
+
+\input{tex/00-abstract.tex}
+\input{tex/01-intro.tex}
+% \input{tex/02-current.tex}
+\input{tex/03-performance.tex}
+\input{tex/04-case-for.tex}
+\input{tex/05-design.tex}
+\input{tex/06-implementation.tex}
+\input{tex/07-evaluation.tex}
+\input{tex/08-related.tex}
+\input{tex/09-conclusion.tex}
+
+\input{tex/bibliography.tex}
+
+\end{document}

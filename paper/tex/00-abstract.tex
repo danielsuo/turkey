@@ -1,0 +1,10 @@
+\begin{abstract}
+The continuous rise of parallel and cloud computing has created new challenges for the systems community. On one hand, high-performance parallelized software requires close collaboration with the operating system and knowledge of underlying hardware. On the other, cloud computing environments attempt to provide an abstraction of a single-tenant system, typically by hiding those same details. This tension will get worse over time as application developers are pressured by the increasing number of cores available in server hardware.
+
+Thus far, the systems community has prioritized maintaining the single-tenancy abstraction at the expense of global application performance. Server virtualization technologies like containers and virtual machines have become popular ways of maintaining isolation between applications that share hardware, but provide little means for cooperative resource sharing between applications.
+
+In this world, developers seeking to maximize performance of their applications have two bad choices: either over-provision units of execution and run the risk of un-managed resource contention or under-provision them and fall short of performance potential.
+
+We propose \mechfull{}s (\mech{}s), a mechanism for structured communication between the operating system and user-level applications for the purposes of cooperative resource sharing. \mech{}s allows applications to dynamically alter their behavior in response to changing resource availability, maximizing global and local application performance. We evaluate the feasibility of \mech{}s by using one to coordinate CPU usage across parallel execution of applications in the PARSEC benchmark, improving system throughput by up to 60\%.
+
+\end{abstract}
