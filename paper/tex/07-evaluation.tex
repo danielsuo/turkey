@@ -27,7 +27,7 @@ We run each workload with Pthreads and TBB in their normal use case and as part 
 
 \subsection{Coordinating with \mech{}s}
 \input{fig/randomized.tex}
-We show our main results in Figure 5}. The pair of figures show the same experiments for Pthreads and TBB. The vertical axis indicates how much faster the cooperative approach completed workloads relative to the pre-emptive approach on the same workload. The line shows mean speed-up for the specified load level and the error bars show the maximum and minimum observed speed-ups.
+We show our main results in Figure 5. The pair of figures show the same experiments for Pthreads and TBB. The vertical axis indicates how much faster the cooperative approach completed workloads relative to the pre-emptive approach on the same workload. The line shows mean speed-up for the specified load level and the error bars show the maximum and minimum observed speed-ups.
 
 There are two important observations. First, we did not observe in any scenario where cooperating led to a worse outcome. Second, cooperation improves performance to a greater extent with increasing contention. We were able to achieve such a result with a simple design because our workload has a number of structural features (e.g., CPU-intensive, parallel structure) that lend themselves to cooperation.
 
