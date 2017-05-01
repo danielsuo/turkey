@@ -1,0 +1,22 @@
+# TODO
+- What if each application looked into stuff on its own and made decisions independently?
+- Argue for why 256 overprovision is good (speed up curves)
+- 256 threads in experiments (over-provisioned)
+- Why does contention happen?
+- Scheduling algorithm details
+- Other scheduling algorithms
+- Expand related work
+- Fix references
+- How to modify parallelism in applications?
+- Open source? How would we make this usable?
+- Back-off punishment (i.e., delta between where you are and new rec -> amount of time to change)
+- Compare with cooperative scheduling (i.e., yields)
+- Expand beyond just CPU-intensive?
+- Isolation vs virtualization
+  - OS can still take over
+  - Applications are responsible for changing behavior
+  - Other applications are not hurt if you don't change behavior (punishment)
+- Store raw data in repo
+- Generate figures from data during compile
+- Measure overhead of converting to work queue. What if we changed parallelism at different stage?
+- What if we changed grain size dynamically?
