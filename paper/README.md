@@ -1,4 +1,19 @@
-# TODO
+## Next steps
+There are four "holes" that I feel must be filled to make the simple case and wanted to get your input before fleshing them out with possible experiments / analyses:
+
+1. What is really going on with the applications under contention? What classes of applications (or stages of applications) are there and how do they interact?
+
+2. Why do existing approaches not resolve these issues? This should be much more exhaustive. There are several straw man solutions we proposed but did not test. We should also be extremely clear about what existing parallel programming libraries are doing.
+
+3. How and why does our simple solution work? Thread contention is one case, but we want to get a more nuanced picture of different resources.
+
+4. Are PARSEC and our simulated workloads really representative of real-world scenarios?
+
+We discuss all four in the paper, but at a high-level and without experimental results. For me, this is why the paper is unsatisfying.
+
+Once we fill the holes, we can discuss how to develop a more sophisticated solution.
+
+## TODO
 - What if each application looked into stuff on its own and made decisions independently?
 - Argue for why 256 overprovision is good (speed up curves)
 - 256 threads in experiments (over-provisioned)
