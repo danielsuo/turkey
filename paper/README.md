@@ -13,6 +13,13 @@ We discuss all four in the paper, but at a high-level and without experimental r
 
 Once we fill the holes, we can discuss how to develop a more sophisticated solution.
 
+- cost context switching
+- hyperthreading / NUMA
+- \# of applications changes
+- better scheduler
+
+![](assets/markdown-img-paste-20170503111044624.png)
+
 ## TODO
 - What if each application looked into stuff on its own and made decisions independently?
 - Argue for why 256 overprovision is good (speed up curves)
@@ -35,3 +42,6 @@ Once we fill the holes, we can discuss how to develop a more sophisticated solut
 - Generate figures from data during compile
 - Measure overhead of converting to work queue. What if we changed parallelism at different stage?
 - What if we changed grain size dynamically?
+- Not just cloud providers, but cloud service providers (e.g., db as a service)
+- Other applications (e.g., dbs)
+- Multi-tenancy vs cloud
