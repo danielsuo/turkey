@@ -24,20 +24,11 @@
 #ifndef X264_ENCODER_SET_H
 #define X264_ENCODER_SET_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /*__cplusplus*/
-
-void x264_sps_init(x264_sps_t* sps, int i_id, x264_param_t* param);
-void x264_sps_write(bs_t* s, x264_sps_t* sps);
-void x264_pps_init(x264_pps_t* pps, int i_id, x264_param_t* param,
-                   x264_sps_t* sps);
-void x264_pps_write(bs_t* s, x264_pps_t* pps);
-void x264_sei_version_write(x264_t* h, bs_t* s);
-int x264_validate_levels(x264_t* h, int verbose);
-
-#ifdef __cplusplus
-}
-#endif /*__cplusplus*/
+void x264_sps_init( x264_sps_t *sps, int i_id, x264_param_t *param );
+void x264_sps_write( bs_t *s, x264_sps_t *sps );
+void x264_pps_init( x264_pps_t *pps, int i_id, x264_param_t *param, x264_sps_t *sps );
+void x264_pps_write( bs_t *s, x264_pps_t *pps );
+void x264_sei_version_write( x264_t *h, bs_t *s );
+int  x264_validate_levels( x264_t *h, int verbose );
 
 #endif
