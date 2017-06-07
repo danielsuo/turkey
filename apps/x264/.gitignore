@@ -1,1 +1,4 @@
 config*
+.depend
+*pc
+x264

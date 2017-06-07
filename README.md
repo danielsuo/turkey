@@ -28,8 +28,8 @@
 | freqmine        | X               |                 |                 |
 | streamcluster   | X               |                 | X               |
 | swaptions       | X               |                 | X               |
-| vips            |                 |                 |                 |
-| x264            |                 |                 |                 |
+| vips            | X               |                 |                 |
+| x264            | X               |                 |                 |
 
 ### SPLASH-2
 | Application     | Compiled        | Turkey          | TBB             |
