@@ -4,6 +4,7 @@
 
 ## Getting started
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
+- Run ```cd benchmarks && ./bin/install```
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
 - Run ```./bin/turkey compile``` to compile all converted applications
 - Run ```./bin/turkey compile -a [APP]``` to compile the application you're working on

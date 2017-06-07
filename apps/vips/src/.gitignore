@@ -1,0 +1,10 @@
+Makefile
+config*
+libtool
+libvips*
+man
+po
+stamp*
+swig
+tools
+vips*

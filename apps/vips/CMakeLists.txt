@@ -53,8 +53,16 @@ target_link_libraries(
 
 add_custom_target (
   ${PROJECT_NAME}_configure
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/src/bootstrap.sh
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/src/configure --disable-shared --without-fftw3 --without-magick --without-liboil --without-lcms --without-OpenEXR --without-matio --without-pangoft2 --without-tiff --without-jpeg --without-zip --without-png --without-libexif --without-python --without-x --without-perl --without-v4l --without-cimg --enable-threads
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/src/configure --disable-shared
+  --without-fftw3 --without-magick --without-liboil --without-lcms
+  --without-OpenEXR --without-matio --without-pangoft2 --without-tiff
+  --without-jpeg --without-zip --without-png --without-libexif --without-python
+  --without-x --without-perl --without-v4l --without-cimg --enable-threads
+  --prefix=${CMAKE_CURRENT_BINARY_DIR}
+  COMMAND make
+  COMMAND make install
 )
 
 add_dependencies (${PROJECT_NAME} ${PROJECT_NAME}_configure)
