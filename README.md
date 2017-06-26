@@ -6,8 +6,8 @@
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
 - Run ```cd benchmarks && ./bin/install```
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
-- Run ```./bin/turkey compile``` to compile all converted applications
-- Run ```./bin/turkey compile -a [APP]``` to compile the application you're working on
+- Run ```./bin/turkey build``` to build all converted applications
+- Run ```./bin/turkey build -a [APP]``` to build the application you're working on
 - Run ```./bin/turkey data -a [APP]``` to download the data for the application you're working on
 - Run ```./bin/turkey one -a [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
 
@@ -16,7 +16,7 @@
 
 ## Application status
 ### PARSEC
-| Application     | Compiled        | Turkey          | TBB             |
+| Application     | compiled        | Turkey          | TBB             |
 | --------------- | :-------------: | :-------------: | :-------------: |
 | blackscholes    | X               | X               | X               |
 | bodytrack       | X               |                 | X               |
@@ -32,7 +32,7 @@
 | x264            | X               |                 |                 |
 
 ### SPLASH-2
-| Application     | Compiled        | Turkey          | TBB             |
+| Application     | compiled        | Turkey          | TBB             |
 | --------------- | :-------------: | :-------------: | :-------------: |
 | barnes          |                 |                 |                 |
 | cholesky        |                 |                 |                 |

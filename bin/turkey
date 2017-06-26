@@ -17,10 +17,6 @@ parser.add_argument('-q', '--turkey-home', help='Turkey home directory')
 
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
-# Compile subcommand
-compile = subparsers.add_parser('compile', help='Compile specified app')
-compile.add_argument('app', help='App to compile')
-
 # Server commands
 server = subparsers.add_parser('server', help='Handle server stuff')
 
