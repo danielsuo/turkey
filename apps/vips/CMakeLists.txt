@@ -22,6 +22,7 @@ find_package (X11 REQUIRED)
 
 # Get all source files
 file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/libvips/**/*)
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src/libvips/include)
 include_directories (${CMAKE_CURRENT_BINARY_DIR}/libvips/include)
 include_directories (${CMAKE_CURRENT_BINARY_DIR}/libvips)
