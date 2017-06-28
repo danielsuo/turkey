@@ -32,7 +32,7 @@ build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 
 # Data subcommand
 data = subparsers.add_parser('data', help='Download and unpack data')
-data.add_argument('app', help='App to data for')
+data.add_argument('app', help='App to data for', default='all')
 
 # Generate subcommand
 gen = subparsers.add_parser('gen', help='Generate job files for run command')
