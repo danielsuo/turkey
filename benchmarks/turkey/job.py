@@ -45,13 +45,17 @@ class Task:
             'outputs': self.out_dir
         }
 
-        if 'ignore' in self.conf:
-            for ignore in self.conf['ignore']:
-                del args[ignore]
+        #  if 'ignore' in self.conf:
+            #  for ignore in self.conf['ignore']:
+                #  del args[ignore]
 
         # if 'inputs' in args and copy_data:
         #     os.system('cp -R %s %s' % (args['inputs'], args['outputs']))
         #     args['inputs'] = os.path.join(args['outputs'], 'inputs')
+
+        if 'environment' in self.conf:
+            for key in self.conf['environment'].keys():
+                os.environ[key] = self.conf['environment'][key] % args
 
         args = (self.conf['args'] % args).split(' ')
         args.insert(0, self.executable)
@@ -61,7 +65,7 @@ class Task:
             args.insert(0, 'time')
 
         if self.output_to_stdout:
-            subprocess.Popen(args)
+            subprocess.Popen(args, env=os.environ)
         else:
             with open(self.out_file, 'w') as out:
                 subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
