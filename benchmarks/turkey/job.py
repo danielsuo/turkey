@@ -6,7 +6,6 @@ import subprocess
 # Run a single task
 class Task:
     def __init__(self, desc, out_dir, in_dir, executable=None, output_to_stdout=False, TURKEY_HOME='.'):
-        print('creating task %s', desc[2])
         self.start     = desc[0]
         self.id        = desc[1]
         self.app       = desc[2]
