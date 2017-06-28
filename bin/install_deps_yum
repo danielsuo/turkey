@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+sudo yum --enablerepo=extras install epel-release
+
 sudo yum install -y \
   cmake3 \
   devtoolset-6-gcc \
@@ -48,4 +50,5 @@ sudo yum install -y \
   SDL-devel \
   openssl-devel \
   gtk-doc-tools \
-  swig
+  swig \
+  yasm
