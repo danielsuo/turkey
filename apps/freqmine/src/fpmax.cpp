@@ -104,7 +104,6 @@ void printLen()
 int main(int argc, char **argv)
 {
 	double tstart, tdatap, tend;
-	int workingthread=omp_get_max_threads();
 	int i;
 	FP_tree* fptree;
 
@@ -121,12 +120,16 @@ int main(int argc, char **argv)
 	__parsec_bench_begin(__parsec_freqmine);
 #endif
 	
-	if (argc < 3)
+	if (argc < 4)
 	{
-	  cout << "usage: " << argv[0] << " <infile> <MINSUP> [<outfile>]\n";
+	  cout << "usage: " << argv[0] << " <infile> <MINSUP> <nthreads> [<outfile>]\n";
 	  exit(1);
 	}
 	THRESHOLD = atoi(argv[2]);
+  int workingthread=atoi(argv[3]);
+
+  omp_set_dynamic(0);
+  omp_set_num_threads(workingthread);
 
 	Data* fdat=new Data(argv[1]);
 

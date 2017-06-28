@@ -1,6 +1,3 @@
 {
-  "args": "%(inputs)s/webdocs_250k.dat 11000 %(outputs)s/out.txt",
-  "environment": {
-    "OMP_NUM_THREADS": "%(nthreads)s"
-  }
+  "args": "%(inputs)s/webdocs_250k.dat 11000 %(nthreads)s %(outputs)s/out.txt",
 }

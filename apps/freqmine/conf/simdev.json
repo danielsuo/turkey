@@ -1,7 +1,4 @@
 {
-  "args": "%(inputs)s/Tw10I4D100K_1k.dat 3 %(outputs)s/out.txt",
-  "environment": {
-    "OMP_NUM_THREADS": "%(nthreads)s"
-  }
+  "args": "%(inputs)s/Tw10I4D100K_1k.dat 3 %(nthreads)s %(outputs)s/out.txt",
 }
 

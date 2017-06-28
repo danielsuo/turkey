@@ -1,7 +1,4 @@
 {
-  "args": "%(inputs)s/kosarak_250k.dat 220 %(output)s/out.txt"
-  "environment": {
-    "OMP_NUM_THREADS": "%(nthreads)s"
-  }
+  "args": "%(inputs)s/kosarak_250k.dat 220 %(nthreads)s %(output)s/out.txt"
 }
 
