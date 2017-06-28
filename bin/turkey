@@ -25,7 +25,7 @@ client = subparsers.add_parser('client', help='Do dummy client stuff')
 
 # Build subcommand
 build = subparsers.add_parser('build', help='Build specified app')
-build.add_argument('-a', '--app', help='App to build', default='all')
+build.add_argument('app', help='App to build', default='all')
 build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
 build.add_argument('-e', '--cmake-executable', help='Path to cmake', default='cmake')
 build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
