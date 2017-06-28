@@ -26,7 +26,11 @@ class Task:
 
         self.out_file = os.path.join(self.out_dir, 'task.out')
         self.output_to_stdout = output_to_stdout
-        self.executable = os.path.join(self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
+
+        if 'exe' in self.conf:
+            self.executable = os.path.join(self.exec_dir, self.conf['exe'])
+        else:
+            self.executable = os.path.join(self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
 
     def run(self, threads=None, time_run=True, wait=False, copy_data=True):
         print('Running %s, output to %s' % (self.executable, self.out_file))
