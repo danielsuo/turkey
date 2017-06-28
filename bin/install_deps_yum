@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+sudo yum install -y \
+  cmake3 \
+  devtoolset-6-gcc \
+  devtoolset-6-gcc-c++ \
+  double-conversion \
+  double-conversion-devel \
+  autogen \
+  scons \
+  perl-Thread-Queue \
+  boost \
+  boost-devel \
+  gflags \
+  gflags-devel \
+  glog \
+  glog-devel \
+  libevent \
+  libevent-devel \
+  epel-release \
+  lz4 \
+  lz4-devel \
+  lzma \
+  lzma-devel \
+  snappy \
+  snappy-devel \
+  zlib \
+  zlib-devel \
+  uuid-devel \
+  tbb-devel \
+  libX11 \
+  libX11-devel \
+  libXtst \
+  libXtst-devel \
+  libXt \
+  libXt-devel \
+  libXmu \
+  libXmu-devel \
+  mesa-libGL-devel \
+  xorg-x11-proto-dvel \
+  gsl-devel \
+  gsl \
+  libjpeg-turbo-devel \
+  freeglut-devel \
+  glib2-devel \
+  libxml2-devel \
+  pango-devel \
+  SDL-devel \
+  openssl-devel \
+  gtk-doc-tools \
+  swig
