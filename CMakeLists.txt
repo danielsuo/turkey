@@ -37,6 +37,7 @@ set (TURKEY_INCLUDE_DIR
   ${WANGLE_INCLUDE_DIR}
 )
 set (APPS
+  barnes
   blackscholes
   bodytrack
   canneal
