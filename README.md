@@ -34,17 +34,20 @@
 ### SPLASH-2
 | Application     | compiled        | Turkey          | TBB             |
 | --------------- | :-------------: | :-------------: | :-------------: |
-| barnes          |                 |                 |                 |
+| barnes          | X               |                 |                 |
 | cholesky        |                 |                 |                 |
 | fft             |                 |                 |                 |
 | fmm             |                 |                 |                 |
-| lu              |                 |                 |                 |
-| ocean           |                 |                 |                 |
+| lu_cb           |                 |                 |                 |
+| lu_ncb          |                 |                 |                 |
+| ocean_cp        |                 |                 |                 |
+| ocean_ncp       |                 |                 |                 |
 | radiosity       |                 |                 |                 |
 | radix           |                 |                 |                 |
 | raytrace        |                 |                 |                 |
 | volrend         |                 |                 |                 |
-| water           |                 |                 |                 |
+| water_nsquared  |                 |                 |                 |
+| water_spatial   |                 |                 |                 |
 
 ## Outstanding feature
 - Modes (e.g., pthreads, tbb, turkey)
