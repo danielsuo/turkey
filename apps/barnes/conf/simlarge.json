@@ -1,0 +1,3 @@
+{
+  "args":  "-n %(nthreads)s -i %(inputs)s/input_simlarge.template"
+}
