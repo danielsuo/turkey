@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+git clone https://github.com/pyenv/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+
+echo "export PYENV_ROOT=$HOME/.pyenv" >> ~/.turkey
+echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> ~/.turkey
+echo 'eval "$(pyenv init -)"' >> ~/.turkey
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.turkey
+
+source ~/.turkey
+
+# Install the relevant python and virtual environment
+pyenv install 2.7.13
+pyenv virtualenv 2.7.13 turkey-venv
+
+# Install the turkey package
+# pyenv activate turkey-venv
+# python setup.py develop
+# pyenv deactivate
+
+echo 'source ~/.turkey' >> $bashrc

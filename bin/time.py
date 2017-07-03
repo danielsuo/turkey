@@ -1,6 +1,19 @@
 import os
 
-apps = ['blackscholes', 'ferret', 'freqmine', 'bodytrack', 'canneal', 'dedup', 'facesim', 'fluidanimate', 'streamcluster', 'swaptions', 'vips', 'x264']
+apps = [
+  #  'blackscholes',
+  #  'ferret',
+  #  'freqmine'
+  #  'bodytrack'
+  #  'canneal',
+  #  'dedup',
+  'facesim',
+  'fluidanimate',
+  'streamcluster',
+  'swaptions',
+  'vips',
+  'x264'
+  ]
 
 times = 4
 
