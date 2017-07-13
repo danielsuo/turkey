@@ -15,9 +15,9 @@ add_executable (${PROJECT_NAME}_pthread ${SOURCE_FILES})
 
 find_package (Threads)
 target_link_libraries(
-    ${PROJECT_NAME}_pthread
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+  ${PROJECT_NAME}_pthread
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
 
-# add_dependencies (${PROJECT_NAME}_pthread turkey)
+add_dependencies (${PROJECT_NAME}_pthread turkey)

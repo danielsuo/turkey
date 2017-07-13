@@ -1,6 +1,7 @@
 .DS_Store
 *~
 .idea
+tags
 cmake-build-debug
 build/
 out/

@@ -1,35 +1,37 @@
-#include "ProcReader.h"
-#include "Server.h"
+#include <iostream>
+
 #include <atomic>
 #include <chrono>
-#include <iostream>
-#include <signal.h>
 #include <thread>
+
+#include <cstring>
+
+// Signal
+#include <signal.h>
 #include <unistd.h>
 
-using namespace Turkey;
-
-std::atomic<bool> quit(false); // signal flag
-
+std::atomic<bool> quit(false);
 void got_signal(int) { quit.store(true); }
 
 int main(int argc, char* argv[]) {
-  // Set up signal handler.
+  // Set up the signal handler
   struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
+  std::memset(&sa, 0, sizeof(sa));
   sa.sa_handler = got_signal;
   sigfillset(&sa.sa_mask);
   sigaction(SIGINT, &sa, NULL);
 
-  using namespace std::chrono_literals;
-  Server server;
-  std::cout << "Starting server" << std::endl;
+  std::cout << "Starting server!" << std::endl;
+
   while (true) {
-    // do real work here...
+    using namespace std::chrono_literals;
     std::this_thread::sleep_for(1s);
-    server.poll();
-    if (quit.load())
-      break; // exit normally after SIGINT
+
+    std::cout << "Polling..." << std::endl;
+
+    if (quit.load()) {
+      break;
+    }
   }
 
   return 0;
