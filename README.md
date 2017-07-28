@@ -4,7 +4,6 @@
 
 ## Getting started
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
-- Run ```cd benchmarks && ./bin/install```
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
 - Run ```./bin/turkey build``` to build all converted applications
 - Run ```./bin/turkey build -a [APP]``` to build the application you're working on
@@ -53,11 +52,11 @@
 - Modes (e.g., pthreads, tbb, turkey)
 
 ## Outstanding documentation
-- Job files
-- Conf files
-- Job outputs
+  - Job files
+  - Conf files
+  - Job outputs
 
 ## Outstanding clean-up
-- CMakeFiles.txt
-- Install scripts
-- Vendor dependencies
+  - CMakeFiles.txt
+  - Install scripts
+  - Vendor dependencies
