@@ -35,49 +35,49 @@ class Task:
     def run(self, threads=None, time_run=True, wait=False, copy_data=True):
         print('Running %s, output to %s' % (self.executable, self.out_file))
 
-    if 'max_threads' in self.conf:
-        self.threads = min(self.conf['max_threads'], int(self.threads))
+        if 'max_threads' in self.conf:
+            self.threads = min(self.conf['max_threads'], int(self.threads))
 
-    if 'min_threads' in self.conf:
-        self.threads = max(self.conf['min_threads'], int(self.threads))
+        if 'min_threads' in self.conf:
+            self.threads = max(self.conf['min_threads'], int(self.threads))
 
-    self.threads = str(self.threads)
+        self.threads = str(self.threads)
 
-    args = {
-        'nthreads': str(threads or self.threads),
-        'inputs': os.path.join(self.app_dir, 'inputs'),
-        'outputs': self.out_dir
-        }
+        args = {
+            'nthreads': str(threads or self.threads),
+            'inputs': os.path.join(self.app_dir, 'inputs'),
+            'outputs': self.out_dir
+            }
 
-    #  if 'ignore' in self.conf:
-        #  for ignore in self.conf['ignore']:
-            #  del args[ignore]
+        #  if 'ignore' in self.conf:
+            #  for ignore in self.conf['ignore']:
+                #  del args[ignore]
 
-    # if 'inputs' in args and copy_data:
-    #     os.system('cp -R %s %s' % (args['inputs'], args['outputs']))
-    #     args['inputs'] = os.path.join(args['outputs'], 'inputs')
+        # if 'inputs' in args and copy_data:
+        #     os.system('cp -R %s %s' % (args['inputs'], args['outputs']))
+        #     args['inputs'] = os.path.join(args['outputs'], 'inputs')
 
-    if 'environment' in self.conf:
-        for key in self.conf['environment'].keys():
-            os.environ[key] = self.conf['environment'][key] % args
+        if 'environment' in self.conf:
+            for key in self.conf['environment'].keys():
+                os.environ[key] = self.conf['environment'][key] % args
 
-    args = (self.conf['args'] % args).split(' ')
-    args.insert(0, self.executable)
+        args = (self.conf['args'] % args).split(' ')
+        args.insert(0, self.executable)
 
-    if time_run:
-        args.insert(0, '-p')
-        args.insert(0, 'time')
+        if time_run:
+            args.insert(0, '-p')
+            args.insert(0, 'time')
 
-    if self.output_to_stdout:
-        subprocess.Popen(args, env=os.environ)
-    else:
-        with open(self.out_file, 'w') as out:
-            subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
+        if self.output_to_stdout:
+            subprocess.Popen(args, env=os.environ)
+        else:
+            with open(self.out_file, 'w') as out:
+                subprocess.Popen(args, stdin=open(os.devnull), stdout=out, stderr=out)
 
-    if wait:
-        os.wait()
-        os.system('date')
-        # os.system('rm -rf %s' % args['inputs'])
+        if wait:
+            os.wait()
+            os.system('date')
+            # os.system('rm -rf %s' % args['inputs'])
 
 # Run a timeline of tasks
 class Job:
