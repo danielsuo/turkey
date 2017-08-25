@@ -23,10 +23,10 @@ target_link_libraries(
   )
 
 # EQUI
-add_executable (${PROJECT_NAME}_pthread_equi ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread_equi.cpp)
-set_target_properties (${PROJECT_NAME}_pthread_equi PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
+add_executable (${PROJECT_NAME}_equi ${CMAKE_CURRENT_SOURCE_DIR}/main_equi.cpp)
+set_target_properties (${PROJECT_NAME}_equi PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
 target_link_libraries(
-  ${PROJECT_NAME}_pthread_equi
+  ${PROJECT_NAME}_equi
   m
   ${CMAKE_THREAD_LIBS_INIT}
   )
