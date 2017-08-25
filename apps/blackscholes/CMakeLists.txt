@@ -17,42 +17,51 @@ find_package (OpenMP)
 add_executable (${PROJECT_NAME}_pthread ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
 set_target_properties (${PROJECT_NAME}_pthread PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
 target_link_libraries(
-    ${PROJECT_NAME}_pthread
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+  ${PROJECT_NAME}_pthread
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
+
+# EQUI
+add_executable (${PROJECT_NAME}_pthread_equi ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread_equi.cpp)
+set_target_properties (${PROJECT_NAME}_pthread_equi PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
+target_link_libraries(
+  ${PROJECT_NAME}_pthread_equi
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
 
 # TBB
 add_executable (${PROJECT_NAME}_tbb ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
 set_target_properties (${PROJECT_NAME}_tbb PROPERTIES COMPILE_DEFINITIONS "ENABLE_TBB")
 target_link_libraries(
-    ${PROJECT_NAME}_tbb
-    tbb
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+  ${PROJECT_NAME}_tbb
+  tbb
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
 
 # OpenMP
 add_executable (${PROJECT_NAME}_omp ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
 set_target_properties (${PROJECT_NAME}_omp PROPERTIES COMPILE_DEFINITIONS "ENABLE_OPENMP")
 target_link_libraries(
-    ${PROJECT_NAME}_omp
-    gomp
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+  ${PROJECT_NAME}_omp
+  gomp
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
 
 # TURKEY
-add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
-target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
-target_link_libraries(
-    ${PROJECT_NAME}_turkey
-    ${TURKEY_LIBRARIES}
-    m
-    ${CMAKE_THREAD_LIBS_INIT}
-)
+# add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
+# target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+# target_link_libraries(
+# ${PROJECT_NAME}_turkey
+# ${TURKEY_LIBRARIES}
+# m
+# ${CMAKE_THREAD_LIBS_INIT}
+# )
 
-add_dependencies (${PROJECT_NAME}_turkey turkey)
+# add_dependencies (${PROJECT_NAME}_turkey turkey)
 
 # Utility
 add_executable (${PROJECT_NAME}_ascii2binary ${CMAKE_CURRENT_SOURCE_DIR}/ascii2binary.cpp)

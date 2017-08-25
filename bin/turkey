@@ -1,28 +1,15 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-print('Importing')
-
 import os
-
-print('imported OS!')
 import sys
-
-print('imported sys!')
 import time
-print('imported time!')
 import argparse
-print('imported argparse!')
 import subprocess
-print('imported subprocess!')
 import pathos.multiprocessing as mp
-print('imported pathos!')
 from random import randint
 
-print('finished importing sys')
 from benchmarks import Job, Task, apps, pthread, tbb
 
-print('finished importing turkey')
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
 parser = argparse.ArgumentParser(description='Turkey job runner')
@@ -44,7 +31,7 @@ build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('app', help='App to build', default='all')
 build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
 build.add_argument(
-    '-e', '--cmake-executable', help='Path to cmake', default='cmake')
+        '-e', '--cmake-executable', help='Path to cmake', default='cmake')
 build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 
 # Data subcommand
@@ -56,35 +43,35 @@ data.add_argument('app', help='App to data for', default='all')
 
 gen = subparsers.add_parser('gen', help='Generate job files for run command')
 gen.add_argument(
-    '-a',
-    '--apps',
-    help='List of applications to generate from',
-    default='pthread')
+        '-a',
+        '--apps',
+        help='List of applications to generate from',
+        default='pthread')
 gen.add_argument('-p', '--prefix', help='Job name prefix', default='job')
 gen.add_argument(
-    '-j',
-    '--num-jobs',
-    help='Number of jobs to generate',
-    type=int,
-    default=100)
+        '-j',
+        '--num-jobs',
+        help='Number of jobs to generate',
+        type=int,
+        default=100)
 gen.add_argument(
-    '-t',
-    '--num-tasks',
-    help='Number of tasks per job to generate',
-    type=int,
-    default=100)
+        '-t',
+        '--num-tasks',
+        help='Number of tasks per job to generate',
+        type=int,
+        default=100)
 gen.add_argument(
-    '-n',
-    '--num-threads',
-    help='Number of threads to launch each task with',
-    type=int,
-    default=1)
+        '-n',
+        '--num-threads',
+        help='Number of threads to launch each task with',
+        type=int,
+        default=1)
 gen.add_argument('-c', '--conf', help='Configuration to run', default='test')
 gen.add_argument(
-    '-s',
-    '--start-time-strategy',
-    help='How to assign job start times',
-    default=0)
+        '-s',
+        '--start-time-strategy',
+        help='How to assign job start times',
+        default=0)
 
 # Run subcommand
 
@@ -92,82 +79,82 @@ run = subparsers.add_parser('run', help='Run job')
 run.add_argument('file', help='Job file')
 run.add_argument('-w', '--working-dir', help='Working directory')
 run.add_argument(
-    '-o', '--out-dir', help='Output directory relative to working')
+        '-o', '--out-dir', help='Output directory relative to working')
 run.add_argument(
-    '-i',
-    '--in-dir',
-    help='Input directory relative to working. Where app directory lives')
+        '-i',
+        '--in-dir',
+        help='Input directory relative to working. Where app directory lives')
 run.add_argument(
-    '-t', '--time', help='Time individual jobs', action='store_false')
+        '-t', '--time', help='Time individual jobs', action='store_false')
 run.add_argument(
-    '-a',
-    '--add-all',
-    help='Dump all simultaneously into queue and let pool sort out',
-    action='store_true')
+        '-a',
+        '--add-all',
+        help='Dump all simultaneously into queue and let pool sort out',
+        action='store_true')
 run.add_argument(
-    '-n',
-    '--num_workers',
-    help='Maximum number of simultaneous jobs',
-    type=int,
-    default=1)
+        '-n',
+        '--num_workers',
+        help='Maximum number of simultaneous jobs',
+        type=int,
+        default=1)
 run.add_argument(
-    '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
+        '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
 # One-off run subcommand
 
 one = subparsers.add_parser('one', help='Run one app')
 one.add_argument('app', help='App to run')
 one.add_argument(
-    '-n', '--num-threads', help='Number of threads', type=int, default=1)
+        '-n', '--num-threads', help='Number of threads', type=int, default=1)
 one.add_argument('-c', '--conf', help='Configuration to run', default='test')
 one.add_argument('-w', '--working-dir', help='Working directory')
 one.add_argument(
-    '-o', '--out-dir', help='Output directory relative to working')
+        '-o', '--out-dir', help='Output directory relative to working')
 one.add_argument(
-    '-i',
-    '--in-dir',
-    help='Input directory relative to working. WHere app directory lives')
+        '-i',
+        '--in-dir',
+        help='Input directory relative to working. WHere app directory lives')
 one.add_argument(
-    '-e', '--executable', help='Executable if different from app name')
+        '-e', '--executable', help='Executable if different from app name')
 one.add_argument(
-    '-s',
-    '--output_to_stdout',
-    help='Dump to stdout instead of file',
-    action='store_true')
+        '-s',
+        '--output_to_stdout',
+        help='Dump to stdout instead of file',
+        action='store_true')
 one.add_argument(
-    '-m', '--mode', help='Which thread library to use', default='pthread')
+        '-m', '--mode', help='Which thread library to use', default='pthread')
 
 # qsub cluster commands
 
 qsub = subparsers.add_parser('qsub', help='Run qsub jobs')
 qsub.add_argument(
-    '-a',
-    '--apps',
-    help='List of applications to generate from',
-    default='pthread')
+        '-a',
+        '--apps',
+        help='List of applications to generate from',
+        default='pthread')
 qsub.add_argument('-p', '--prefix', help='Job name prefix', default='job')
 qsub.add_argument(
-    '-n',
-    '--num_workers',
-    help='Maximum number of simultaneous jobs',
-    type=int,
-    default=5)
+        '-n',
+        '--num_workers',
+        help='Maximum number of simultaneous jobs',
+        type=int,
+        default=5)
 qsub.add_argument(
-    '-c',
-    '--num_cores',
-    help='Maximum number of simultaneous jobs',
-    type=int,
-    default=mp.cpu_count())
+        '-c',
+        '--num_cores',
+        help='Maximum number of simultaneous jobs',
+        type=int,
+        default=mp.cpu_count())
 qsub.add_argument('-r', '--run-script', help='Run script')
 qsub.add_argument(
-    '-j', '--array-bounds', help='Range of jobs to run', default='0-99')
+        '-j', '--array-bounds', help='Range of jobs to run', default='0-99')
 qsub.add_argument(
-    '-l',
-    '--loop',
-    help='Array job (without flag) or individual qsub',
-    action='store_true')
+        '-l',
+        '--loop',
+        help='Array job (without flag) or individual qsub',
+        action='store_true')
 qsub.add_argument(
-    '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
+        '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
 # TODO: Clean subcommand
 
@@ -178,134 +165,135 @@ args = parser.parse_args()
 print('Finished parsing args')
 
 if args.turkey_home == None:
-  try:
-    TURKEY_HOME = os.environ['TURKEY_HOME']
-    args.turkey_home = TURKEY_HOME
-  except KeyError, e:
-    print 'ERROR: could not find TURKEY_HOME in environment. Please specify with -q.'
-    sys.exit()
+    try:
+        TURKEY_HOME = os.environ['TURKEY_HOME']
+        args.turkey_home = TURKEY_HOME
+    except KeyError, e:
+        print 'ERROR: could not find TURKEY_HOME in environment. Please specify with -q.'
+        sys.exit()
 else:
-  TURKEY_HOME = args.turkey_home
+    TURKEY_HOME = args.turkey_home
 
 if args.cmd == 'server':
-  subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_server')])
-  os.wait()
+    subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_server')])
+    os.wait()
 elif args.cmd == 'client':
 
-  subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_client')])
-  os.wait()
+    subprocess.Popen([os.path.join(TURKEY_HOME, 'build/turkey_client')])
+    os.wait()
 elif args.cmd == 'qsub':
 
-  turkey = ''
-  if args.turkey_mode:
-    turkey = '-u'
+    turkey = ''
+    if args.turkey_mode:
+        turkey = '-u'
 
-  if not args.loop:
-    args.run_script = args.run_script or os.path.join(TURKEY_HOME,
-                                                      'cluster/array.sh')
-    os.system(
-        'qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d,mode=%s %s'
-        % (args.num_cores, args.array_bounds, args.apps, args.prefix,
-           args.num_workers, turkey, args.run_script, ))
-  else:
-    bounds = [int(bound) for bound in args.array_bounds.split('-')]
-    for i in range(bounds[1] - bounds[0] + 1):
-      args.run_script = args.run_script \
-          or os.path.join(TURKEY_HOME, 'cluster/run.sh')
-      os.system(
-          'qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d,mode=%s %s'
-          % (args.num_cores, args.apps, args.prefix, args.num_workers, i,
-             turkey, args.run_script, ))
+    if not args.loop:
+        args.run_script = args.run_script or os.path.join(TURKEY_HOME,
+                'cluster/array.sh')
+        os.system(
+                'qsub -lselect=1:ncpus=%d -lplace=excl -J %s -v apps=%s,prefix=%s,workers=%d,mode=%s %s'
+                % (args.num_cores, args.array_bounds, args.apps, args.prefix,
+                    args.num_workers, turkey, args.run_script, ))
+    else:
+        bounds = [int(bound) for bound in args.array_bounds.split('-')]
+        for i in range(bounds[1] - bounds[0] + 1):
+            args.run_script = args.run_script \
+                    or os.path.join(TURKEY_HOME, 'cluster/run.sh')
+            os.system(
+                    'qsub -lselect=1:ncpus=%d -lplace=excl -v apps=%s,prefix=%s,workers=%d,index=%d,mode=%s %s'
+                    % (args.num_cores, args.apps, args.prefix, args.num_workers, i,
+                        turkey, args.run_script, ))
 elif args.cmd == 'build':
 
-  if args.force:
-    os.system('rm -rf %s' % os.path.join(TURKEY_HOME, 'build'))
-  cwd = os.getcwd()
-  os.chdir(TURKEY_HOME)
-  os.system('mkdir -p build')
-  os.chdir(os.path.join(TURKEY_HOME, 'build'))
-  os.system('%s .. -DMAKE=%s && make %s' % (args.cmake_executable, args.app,
-                                            ('-j' if args.parallel else '')))
-  os.chdir(cwd)
+    if args.force:
+        os.system('rm -rf %s' % os.path.join(TURKEY_HOME, 'build'))
+    cwd = os.getcwd()
+    os.chdir(TURKEY_HOME)
+    os.system('mkdir -p build')
+    os.chdir(os.path.join(TURKEY_HOME, 'build'))
+    os.system('%s .. -DMAKE=%s && make %s' % (args.cmake_executable, args.app,
+        ('-j' if args.parallel else '')))
+    os.chdir(cwd)
 elif args.cmd == 'data':
 
-  data_executable = os.path.join(TURKEY_HOME, 'bin/data')
-  if args.app in apps:
-    os.system('%s %s' % (data_executable, args.app))
-  else:
-    for app in apps:
-      os.system('%s %s' % (data_executable, app))
+    data_executable = os.path.join(TURKEY_HOME, 'bin/data')
+    if args.app in apps:
+        os.system('%s %s' % (data_executable, args.app))
+    else:
+        for app in apps:
+            os.system('%s %s' % (data_executable, app))
 elif args.cmd == 'gen':
 
-  subset = pthread
-  if args.apps == 'tbb':
-    subset = tbb
+    subset = pthread
+    if args.apps == 'tbb':
+        subset = tbb
 
-  working_dir = os.path.join(TURKEY_HOME, 'jobs')
-  for i in range(args.num_jobs):
-    os.system('mkdir -p %s' % os.path.join(working_dir, args.apps))
-    with open(
-        os.path.join(working_dir, args.apps, '%s-%08d.job' % (args.prefix, i)),
-        'w') as job_file:
-      for j in range(args.num_tasks):
-        task_index = randint(0, len(subset) - 1)
-        job_file.write(','.join([
-            str(0), subset[task_index], args.conf, args.apps,
-            str(args.num_threads)
-        ]) + '\n')
+    working_dir = os.path.join(TURKEY_HOME, 'jobs')
+    for i in range(args.num_jobs):
+        os.system('mkdir -p %s' % os.path.join(working_dir, args.apps))
+        with open(
+                os.path.join(working_dir, args.apps, '%s-%08d.job' %
+                    (args.prefix, i)),
+                'w') as job_file:
+            for j in range(args.num_tasks):
+                task_index = randint(0, len(subset) - 1)
+                job_file.write(','.join([
+                    str(0), subset[task_index], args.conf, args.apps,
+                    str(args.num_threads)
+                    ]) + '\n')
 elif args.cmd == 'run':
 
-  if args.time:
-    os.system('date')
+    if args.time:
+        os.system('date')
 
-  if args.working_dir == None:
-    args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
+    if args.working_dir == None:
+        args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
 
-  if args.in_dir == None:
-    args.in_dir = TURKEY_HOME
+    if args.in_dir == None:
+        args.in_dir = TURKEY_HOME
 
-  job = Job(args)
-  if args.add_all:
-    pool_size = min(job.ntasks, args.num_workers)
-    pool = mp.Pool(pool_size)
-    if args.turkey_mode:
-      pool.map(lambda task: task.run(threads=int(mp.cpu_count()
-               / pool_size), wait=True), job.task_array)
+    job = Job(args)
+    if args.add_all:
+        pool_size = min(job.ntasks, args.num_workers)
+        pool = mp.Pool(pool_size)
+        if args.turkey_mode:
+            pool.map(lambda task: task.run(threads=int(mp.cpu_count()
+                / pool_size), wait=True), job.task_array)
+        else:
+            pool.map(lambda task: task.run(wait=True), job.task_array)
     else:
-      pool.map(lambda task: task.run(wait=True), job.task_array)
-  else:
-    job.run()
+        job.run()
 elif args.cmd == 'one':
 
-  if args.executable == None:
-    args.executable = args.app
+    if args.executable == None:
+        args.executable = args.app
 
-  if args.working_dir == None:
-    args.working_dir = os.path.join(TURKEY_HOME, 'out')
+    if args.working_dir == None:
+        args.working_dir = os.path.join(TURKEY_HOME, 'out')
 
-  if args.out_dir == None:
-    args.out_dir = '.'
+    if args.out_dir == None:
+        args.out_dir = '.'
 
-  if args.in_dir == None:
-    args.in_dir = TURKEY_HOME
+    if args.in_dir == None:
+        args.in_dir = TURKEY_HOME
 
-  out_dir = os.path.join(args.working_dir, args.out_dir)
-  task = Task(
-      [
-          0,
-          0,
-          args.app,
-          args.conf,
-          args.mode,
-          args.num_threads,
-      ],
-      out_dir,
-      args.in_dir,
-      executable=args.executable,
-      output_to_stdout=args.output_to_stdout,
-      TURKEY_HOME=TURKEY_HOME, )
-  task.run()
+    out_dir = os.path.join(args.working_dir, args.out_dir)
+    task = Task(
+            [
+                0,
+                0,
+                args.app,
+                args.conf,
+                args.mode,
+                args.num_threads,
+                ],
+            out_dir,
+            args.in_dir,
+            executable=args.executable,
+            output_to_stdout=args.output_to_stdout,
+            TURKEY_HOME=TURKEY_HOME, )
+    task.run()
 
-  os.wait()
+    os.wait()
 else:
-  print parser.print_help()
+    print parser.print_help()
