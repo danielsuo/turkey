@@ -5,10 +5,11 @@
 ## Getting started
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
-- Run ```./bin/turkey build``` to build all converted applications
-- Run ```./bin/turkey build -a [APP]``` to build the application you're working on
-- Run ```./bin/turkey data -a [APP]``` to download the data for the application you're working on
-- Run ```./bin/turkey one -a [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
+- Run ```source ~/.bashrc``` to get updated environment variables
+- Run ```./bin/turkey.py build all``` to build all converted applications
+- Run ```./bin/turkey.py build [APP]``` to build the application you're working on
+- Run ```./bin/turkey.py data [APP]``` to download the data for the application you're working on. Use ```alll``` to download all applications
+- Run ```./bin/turkey.py one [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
 
 ## How to convert an application (your mileage may vary...)
 - TODO

@@ -60,23 +60,23 @@ include_directories (${TURKEY_INCLUDE_DIR})
 # Pool library
 add_library (${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
   )
 
 add_executable (
   ${PROJECT_NAME}_server
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
   )
 
 add_executable (
   ${PROJECT_NAME}_client
 
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
   )
 
 add_dependencies (${PROJECT_NAME} ${TURKEY_DEPS})
@@ -85,7 +85,7 @@ add_dependencies (${PROJECT_NAME}_client ${TURKEY_DEPS})
 
 target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
 target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
-target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS})
+target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 
 # Compiling client applications
 if (${MAKE} STREQUAL "all")
