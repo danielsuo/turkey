@@ -44,7 +44,8 @@ sudo apt-get install -y \
   gtk-doc-tools \
   swig \
   libcurl4-openssl-dev \
-  yasm
+  yasm \
+  gfortran
 
 
 # CentOS
@@ -108,28 +109,28 @@ sudo apt-get install -y \
 
 # Perf dependencies
 # sudo apt-get install -y \
-#   flex \
-#   bison \
-#   libelf-dev \
-#   libaudit-dev \
-#   libdw-dev \
-#   libunwind* \
-#   python-dev \
-#   binutils-dev \
-#   libnuma-dev \
-#   libgtk2.0-dev \
-#   libbfd-dev \
-#   libelf1 \
-#   libperl-dev \
-#   libnuma-dev \
-#   libslang2 libslang2-dev \
-#   libunwind8 libunwind8-dev \
-#   binutils-multiarch-dev \
-#   elfutils \
-#   libiberty-dev \
-#   libssl-dev \
-#   liblzma-dev \
-#   systemtap-sdt-dev
+  #   flex \
+  #   bison \
+  #   libelf-dev \
+  #   libaudit-dev \
+  #   libdw-dev \
+  #   libunwind* \
+  #   python-dev \
+  #   binutils-dev \
+  #   libnuma-dev \
+  #   libgtk2.0-dev \
+  #   libbfd-dev \
+  #   libelf1 \
+  #   libperl-dev \
+  #   libnuma-dev \
+  #   libslang2 libslang2-dev \
+  #   libunwind8 libunwind8-dev \
+  #   binutils-multiarch-dev \
+  #   elfutils \
+  #   libiberty-dev \
+  #   libssl-dev \
+  #   liblzma-dev \
+  #   systemtap-sdt-dev
 
 # git clone https://github.com/torvalds/linux
 # pushd linux/tools/perf

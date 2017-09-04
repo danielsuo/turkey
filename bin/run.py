@@ -143,6 +143,8 @@ one.add_argument(
 
 policy = subparsers.add_parser('policy', help='Run according to policy file')
 policy.add_argument('file', help='Policy JSON file')
+policy.add_argument('-o', '--out_dir',
+                    help='Output directory relative to working', default='out')
 
 ###############################################################################
 # qsub cluster commands
@@ -320,7 +322,7 @@ elif args.cmd == 'one':
 
     os.wait()
 elif args.cmd == 'policy':
-    pol = Policy(args.file)
+    pol = Policy(args.file, args.out_dir, TURKEY_HOME)
     pol.run()
 
 elif args.cmd == 'clean':

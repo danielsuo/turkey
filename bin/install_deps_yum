@@ -51,4 +51,5 @@ sudo yum install -y \
   openssl-devel \
   gtk-doc-tools \
   swig \
-  yasm
+  yasm \
+  gfortran

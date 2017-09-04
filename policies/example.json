@@ -1,0 +1,24 @@
+{
+  "app": "blackscholes",
+  "num": 1000,
+  "conf": "native",
+  "mode": "pthread",
+  "scheduler": {
+    "name": "linux",
+    "parameters": {
+      "threads": 16
+    }
+  },
+  "arrival": {
+    "distribution": "poisson",
+    "parameters": {
+      "lam": 1.0
+    }
+  },
+  "size": {
+    "distribution": "exponential",
+    "parameters": {
+      "scale": 1.0
+    }
+  }
+}
