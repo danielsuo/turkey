@@ -1,8 +1,9 @@
 {
   "app": "blackscholes",
-  "num": 5,
+  "num": 1000,
   "conf": "equi",
   "mode": "equi",
+  "taskset": "0-7",
   "scheduler": {
     "name": "linux",
     "parameters": {
@@ -13,14 +14,15 @@
     "distribution": "poisson",
     "parameters": {
       "lam": 1.0
-    }
+    },
+    "scale": 5
   },
   "size": {
     "distribution": "exponential",
     "parameters": {
       "scale": 1.0
     },
-    "scale": 10000000,
+    "scale": 100000,
     "arg": "noptions"
   }
 }

@@ -37,7 +37,7 @@ class Task:
             self.executable = os.path.join(
                 self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
 
-    def run(self, args=None, threads=None, time_run=True, wait=False, copy_data=True):
+    def run(self, args=None, threads=None, time_run=True, wait=False, copy_data=True, taskset=None):
 
         if 'max_threads' in self.conf:
             self.threads = min(self.conf['max_threads'], int(self.threads))
@@ -72,6 +72,11 @@ class Task:
         if time_run:
             args.insert(0, '-p')
             args.insert(0, 'time')
+
+        if taskset:
+            args.insert(0, taskset)
+            args.insert(0, '-c')
+            args.insert(0, 'taskset')
 
         if self.output_to_stdout:
             subprocess.Popen(args, env=os.environ)
