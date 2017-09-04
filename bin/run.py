@@ -8,7 +8,7 @@ import subprocess
 import pathos.multiprocessing as mp
 from random import randint
 
-from benchmarks import Job, Task, apps, pthread, tbb
+from turkey import Job, Task, Policy, apps, pthread, tbb
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -83,32 +83,32 @@ gen.add_argument(
     default=0)
 
 ###############################################################################
-# Run subcommand
+# Job subcommand
 ###############################################################################
 
-run = subparsers.add_parser('run', help='Run job')
-run.add_argument('file', help='Job file')
-run.add_argument('-w', '--working-dir', help='Working directory')
-run.add_argument(
+job = subparsers.add_parser('job', help='Run job')
+job.add_argument('file', help='Job file')
+job.add_argument('-w', '--working-dir', help='Working directory')
+job.add_argument(
     '-o', '--out-dir', help='Output directory relative to working')
-run.add_argument(
+job.add_argument(
     '-i',
     '--in-dir',
     help='Input directory relative to working. Where app directory lives')
-run.add_argument(
+job.add_argument(
     '-t', '--time', help='Time individual jobs', action='store_false')
-run.add_argument(
+job.add_argument(
     '-a',
     '--add-all',
     help='Dump all simultaneously into queue and let pool sort out',
     action='store_true')
-run.add_argument(
+job.add_argument(
     '-n',
     '--num_workers',
     help='Maximum number of simultaneous jobs',
     type=int,
     default=1)
-run.add_argument(
+job.add_argument(
     '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
 ###############################################################################
@@ -136,6 +136,13 @@ one.add_argument(
     action='store_true')
 one.add_argument(
     '-m', '--mode', help='Which thread library to use', default='pthread')
+
+###############################################################################
+# policy commands
+###############################################################################
+
+policy = subparsers.add_parser('policy', help='Run according to policy file')
+policy.add_argument('file', help='Policy JSON file')
 
 ###############################################################################
 # qsub cluster commands
@@ -258,7 +265,7 @@ elif args.cmd == 'gen':
                     str(0), subset[task_index], args.conf, args.apps,
                     str(args.num_threads)
                 ]) + '\n')
-elif args.cmd == 'run':
+elif args.cmd == 'job':
 
     if args.time:
         os.system('date')
@@ -312,6 +319,10 @@ elif args.cmd == 'one':
     task.run()
 
     os.wait()
+elif args.cmd == 'policy':
+    pol = Policy(args.file)
+    pol.run()
+
 elif args.cmd == 'clean':
     os.system('rm -rf build')
 else:
