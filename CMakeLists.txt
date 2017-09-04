@@ -88,14 +88,13 @@ function (make_turkey)
   target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 endfunction(make_turkey)
 
+make_turkey ()
+
 # Compiling client applications
 if (${MAKE} STREQUAL "all")
-  make_turkey ()
   foreach (APP ${APPS})
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
   endforeach ()
-elseif (${MAKE} STREQUAL "turkey")
-  make_turkey ()
 else ()
   if (${MAKE} IN_LIST APPS)
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})

@@ -188,8 +188,6 @@ clean = subparsers.add_parser('clean', help='Clean up directory')
 
 args = parser.parse_args()
 
-print('Finished parsing args')
-
 if args.turkey_home is None:
     try:
         TURKEY_HOME = os.environ['TURKEY_HOME']

@@ -52,16 +52,14 @@ target_link_libraries(
   )
 
 # TURKEY
-# add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
-# target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
-# target_link_libraries(
-# ${PROJECT_NAME}_turkey
-# ${TURKEY_LIBRARIES}
-# m
-# ${CMAKE_THREAD_LIBS_INIT}
-# )
-
-# add_dependencies (${PROJECT_NAME}_turkey turkey)
+add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
+target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+target_link_libraries(
+  ${PROJECT_NAME}_turkey
+  ${TURKEY_LIBRARIES}
+  m
+  ${CMAKE_THREAD_LIBS_INIT}
+  )
 
 # Utility
 add_executable (${PROJECT_NAME}_ascii2binary ${CMAKE_CURRENT_SOURCE_DIR}/ascii2binary.cpp)

@@ -10,6 +10,9 @@
 
 #include "options.h"
 
+#define PAD 256
+#define LINESIZE 64
+
 fptype* prices;
 int numOptions;
 
@@ -57,21 +60,7 @@ int main(int argc, char** argv) {
   option.divs       = 0.00;
   option.DGrefval   = 4.759423036851750055;
 
-  // for (loopnum = 0; loopnum < numOptions; ++loopnum) {
-  //   rv = fscanf(file, "%f %f %f %f %f %f %c %f %f", &data[loopnum].s,
-  //               &data[loopnum].strike, &data[loopnum].r, &data[loopnum].divq,
-  //               &data[loopnum].v, &data[loopnum].t,
-  //               &data[loopnum].OptionType,
-  //               &data[loopnum].divs, &data[loopnum].DGrefval);
-  //   if (rv != 9) {
-  //     printf("ERROR: Unable to read from file %s.\n", inputFile);
-  //     fclose(file);
-  //     exit(1);
-  //   }
-  // }
-
   pthread_mutexattr_init(&normalMutexAttr);
-  //    pthread_mutexattr_settype( &normalMutexAttr, PTHREAD_MUTEX_NORMAL);
   numThreads = nThreads;
   {
     int i;
@@ -81,9 +70,6 @@ int main(int argc, char** argv) {
   };
   printf("Num of Options: %d\n", numOptions);
   printf("Num of Runs: %d\n", NUM_RUNS);
-
-#define PAD 256
-#define LINESIZE 64
 
   prices = (fptype*)malloc(numOptions * sizeof(fptype));
 

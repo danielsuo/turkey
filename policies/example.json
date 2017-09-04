@@ -1,8 +1,8 @@
 {
   "app": "blackscholes",
-  "num": 1000,
-  "conf": "native",
-  "mode": "pthread",
+  "num": 5,
+  "conf": "equi",
+  "mode": "equi",
   "scheduler": {
     "name": "linux",
     "parameters": {
@@ -19,6 +19,8 @@
     "distribution": "exponential",
     "parameters": {
       "scale": 1.0
-    }
+    },
+    "scale": 10000000,
+    "arg": "noptions"
   }
 }
