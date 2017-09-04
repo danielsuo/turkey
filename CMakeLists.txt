@@ -57,41 +57,45 @@ set (APPS
 # Include some directories
 include_directories (${TURKEY_INCLUDE_DIR})
 
-# Pool library
-add_library (${PROJECT_NAME} SHARED
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-  )
+function (make_turkey)
+  add_library (${PROJECT_NAME} SHARED
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+    )
 
-add_executable (
-  ${PROJECT_NAME}_server
+  add_executable (
+    ${PROJECT_NAME}_server
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
-  )
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
+    )
 
-add_executable (
-  ${PROJECT_NAME}_client
+  add_executable (
+    ${PROJECT_NAME}_client
 
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-  )
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
+    )
 
-add_dependencies (${PROJECT_NAME} ${TURKEY_DEPS})
-add_dependencies (${PROJECT_NAME}_server ${TURKEY_DEPS})
-add_dependencies (${PROJECT_NAME}_client ${TURKEY_DEPS})
+  add_dependencies (${PROJECT_NAME} ${TURKEY_DEPS})
+  add_dependencies (${PROJECT_NAME}_server ${TURKEY_DEPS})
+  add_dependencies (${PROJECT_NAME}_client ${TURKEY_DEPS})
 
-target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
-target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
-target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
+  target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
+  target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
+  target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
+endfunction(make_turkey)
 
 # Compiling client applications
 if (${MAKE} STREQUAL "all")
+  make_turkey ()
   foreach (APP ${APPS})
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
   endforeach ()
+elseif (${MAKE} STREQUAL "turkey")
+  make_turkey ()
 else ()
   if (${MAKE} IN_LIST APPS)
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})

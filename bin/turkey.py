@@ -3,7 +3,6 @@
 
 import os
 import sys
-import time
 import argparse
 import subprocess
 import pathos.multiprocessing as mp
@@ -15,18 +14,23 @@ from benchmarks import Job, Task, apps, pthread, tbb
 
 parser = argparse.ArgumentParser(description='Turkey job runner')
 parser.add_argument('-q', '--turkey-home', help='Turkey home directory')
-
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
+###############################################################################
 # Server commands
+###############################################################################
 
 server = subparsers.add_parser('server', help='Handle server stuff')
 
+###############################################################################
 # Client (the dummy one) commands
+###############################################################################
 
 client = subparsers.add_parser('client', help='Do dummy client stuff')
 
+###############################################################################
 # Build subcommand
+###############################################################################
 
 build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('app', help='App to build', default='all')
@@ -35,12 +39,16 @@ build.add_argument(
     '-e', '--cmake-executable', help='Path to cmake', default='cmake')
 build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 
+###############################################################################
 # Data subcommand
+###############################################################################
 
 data = subparsers.add_parser('data', help='Download and unpack data')
 data.add_argument('app', help='App to data for', default='all')
 
+###############################################################################
 # Generate subcommand
+###############################################################################
 
 gen = subparsers.add_parser('gen', help='Generate job files for run command')
 gen.add_argument(
@@ -74,7 +82,9 @@ gen.add_argument(
     help='How to assign job start times',
     default=0)
 
+###############################################################################
 # Run subcommand
+###############################################################################
 
 run = subparsers.add_parser('run', help='Run job')
 run.add_argument('file', help='Job file')
@@ -101,7 +111,9 @@ run.add_argument(
 run.add_argument(
     '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
+###############################################################################
 # One-off run subcommand
+###############################################################################
 
 one = subparsers.add_parser('one', help='Run one app')
 one.add_argument('app', help='App to run')
@@ -125,7 +137,9 @@ one.add_argument(
 one.add_argument(
     '-m', '--mode', help='Which thread library to use', default='pthread')
 
+###############################################################################
 # qsub cluster commands
+###############################################################################
 
 qsub = subparsers.add_parser('qsub', help='Run qsub jobs')
 qsub.add_argument(
@@ -157,7 +171,9 @@ qsub.add_argument(
 qsub.add_argument(
     '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
-# TODO: Clean subcommand
+###############################################################################
+# Clean subcommand
+###############################################################################
 
 clean = subparsers.add_parser('clean', help='Clean up directory')
 
@@ -165,7 +181,7 @@ args = parser.parse_args()
 
 print('Finished parsing args')
 
-if args.turkey_home == None:
+if args.turkey_home is None:
     try:
         TURKEY_HOME = os.environ['TURKEY_HOME']
         args.turkey_home = TURKEY_HOME
@@ -296,5 +312,7 @@ elif args.cmd == 'one':
     task.run()
 
     os.wait()
+elif args.cmd == 'clean':
+    os.system('rm -rf build')
 else:
     print parser.print_help()

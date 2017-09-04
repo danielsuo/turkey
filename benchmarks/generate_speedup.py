@@ -1,7 +1,6 @@
 import os
 import subprocess
 
-
 apps = [
     'blackscholes',
     'ferret',
@@ -31,7 +30,8 @@ def get_args(app, thread, i):
     return args.split()
 
 
-for app in apps:
-    for thread in threads:
-        args = get_args(app, thread, 1)
-        subprocess.Popen(args)
+def generate_speedup():
+    for app in apps:
+        for thread in threads:
+            args = get_args(app, thread, 1)
+            subprocess.Popen(args)
