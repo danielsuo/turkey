@@ -13,16 +13,16 @@
   "arrival": {
     "distribution": "poisson",
     "parameters": {
-      "lam": 1.0
+      "lam": 5.0
     },
-    "scale": 5
+    "scale": 1
   },
   "size": {
     "distribution": "exponential",
     "parameters": {
       "scale": 1.0
     },
-    "scale": 100000,
+    "scale": 1000000,
     "arg": "noptions"
   }
 }
