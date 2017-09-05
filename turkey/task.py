@@ -92,9 +92,6 @@ class Task:
             args.insert(0, '-c')
             args.insert(0, 'taskset')
 
-        # Delay start
-        time.sleep(self.args['start'])
-
         # TODO: this isn't great, but life is complicated
         args = ' '.join(args)
         print('Running task %d with args "%s"' % (self.desc['id'], args))
@@ -111,3 +108,8 @@ class Task:
         if wait:
             os.wait()
             os.system('date')
+
+    def delay(self):
+        # Delay start
+        time.sleep(self.args['start'])
+

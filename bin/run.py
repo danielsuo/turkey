@@ -62,25 +62,8 @@ job.add_argument('file', help='Job file')
 job.add_argument('-w', '--working-dir', help='Working directory')
 job.add_argument(
     '-o', '--out-dir', help='Output directory relative to working')
-job.add_argument(
-    '-i',
-    '--in-dir',
-    help='Input directory relative to working. Where app directory lives')
-job.add_argument(
-    '-t', '--time', help='Time individual jobs', action='store_false')
-job.add_argument(
-    '-a',
-    '--add-all',
-    help='Dump all simultaneously into queue and let pool sort out',
-    action='store_true')
-job.add_argument(
-    '-n',
-    '--num_workers',
-    help='Maximum number of simultaneous jobs',
-    type=int,
-    default=1)
-job.add_argument(
-    '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
+job.add_argument('-p', '--pool-size',
+                 help='Number of workers to gate', type=int, default=9999)
 
 ###############################################################################
 # One-off run subcommand
@@ -220,26 +203,11 @@ elif args.cmd == 'gen':
     generator.generate()
 elif args.cmd == 'job':
 
-    if args.time:
-        os.system('date')
-
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'jobs')
 
-    if args.in_dir == None:
-        args.in_dir = TURKEY_HOME
-
     job = Job(args)
-    if args.add_all:
-        pool_size = min(job.ntasks, args.num_workers)
-        pool = mp.Pool(pool_size)
-        if args.turkey_mode:
-            pool.map(lambda task: task.run(threads=int(mp.cpu_count()
-                                                       / pool_size), wait=True), job.task_array)
-        else:
-            pool.map(lambda task: task.run(wait=True), job.task_array)
-    else:
-        job.run()
+    job.run()
 elif args.cmd == 'one':
 
     if args.working_dir == None:
