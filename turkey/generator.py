@@ -21,24 +21,27 @@ class Generator():
         arrival = self.params['arrival']
         for j in range(self.params['tasks']):
             app = random.sample(self.params['apps'], 1)[0]
-            size = app['size']
 
             # Get arrival time of next task
             timer = getattr(np.random, arrival['distribution'])(
                 **arrival['parameters']) * arrival['scale']
 
-            # Get size of next task
-            task_size = int(getattr(np.random, size['distribution'])(
-                **size['parameters']) * size['scale'])
-
             # Construct application-specific arguments
             task = {
                 'start': timer,
-                app['size']['arg']: int(task_size),
                 'app': app['name'],
                 'conf': self.params['conf'],
                 'mode': self.params['mode'],
             }
+
+            if 'size' in app:
+                size = app['size']
+
+                # Get size of next task
+                task_size = int(getattr(np.random, size['distribution'])(
+                    **size['parameters']) * size['scale'])
+
+                task[app['size']['arg']] = int(task_size)
 
             for parameter in self.params['scheduler']['parameters']:
                 task[parameter] = self.params['scheduler']['parameters'][parameter]

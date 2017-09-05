@@ -1,11 +1,19 @@
 {
   "apps": [{
-    "name": "blackscholes"
+    "name": "blackscholes",
+    "size": {
+      "distribution": "exponential",
+      "parameters": {
+        "scale": 1.0
+      },
+      "scale": 1000000,
+      "arg": "noptions"
+    }
   }],
   "tasks": 1000,
   "jobs": 1,
-  "conf": "native",
-  "mode": "pthread",
+  "conf": "resizable",
+  "mode": "equi",
   "taskset": "0-7",
   "arrival": {
     "distribution": "poisson",
