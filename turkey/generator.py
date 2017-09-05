@@ -18,9 +18,9 @@ class Generator():
         #  for i in range(self.params['jobs']):
 
         tasks = []
+        arrival = self.params['arrival']
         for j in range(self.params['tasks']):
             app = random.sample(self.params['apps'], 1)[0]
-            arrival = app['arrival']
             size = app['size']
 
             # Get arrival time of next task

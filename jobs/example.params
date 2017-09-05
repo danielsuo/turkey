@@ -1,31 +1,31 @@
 {
   "apps": [{
     "name": "blackscholes",
-      "arrival": {
-        "distribution": "poisson",
-        "parameters": {
-          "lam": 5.0
-        },
-        "scale": 1
-      },
-      "size": {
-        "distribution": "exponential",
-        "parameters": {
-          "scale": 1.0
-        },
-        "scale": 1000000,
-        "arg": "noptions"
-      }
-  }],
-    "tasks": 1000,
-    "jobs": 1,
-    "conf": "resizable",
-    "mode": "equi",
-    "taskset": "0-7",
-    "scheduler": {
-      "name": "linux",
+    "size": {
+      "distribution": "exponential",
       "parameters": {
-        "threads": 16
-      }
+        "scale": 1.0
+      },
+      "scale": 1000000,
+      "arg": "noptions"
     }
+  }],
+  "tasks": 1000,
+  "jobs": 1,
+  "conf": "resizable",
+  "mode": "equi",
+  "taskset": "0-7",
+  "arrival": {
+    "distribution": "poisson",
+    "parameters": {
+      "lam": 5.0
+    },
+    "scale": 1
+  },
+  "scheduler": {
+    "name": "linux",
+    "parameters": {
+      "threads": 16
+    }
+  }
 }
