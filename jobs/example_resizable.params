@@ -16,9 +16,9 @@
   "mode": "equi",
   "taskset": "0-7",
   "arrival": {
-    "distribution": "poisson",
+    "distribution": "exponential",
     "parameters": {
-      "lam": 5.0
+      "scale": 5.0
     },
     "scale": 1
   },
