@@ -1,0 +1,4 @@
+{
+  "args": "%(nthreads)s %(noptions)d",
+  "exe": "blackscholes_equi"
+}

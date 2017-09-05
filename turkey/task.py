@@ -1,91 +1,113 @@
 import os
+import time
 import json
+import copy
 import subprocess
 
-# Run a single task
+# Documentation for Task: https://goo.gl/UJNB6J
 
 
 class Task:
-    def __init__(self, desc, out_dir='out', in_dir='.', executable=None, output_to_stdout=False, TURKEY_HOME='.'):
-        self.start = desc[0]
-        self.id = desc[1]
-        self.app = desc[2]
-        self.conf_name = desc[3]
-        self.mode = desc[4]
-        self.threads = desc[5]
+    tid = 0
 
-        print(self.threads)
+    def __init__(self, desc, out_dir='out'):
 
-        self.in_dir = in_dir
-        self.out_dir = out_dir
-        os.system('mkdir -p %s' % self.out_dir)
+        self.desc = desc
 
-        self.app_dir = os.path.join(self.in_dir, 'apps', self.app)
-        self.exec_dir = os.path.join(TURKEY_HOME, 'build/apps', self.app)
-        self.conf_file = os.path.join(
-            self.app_dir, 'conf', '%s.json' % self.conf_name)
+        # Set task id
+        Task.tid += 1
+        self.desc['id'] = Task.tid
 
-        with open(self.conf_file, 'r') as conf_file:
+        # Compute directories
+        self.dirs = {}
+        self.dirs['root'] = os.getenv('TURKEY_HOME', '.')
+        self.dirs['src'] = os.path.join(
+            self.dirs['root'], 'apps', self.desc['app'])
+        self.dirs['input'] = os.path.join(self.dirs['src'], 'inputs')
+        self.dirs['output'] = os.path.join(out_dir, str(self.desc['id']))
+        self.dirs['conf'] = os.path.join(self.dirs['src'], 'conf')
+        self.dirs['exec'] = os.path.join(
+            self.dirs['root'], 'build/apps', self.desc['app'])
+
+        # Make output directory if necessary
+        os.system('mkdir -p %s' % self.dirs['output'])
+
+        # Compute file locations
+        self.files = {}
+        self.files['conf'] = os.path.join(
+            self.dirs['conf'], '%s.json' % self.desc['conf'])
+        self.files['output'] = os.path.join(self.dirs['output'], 'task.out')
+
+        with open(self.files['conf'], 'r') as conf_file:
             self.conf = json.load(conf_file)
 
-        self.out_file = os.path.join(self.out_dir, 'task.out')
-        self.output_to_stdout = output_to_stdout
-
+        # Determine executable file
+        self.files['exec'] = self.dirs['exec']
         if 'exe' in self.conf:
-            self.executable = os.path.join(self.exec_dir, self.conf['exe'])
+            self.files['exec'] += '/%s' % self.conf['exe']
         else:
-            self.executable = os.path.join(
-                self.exec_dir, '%s_%s' % (executable or self.app, self.mode))
+            self.files['exec'] += '/%s_%s' % (self.desc['app'],
+                                              self.desc['mode'])
 
-    def run(self, args=None, threads=None, time_run=True, wait=False, copy_data=True, taskset=None):
-
+        # Make sure number of threads is within bounds of application
+        threads = self.desc['threads']
         if 'max_threads' in self.conf:
-            self.threads = min(self.conf['max_threads'], int(self.threads))
+            threads = min(self.conf['max_threads'], int(threads))
 
         if 'min_threads' in self.conf:
-            self.threads = max(self.conf['min_threads'], int(self.threads))
+            threads = max(self.conf['min_threads'], int(threads))
 
-        self.threads = str(self.threads)
+        self.desc['threads'] = str(threads)
 
-        if args is None:
-            args = {}
+        # Set up arguments
+        self.args = copy.deepcopy(self.desc)
+        self.args['nthreads'] = self.desc['threads']
+        self.args['inputs'] = self.dirs['input']
+        self.args['outputs'] = self.dirs['output']
 
-        args['nthreads'] = str(threads or self.threads)
-        args['inputs'] = os.path.join(self.app_dir, 'inputs'),
-        args['outputs'] = self.out_dir
+        if 'start' not in self.args:
+            self.args['start'] = 0
 
-        #  if 'ignore' in self.conf:
-        #  for ignore in self.conf['ignore']:
-        #  del args[ignore]
+    def run(self, args={}, stdout=False, wait=False):
 
-        # if 'inputs' in args and copy_data:
-        #     os.system('cp -R %s %s' % (args['inputs'], args['outputs']))
-        #     args['inputs'] = os.path.join(args['outputs'], 'inputs')
+        # Overwrite "compile"-time attributes with "run"-time attributes in
+        # addition to adding any new attributes
+        for key in args:
+            self.args[key] = args[key]
 
+        # Add environment variables if any
         if 'environment' in self.conf:
             for key in self.conf['environment'].keys():
                 os.environ[key] = self.conf['environment'][key] % args
 
-        args = (self.conf['args'] % args).split()
-        args.insert(0, self.executable)
+        args = (self.conf['args'] % self.args).split()
+        args.insert(0, self.files['exec'])
 
-        if time_run:
-            args.insert(0, '-p')
-            args.insert(0, 'time')
+        # Time the run
+        args.insert(0, '-p')
+        args.insert(0, 'time')
 
-        if taskset:
-            args.insert(0, taskset)
+        if 'taskset' in self.args:
+            args.insert(0, self.args['taskset'])
             args.insert(0, '-c')
             args.insert(0, 'taskset')
 
-        if self.output_to_stdout:
-            subprocess.Popen(args, env=os.environ)
+        # Delay start
+        time.sleep(self.args['start'])
+
+        # TODO: this isn't great, but life is complicated
+        args = ' '.join(args)
+        print('Running task %d with args "%s"' % (self.desc['id'], args))
+        args = 'date "+datetime: %Y-%m-%dT%H:%M:%S" && ' + args
+
+        # Run executable
+        if stdout:
+            proc = subprocess.Popen(args, env=os.environ, shell=True)
         else:
-            with open(self.out_file, 'w') as out:
-                subprocess.Popen(args, stdin=open(
-                    os.devnull), stdout=out, stderr=out)
+            with open(self.files['output'], 'w') as out:
+                proc = subprocess.Popen(args, stdin=open(
+                    os.devnull), stdout=out, stderr=out, env=os.environ, shell=True)
 
         if wait:
             os.wait()
             os.system('date')
-            # os.system('rm -rf %s' % args['inputs'])

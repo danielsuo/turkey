@@ -1,8 +1,1 @@
-0,blackscholes,native,pthread,32
-0,blackscholes,native,pthread,32
-0,canneal,native,pthread,32
-0,canneal,native,pthread,32
-0,dedup,native,pthread,32
-0,dedup,native,pthread,32
-0,swaptions,native,pthread,32
-0,swaptions,native,pthread,32
+[{"taskset": "0-7", "app": "blackscholes", "start": 8, "noptions": 577910, "mode": "equi", "conf": "resizable", "threads": 16}, {"taskset": "0-7", "app": "blackscholes", "start": 5, "noptions": 3905120, "mode": "equi", "conf": "resizable", "threads": 16}]

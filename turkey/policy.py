@@ -19,8 +19,6 @@ class Policy():
                                    time.strftime('%Y_%m_%d_%H_%M_%S'))
 
     def run(self):
-        print('Running')
-
         arrival = self.policy['arrival']
         size = self.policy['size']
 
@@ -44,6 +42,7 @@ class Policy():
 
             # Wait to release next task
             time.sleep(timer)
+
             print('Running job %d after delay of %d with size %d' %
                   (i, timer, task_size))
 

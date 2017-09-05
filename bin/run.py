@@ -8,7 +8,7 @@ import subprocess
 import pathos.multiprocessing as mp
 from random import randint
 
-from turkey import Job, Task, Policy, apps, pthread, tbb
+from turkey import Job, Task, Generator, apps, pthread, tbb
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -51,36 +51,7 @@ data.add_argument('app', help='App to data for', default='all')
 ###############################################################################
 
 gen = subparsers.add_parser('gen', help='Generate job files for run command')
-gen.add_argument(
-    '-a',
-    '--apps',
-    help='List of applications to generate from',
-    default='pthread')
-gen.add_argument('-p', '--prefix', help='Job name prefix', default='job')
-gen.add_argument(
-    '-j',
-    '--num-jobs',
-    help='Number of jobs to generate',
-    type=int,
-    default=100)
-gen.add_argument(
-    '-t',
-    '--num-tasks',
-    help='Number of tasks per job to generate',
-    type=int,
-    default=100)
-gen.add_argument(
-    '-n',
-    '--num-threads',
-    help='Number of threads to launch each task with',
-    type=int,
-    default=1)
-gen.add_argument('-c', '--conf', help='Configuration to run', default='test')
-gen.add_argument(
-    '-s',
-    '--start-time-strategy',
-    help='How to assign job start times',
-    default=0)
+gen.add_argument('file', help='Generator parameter file')
 
 ###############################################################################
 # Job subcommand
@@ -124,27 +95,12 @@ one.add_argument('-w', '--working-dir', help='Working directory')
 one.add_argument(
     '-o', '--out-dir', help='Output directory relative to working')
 one.add_argument(
-    '-i',
-    '--in-dir',
-    help='Input directory relative to working. WHere app directory lives')
-one.add_argument(
-    '-e', '--executable', help='Executable if different from app name')
-one.add_argument(
     '-s',
     '--output_to_stdout',
     help='Dump to stdout instead of file',
     action='store_true')
 one.add_argument(
     '-m', '--mode', help='Which thread library to use', default='pthread')
-
-###############################################################################
-# policy commands
-###############################################################################
-
-policy = subparsers.add_parser('policy', help='Run according to policy file')
-policy.add_argument('file', help='Policy JSON file')
-policy.add_argument('-o', '--out_dir',
-                    help='Output directory relative to working', default='out')
 
 ###############################################################################
 # qsub cluster commands
@@ -247,24 +203,8 @@ elif args.cmd == 'data':
         for app in apps:
             os.system('%s %s' % (data_executable, app))
 elif args.cmd == 'gen':
-
-    subset = pthread
-    if args.apps == 'tbb':
-        subset = tbb
-
-    working_dir = os.path.join(TURKEY_HOME, 'jobs')
-    for i in range(args.num_jobs):
-        os.system('mkdir -p %s' % os.path.join(working_dir, args.apps))
-        with open(
-                os.path.join(working_dir, args.apps, '%s-%08d.job' %
-                             (args.prefix, i)),
-                'w') as job_file:
-            for j in range(args.num_tasks):
-                task_index = randint(0, len(subset) - 1)
-                job_file.write(','.join([
-                    str(0), subset[task_index], args.conf, args.apps,
-                    str(args.num_threads)
-                ]) + '\n')
+    generator = Generator(args.file)
+    generator.generate()
 elif args.cmd == 'job':
 
     if args.time:
@@ -289,40 +229,23 @@ elif args.cmd == 'job':
         job.run()
 elif args.cmd == 'one':
 
-    if args.executable == None:
-        args.executable = args.app
-
     if args.working_dir == None:
         args.working_dir = os.path.join(TURKEY_HOME, 'out')
 
     if args.out_dir == None:
         args.out_dir = '.'
 
-    if args.in_dir == None:
-        args.in_dir = TURKEY_HOME
-
     out_dir = os.path.join(args.working_dir, args.out_dir)
-    task = Task(
-        [
-            0,
-            0,
-            args.app,
-            args.conf,
-            args.mode,
-            args.num_threads,
-        ],
-        out_dir,
-        args.in_dir,
-        executable=args.executable,
-        output_to_stdout=args.output_to_stdout,
-        TURKEY_HOME=TURKEY_HOME, )
-    task.run()
 
-    os.wait()
-elif args.cmd == 'policy':
-    pol = Policy(args.file, args.out_dir, TURKEY_HOME)
-    pol.run()
+    task_args = {
+        'app': args.app,
+        'conf': args.conf,
+        'mode': args.mode,
+        'threads': args.num_threads
+    }
 
+    task = Task(task_args, out_dir=out_dir)
+    task.run(stdout=args.output_to_stdout, wait=True)
 elif args.cmd == 'clean':
     os.system('rm -rf build')
 else:
