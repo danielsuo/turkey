@@ -1,18 +1,22 @@
 # Turkey
 
-[TODO](https://docs.google.com/document/d/1c7FWr20b7X3C0umUbcWgD6-azkyj5Yhzmg3Ah-hwTuU/edit)
-
 ## Getting started
+
+### Installing
 - Run ```./bin/install```. This will set up the ```TURKEY_HOME``` environment variable in your ```~/.bashrc```.
 - Run ```./bin/install_deps``` if on Ubuntu with root acces. Otherwise, call home and complain.
 - Run ```source ~/.bashrc``` to get updated environment variables
 - Run ```./bin/run.py build all``` to build all converted applications
-- Run ```./bin/run.py build [APP]``` to build the application you're working on
-- Run ```./bin/run.py data [APP]``` to download the data for the application you're working on. Use ```alll``` to download all applications
-- Run ```./bin/run.py one [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
+- Run ```./bin/run.py data [APP]``` to download the data for the application you're working on. Use ```all``` to download all applications
 
-## How to convert an application (your mileage may vary...)
-- TODO
+### Building
+- Run ```./bin/run.py build [APP]``` to build the application you're working on
+
+### Running
+- Run ```./bin/run.py one [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
+- Run ```./bin/run.py gen jobs/example.params``` to generate a list of tasks according to a params file (parsed by ```turkey/generator.py```)
+- Run ```./bin/run.py job jobs/example.jobs``` to run the jobs generated in the above step (job file has the same name and location as params file)
+- Run ```./bin/run.py viz [PARAMS] [JOB] [OUTPUT_DIR]``` to generate graphs from the job run
 
 ## Application status
 ### PARSEC
@@ -49,15 +53,3 @@
 | water_nsquared  |                 |                 |                 |
 | water_spatial   |                 |                 |                 |
 
-## Outstanding feature
-- Modes (e.g., pthreads, tbb, turkey)
-
-## Outstanding documentation
-  - Job files
-  - Conf files
-  - Job outputs
-
-## Outstanding clean-up
-  - CMakeFiles.txt
-  - Install scripts
-  - Vendor dependencies
