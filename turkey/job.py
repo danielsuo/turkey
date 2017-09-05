@@ -1,8 +1,37 @@
 import os
+import csv
 import json
 import time
+import subprocess
+import multiprocess
 import pathos.multiprocessing as mp
 from .task import Task
+
+
+def parse_vmstat(stdout):
+    return dict(zip(*map(str.split, stdout.strip().split('\n'))[-2:]))
+
+def get_stats():
+    output = subprocess.check_output('vmstat', shell=True)
+    result = parse_vmstat(output)
+
+    return result
+
+def write_stats(stat_file):
+
+    # Grab stats once to get fieldnames
+    keys = get_stats().keys()
+
+    with open(stat_file, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=keys, delimiter=',')
+        writer.writeheader()
+        while True:
+            print('Getting stats...Ctrl-\\ to quit')
+            writer.writerow(get_stats())
+
+            # TODO: we shouldn't flush, but while debugging...
+            f.flush()
+            time.sleep(1)
 
 
 class Job:
@@ -23,23 +52,35 @@ class Job:
 
         self.pool_size = args.pool_size
 
-    def run(self, stdout=False):
+    def run(self, stdout=False, intelligent=False):
+        # Set up up system stat collector
+        self.stat_process = multiprocess.Process(
+            target=write_stats, args=(os.path.join(self.out_dir, 'stats.csv'),))
+        self.stat_process.start()
+
         pool_size = min(len(self.tasks), self.pool_size, mp.cpu_count())
         pool = mp.ProcessingPool(pool_size)
 
+        args = {}
+
         for task in self.tasks:
+            # TODO: We may want to allow more threads
+            if intelligent:
+                args['threads'] = mp.cpu_count()
+
             task.delay()
-            pool.apipe(lambda t: t.run(stdout=stdout), task)
+            pool.apipe(lambda t: t.run(args=args, stdout=stdout), task)
 
         os.wait()
+        self.stat_process.terminate()
         os.system('stty sane')
     #  if args.add_all:
         #  pool_size = min(job.ntasks, args.num_workers)
         #  pool = mp.Pool(pool_size)
         #  if args.turkey_mode:
-            #  pool.map(lambda task: task.run(threads=int(mp.cpu_count()
-                                                       #  / pool_size), wait=True), job.task_array)
+        #  pool.map(lambda task: task.run(threads=int(mp.cpu_count()
+        #  / pool_size), wait=True), job.task_array)
         #  else:
-            #  pool.map(lambda task: task.run(wait=True), job.task_array)
+        #  pool.map(lambda task: task.run(wait=True), job.task_array)
     #  else:
         #  job.run()
