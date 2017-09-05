@@ -15,8 +15,8 @@ class Task:
         self.desc = desc
 
         # Set task id
-        Task.tid += 1
         self.desc['id'] = Task.tid
+        Task.tid += 1
 
         # Compute directories
         self.dirs = {}

@@ -8,7 +8,7 @@ import subprocess
 import pathos.multiprocessing as mp
 from random import randint
 
-from turkey import Job, Task, Generator, apps, pthread, tbb
+from turkey import Job, Task, Generator, Parser, apps, pthread, tbb
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -136,6 +136,12 @@ qsub.add_argument(
 qsub.add_argument(
     '-u', '--turkey-mode', help='Run in turkey mode', action='store_true')
 
+parse = subparsers.add_parser('parse', help='Parse results')
+parse.add_argument(
+    'params', help='Original params file used to generate a jobs file')
+parse.add_argument('jobs', help='Generated jobs file')
+parse.add_argument('out_dir', help='Output directory')
+
 ###############################################################################
 # Clean subcommand
 ###############################################################################
@@ -246,6 +252,9 @@ elif args.cmd == 'one':
 
     task = Task(task_args, out_dir=out_dir)
     task.run(stdout=args.output_to_stdout, wait=True)
+elif args.cmd == 'parse':
+    parser = Parser(args)
+    parser.parse()
 elif args.cmd == 'clean':
     os.system('rm -rf build')
 else:
