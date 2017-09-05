@@ -45,10 +45,10 @@ class Parser():
             writer.writeheader()
 
             for job in self.jobs:
-                counter += 1
                 job['id'] = counter
 
                 parse_file(job, os.path.join(
                     self.out_dir, str(counter), 'task.out'))
 
                 writer.writerow(job)
+                counter += 1
