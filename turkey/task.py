@@ -68,7 +68,7 @@ class Task:
         if 'start' not in self.args:
             self.args['start'] = 0
 
-    def run(self, args={}, stdout=False, wait=False):
+    def run(self, args={}, stdout=False, wait=False, lock=None, counter=None):
 
         # Overwrite "compile"-time attributes with "run"-time attributes in
         # addition to adding any new attributes
@@ -97,17 +97,31 @@ class Task:
         print('Running task %d with args "%s"' % (self.desc['id'], args))
         args = 'date "+datetime: %Y-%m-%dT%H:%M:%S" && ' + args
 
+        if wait and lock is not None and counter is not None:
+            print('trying to acquire...')
+            lock.acquire()
+            counter += 1
+            print('Job starting: %d' % counter)
+            lock.release()
+
         # Run executable
         if stdout:
-            proc = subprocess.Popen(args, env=os.environ, shell=True)
+            subprocess.Popen(args, env=os.environ, shell=True)
         else:
             with open(self.files['output'], 'w') as out:
-                proc = subprocess.Popen(args, stdin=open(
+                subprocess.Popen(args, stdin=open(
                     os.devnull), stdout=out, stderr=out, env=os.environ, shell=True)
 
         if wait:
             os.wait()
             os.system('date')
+
+            if lock is not None and counter is not None:
+                lock.acquire()
+                counter -= 1
+                print('Job finished: %d' % counter)
+                lock.release()
+
 
     def delay(self):
         # Delay start

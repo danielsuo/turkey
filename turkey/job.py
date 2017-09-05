@@ -3,19 +3,23 @@ import csv
 import json
 import time
 import subprocess
-import multiprocess
+import datetime
 import pathos.multiprocessing as mp
+from multiprocess import Lock, Process, Value
 from .task import Task
 
 
 def parse_vmstat(stdout):
     return dict(zip(*map(str.split, stdout.strip().split('\n'))[-2:]))
 
+
 def get_stats():
     output = subprocess.check_output('vmstat', shell=True)
     result = parse_vmstat(output)
+    result['datetime'] = datetime.datetime.now()
 
     return result
+
 
 def write_stats(stat_file):
 
@@ -53,8 +57,12 @@ class Job:
         self.pool_size = args.pool_size
 
     def run(self, stdout=False, intelligent=False):
+        # Set up system lock
+        self.lock = Lock()
+        self.counter = Value('i', 0)
+
         # Set up up system stat collector
-        self.stat_process = multiprocess.Process(
+        self.stat_process = Process(
             target=write_stats, args=(os.path.join(self.out_dir, 'stats.csv'),))
         self.stat_process.start()
 
@@ -68,8 +76,10 @@ class Job:
             if intelligent:
                 args['threads'] = mp.cpu_count()
 
+            print('%d' % pool_size)
             task.delay()
-            pool.apipe(lambda t: t.run(args=args, stdout=stdout), task)
+            pool.apipe(lambda t: t.run(args=args, stdout=stdout,
+                                       wait=True, lock=self.lock, counter=self.counter), task)
 
         os.wait()
         self.stat_process.terminate()
