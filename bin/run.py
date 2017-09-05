@@ -8,7 +8,7 @@ import subprocess
 import pathos.multiprocessing as mp
 from random import randint
 
-from turkey import Job, Task, Generator, Parser, apps, pthread, tbb
+from turkey import Job, Task, Generator, Parser, Visualizer, apps, pthread, tbb
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -143,6 +143,13 @@ parse.add_argument('jobs', help='Generated jobs file')
 parse.add_argument('out_dir', help='Output directory')
 
 ###############################################################################
+# Viz subcommand
+###############################################################################
+
+viz = subparsers.add_parser('viz', help='Visualize results')
+viz.add_argument('file', help='parsed.csv')
+
+###############################################################################
 # Clean subcommand
 ###############################################################################
 
@@ -255,6 +262,9 @@ elif args.cmd == 'one':
 elif args.cmd == 'parse':
     parser = Parser(args)
     parser.parse()
+elif args.cmd == 'viz':
+    visualizer = Visualizer(args)
+    visualizer.visualize()
 elif args.cmd == 'clean':
     os.system('rm -rf build')
 else:

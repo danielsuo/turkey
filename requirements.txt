@@ -2,3 +2,5 @@ proc
 pathos
 tqdm
 numpy
+pandas
+matplotlib

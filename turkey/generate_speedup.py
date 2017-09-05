@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+# TODO: refactor into utils
+
 apps = [
     'blackscholes',
     'ferret',
