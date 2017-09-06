@@ -4,8 +4,7 @@ sudo yum --enablerepo=extras install epel-release
 
 sudo yum install -y \
   cmake3 \
-  devtoolset-6-gcc \
-  devtoolset-6-gcc-c++ \
+  devtoolset-6* \
   double-conversion \
   double-conversion-devel \
   autogen \
@@ -52,4 +51,6 @@ sudo yum install -y \
   gtk-doc-tools \
   swig \
   yasm \
-  gfortran
+  gfortran \
+  libatomic-devel \
+  libunwind-devel
