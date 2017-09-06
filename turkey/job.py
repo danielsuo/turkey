@@ -6,7 +6,6 @@ import subprocess
 import datetime
 import pathos.multiprocessing as mp
 from multiprocess import Process
-import multiprocess
 from .task import Task
 import config
 
@@ -64,7 +63,10 @@ class Job:
 
         self.pool_size = args.pool_size
 
-    def run(self, stdout=False, intelligent=False):
+        # TODO: might want a better name (i.e., moldable Linux)
+        self.intelligent = args.intelligent
+
+    def run(self, stdout=False):
         # Set up up system stat collector
         self.stat_process = Process(
             target=write_stats, args=(os.path.join(self.out_dir, 'stats.csv'),))
@@ -79,9 +81,11 @@ class Job:
         config.num_tasks_remaining.set(len(self.tasks))
 
         for task in self.tasks:
-            # TODO: We may want to allow more threads
-            if intelligent:
-                args['threads'] = mp.cpu_count()
+            # TODO: We should discuss the details of intelligent. For example, in
+            # the case where tasks are pinned to fewer than cpu_count number of
+            # cores
+            if self.intelligent:
+                args['threads'] = int(mp.cpu_count() / config.num_tasks_in_system)
 
             # Wait before we deliver the next task
             # TODO: Not great that this happens on the main thread
