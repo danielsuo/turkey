@@ -64,6 +64,8 @@ job.add_argument(
     '-o', '--out-dir', help='Output directory relative to working')
 job.add_argument('-p', '--pool-size',
                  help='Number of workers to gate', type=int, default=mp.cpu_count())
+job.add_argument('-i', '--intelligent',
+                 help='Use intelligent Linux scheduler', action='store_true')
 
 ###############################################################################
 # One-off run subcommand
