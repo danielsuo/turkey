@@ -19,7 +19,7 @@ source scl_source enable devtoolset-6
 NOTE: On CentOS, you may need to upgrade gcc
 ```bash
 # Install newer version of gcc
-sudo yum install devtoolset-6-gcc* devtoolset-6-libatomic-devel
+sudo yum install devtoolset-6*
 
 # Set gcc to newer version in current terminal
 scl enable devtoolset-6 bash
