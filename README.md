@@ -16,7 +16,12 @@
 - Run ```./bin/run.py one [APP] -c native -n 8``` to run a one-off of the application with configuration native and 8 threads
 - Run ```./bin/run.py gen jobs/example.params``` to generate a list of tasks according to a params file (parsed by ```turkey/generator.py```)
 - Run ```./bin/run.py job jobs/example.jobs``` to run the jobs generated in the above step (job file has the same name and location as params file)
+- Run ```./bin/run.py parse [PARAMS] [JOB] [OUTPUT_DIR]``` to generate csv file of task-level stats
 - Run ```./bin/run.py viz [PARAMS] [JOB] [OUTPUT_DIR]``` to generate graphs from the job run
+
+### Statistics
+- Task-level stats are parsed via the ```parse``` sub-command (see above)
+- System-level stats are stored in ```[OUTPUT_DIR]/stats.csv```
 
 ## Application status
 ### PARSEC

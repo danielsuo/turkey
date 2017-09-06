@@ -25,11 +25,11 @@ class Visualizer():
         plt.close()
 
         # Histogram of task sizes
-        n, bins, patches = plt.hist(self.df['noptions'], 40, normed=1)
-        plt.xlabel('Number of options')
-        plt.ylabel('Probability')
-        plt.savefig(self.files['hist_size'])
-        plt.close()
+        #  n, bins, patches = plt.hist(self.df['noptions'], 40, normed=1)
+        #  plt.xlabel('Number of options')
+        #  plt.ylabel('Probability')
+        #  plt.savefig(self.files['hist_size'])
+        #  plt.close()
 
         # Histogram of response times
         n, bins, patches = plt.hist(self.df['real'] / 1000, 40, normed=1)

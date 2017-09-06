@@ -3,6 +3,7 @@ import time
 import json
 import copy
 import subprocess
+import config
 
 # Documentation for Task: https://goo.gl/UJNB6J
 
@@ -68,7 +69,7 @@ class Task:
         if 'start' not in self.args:
             self.args['start'] = 0
 
-    def run(self, args={}, stdout=False, wait=False, lock=None, counter=None):
+    def run(self, args={}, stdout=False, wait=False, count=False):
 
         # Overwrite "compile"-time attributes with "run"-time attributes in
         # addition to adding any new attributes
@@ -97,12 +98,9 @@ class Task:
         print('Running task %d with args "%s"' % (self.desc['id'], args))
         args = 'date "+datetime: %Y-%m-%dT%H:%M:%S" && ' + args
 
-        if wait and lock is not None and counter is not None:
-            print('trying to acquire...')
-            lock.acquire()
-            counter += 1
-            print('Job starting: %d' % counter)
-            lock.release()
+        if wait and count:
+            config.num_tasks_in_system.increment()
+            print('Job starting: %d' % config.num_tasks_in_system.value)
 
         # Run executable
         if stdout:
@@ -116,11 +114,10 @@ class Task:
             os.wait()
             os.system('date')
 
-            if lock is not None and counter is not None:
-                lock.acquire()
-                counter -= 1
-                print('Job finished: %d' % counter)
-                lock.release()
+            if count:
+                config.num_tasks_in_system.decrement()
+                config.num_tasks_remaining.decrement()
+                print('Job finished: %d' % config.num_tasks_in_system.value)
 
 
     def delay(self):
