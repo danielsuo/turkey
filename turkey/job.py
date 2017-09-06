@@ -3,19 +3,32 @@ import csv
 import json
 import time
 import subprocess
-import multiprocess
+import datetime
 import pathos.multiprocessing as mp
+from multiprocess import Process
+import multiprocess
 from .task import Task
+import config
 
 
 def parse_vmstat(stdout):
-    return dict(zip(*map(str.split, stdout.strip().split('\n'))[-2:]))
+    output = map(str.split, stdout.strip().split('\n'))
+
+    # We want the 2nd and 4th lines to grab column headers and statistics
+    # from the most recent second, respectively
+    return dict(zip(output[1], output[3]))
+
 
 def get_stats():
-    output = subprocess.check_output('vmstat', shell=True)
+    # We have to get the second line of vmstat (after waiting one second).
+    # Otherwise, there the statistics are averaged from last reboot.
+    output = subprocess.check_output('vmstat 1 2', shell=True)
     result = parse_vmstat(output)
+    result['datetime'] = datetime.datetime.now()
+    result['tasks'] = config.num_tasks_in_system.value
 
     return result
+
 
 def write_stats(stat_file):
 
@@ -31,7 +44,6 @@ def write_stats(stat_file):
 
             # TODO: we shouldn't flush, but while debugging...
             f.flush()
-            time.sleep(1)
 
 
 class Job:
@@ -40,7 +52,7 @@ class Job:
         self.file = args.file
         self.working_dir = args.working_dir
 
-        self.out_dir = args.out_dir if args.out_dir != None else \
+        self.out_dir = args.out_dir if args.out_dir is not None else \
             self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
         self.out_dir = os.path.join(self.working_dir, self.out_dir)
 
@@ -54,24 +66,41 @@ class Job:
 
     def run(self, stdout=False, intelligent=False):
         # Set up up system stat collector
-        self.stat_process = multiprocess.Process(
+        self.stat_process = Process(
             target=write_stats, args=(os.path.join(self.out_dir, 'stats.csv'),))
         self.stat_process.start()
 
         pool_size = min(len(self.tasks), self.pool_size, mp.cpu_count())
-        pool = mp.ProcessingPool(pool_size)
+        pool = mp.Pool(pool_size)
 
         args = {}
+
+        # Initialize the number of tasks remaining
+        config.num_tasks_remaining.set(len(self.tasks))
 
         for task in self.tasks:
             # TODO: We may want to allow more threads
             if intelligent:
                 args['threads'] = mp.cpu_count()
 
+            # Wait before we deliver the next task
+            # TODO: Not great that this happens on the main thread
             task.delay()
-            pool.apipe(lambda t: t.run(args=args, stdout=stdout), task)
 
-        os.wait()
+            apply_args = {
+                'args': args,
+                'stdout': stdout,
+                'wait': True,
+                'count': True
+            }
+            pool.apply_async(task.run, (), apply_args)
+
+        # Normally we'd use os.wait(), but between wanting to wait for the
+        # async applies to finish and os.wait() also depending on the stat
+        # process, we have a deadlock
+        while config.num_tasks_remaining.value > 0:
+            time.sleep(5)
+
         self.stat_process.terminate()
         os.system('stty sane')
     #  if args.add_all:
