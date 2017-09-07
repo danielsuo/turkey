@@ -20,8 +20,11 @@ echo PBS: PATH = $PBS_O_PATH
 echo PBS: TMPDIR = $TMPDIR
 echo ------------------------------------------------------
 
+# Copy data over to worker
 cp -R $PBS_O_HOME/turkey $TMPDIR
-source activate idp
 
-jobname=${prefix}-`printf "%08d" ${index}`
-~/turkey/bin/turkey run ~/turkey/jobs/${apps}/${jobname}.job -i $TMPDIR/turkey -o $PBS_JOBID/${jobname} -n ${workers} -a ${mode} 
+# Run job
+${turkey}/bin/run.py job ${turkey}/${jobfile} -i $TMPDIR/turkey -o ${turkey}/$PBS_JOBID/${jobfile}
+
+# Clean up (this shouldn't be necessary, but for whatever reason, had issues)
+rm -rf $TMPDIR/*
