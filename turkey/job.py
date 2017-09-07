@@ -49,13 +49,13 @@ class Job:
     def __init__(self, args):
         self.prefix = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
         self.file = args.file
-        self.working_dir = args.working_dir
 
         self.out_dir = args.out_dir if args.out_dir is not None else \
             self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
-        self.out_dir = os.path.join(self.working_dir, self.out_dir)
 
-        os.system('mkdir -p %s' % os.path.join(self.working_dir, self.out_dir))
+        self.out_dir = os.path.join(args.turkey_home, 'out', self.out_dir)
+
+        os.system('mkdir -p %s' % self.out_dir)
 
         with open(self.file, 'r') as f:
             self.tasks = [Task(task, out_dir=self.out_dir)
@@ -85,7 +85,8 @@ class Job:
             # the case where tasks are pinned to fewer than cpu_count number of
             # cores
             if self.intelligent:
-                args['threads'] = int(mp.cpu_count() / config.num_tasks_in_system)
+                args['threads'] = int(
+                    mp.cpu_count() / config.num_tasks_in_system)
 
             # Wait before we deliver the next task
             # TODO: Not great that this happens on the main thread
