@@ -127,7 +127,7 @@ args = parser.parse_args()
 
 if args.turkey_home is None:
     try:
-        args.turkey_home = os.environ['args.turkey_home']
+        args.turkey_home = os.environ['TURKEY_HOME']
     except KeyError, e:
         print 'ERROR: could not find args.turkey_home in environment. Please specify with -q.'
         sys.exit()
