@@ -1,5 +1,8 @@
 import os
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 
@@ -7,11 +10,11 @@ class Visualizer():
     def __init__(self, args):
         self.file = args.file
         self.files = {
-            'hist_delay': self.file.replace('parsed.csv', 'hist_delay.pdf'),
-            'hist_size': self.file.replace('parsed.csv', 'hist_size.pdf.'),
-            'hist_response': self.file.replace('parsed.csv', 'hist_response.pdf'),
-            'num_tasks': self.file.replace('parsed.csv', 'num_tasks.pdf')
-        }
+                'hist_delay': self.file.replace('parsed.csv', 'hist_delay.pdf'),
+                'hist_size': self.file.replace('parsed.csv', 'hist_size.pdf.'),
+                'hist_response': self.file.replace('parsed.csv', 'hist_response.pdf'),
+                'num_tasks': self.file.replace('parsed.csv', 'num_tasks.pdf')
+                }
 
         self.df = pd.read_csv(self.file)
 
