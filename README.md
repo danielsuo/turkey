@@ -9,6 +9,11 @@
 - Run ```./bin/run.py build all``` to build all converted applications
 - Run ```./bin/run.py data [APP]``` to download the data for the application you're working on. Use ```all``` to download all applications
 
+NOTE: You may need to specify a cmake executable during build
+```bash
+./bin/run.py build all -e cmake3
+```
+
 ### Installing on the Intel vLab cluster
 Add the following to your ```~/.bashrc```
 ```bash
