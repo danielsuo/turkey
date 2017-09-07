@@ -21,20 +21,22 @@ find_package (Threads REQUIRED)
 # Build vendored libraries
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/folly)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/wangle)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/yasm)
 
 # Set some convenience variables
 set (TURKEY_DEPS ${FOLLY_EXTERNAL_PROJECT} ${WANGLE_EXTERNAL_PROJECT})
-set (TURKEY_LIB_DEPS folly wangle rt glog gflags ${CMAKE_THREAD_LIBS_INIT})
+set (TURKEY_LIB_DEPS folly wangle rt glog gflags yasm ${CMAKE_THREAD_LIBS_INIT})
 set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 set (TURKEY_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 
-link_directories (${FOLLY_LIBRARY_DIR} ${WANGLE_LIBRARY_DIR})
+link_directories (${FOLLY_LIBRARY_DIR} ${WANGLE_LIBRARY_DIR} ${YASM_LIBRARY_DIR})
 
 set (TURKEY_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${FOLLY_INCLUDE_DIR}
   ${Boost_INCLUDE_DIR}
   ${WANGLE_INCLUDE_DIR}
+  ${YASM_INCLUDE_DIR}
   )
 set (APPS
   barnes

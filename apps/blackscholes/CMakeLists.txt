@@ -10,7 +10,7 @@ set (CMAKE_BUILD_TYPE Debug)
 
 # Find packages
 find_package (Threads)
-find_package (TBB)
+# find_package (TBB)
 find_package (OpenMP)
 
 # PTHREAD
@@ -32,14 +32,14 @@ target_link_libraries(
   )
 
 # TBB
-add_executable (${PROJECT_NAME}_tbb ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
-set_target_properties (${PROJECT_NAME}_tbb PROPERTIES COMPILE_DEFINITIONS "ENABLE_TBB")
-target_link_libraries(
-  ${PROJECT_NAME}_tbb
-  tbb
-  m
-  ${CMAKE_THREAD_LIBS_INIT}
-  )
+# add_executable (${PROJECT_NAME}_tbb ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
+# set_target_properties (${PROJECT_NAME}_tbb PROPERTIES COMPILE_DEFINITIONS "ENABLE_TBB")
+# target_link_libraries(
+# ${PROJECT_NAME}_tbb
+# tbb
+# m
+# ${CMAKE_THREAD_LIBS_INIT}
+# )
 
 # OpenMP
 add_executable (${PROJECT_NAME}_omp ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
