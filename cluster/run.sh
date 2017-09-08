@@ -21,10 +21,18 @@ echo PBS: TMPDIR = $TMPDIR
 echo ------------------------------------------------------
 
 # Copy data over to worker
-cp -R $PBS_O_HOME/turkey $TMPDIR
+echo "Copying over data"
+time -p cp -R $PBS_O_HOME/turkey $TMPDIR
+
+# Install dependencies
+echo "Installing dependencies"
+pushd ${turkey}
+time -p python setup.py develop --user
+pip install numpy --upgrade --user
+popd
 
 # Run job
-${turkey}/bin/run.py job ${turkey}/${jobfile} -i $TMPDIR/turkey -o ${turkey}/$PBS_JOBID/${jobfile}
+${turkey}/bin/run.py -q ${turkey} job ${turkey}/${jobfile} -i $TMPDIR/turkey -o ${out}
 
 # Clean up (this shouldn't be necessary, but for whatever reason, had issues)
 rm -rf $TMPDIR/*

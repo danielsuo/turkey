@@ -42,6 +42,8 @@ scl enable devtoolset-6 bash
 
 ### Running on vLab
 - Useful guide [link](http://qcd.phys.cmu.edu/QCDcluster/pbs/run_serial.html)
+- Run ```./bin/run.py qsub [JOBS] -m [EMAIL]``` where JOBS is a job file or directory with job files in it. You can optionally receive emails.
+- Output will be in ```$TURKEY_HOME/out```
 
 ### Statistics
 - Task-level stats are parsed via the ```parse``` sub-command (see above)

@@ -1,1 +1,0 @@
-[{"conf": "native", "app": "blackscholes", "start": 3.612622954480079, "threads": 16, "mode": "pthread", "taskset": "0-7"}, {"conf": "native", "app": "blackscholes", "start": 2.6665842631509062, "threads": 16, "mode": "pthread", "taskset": "0-7"}]
