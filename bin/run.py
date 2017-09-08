@@ -105,9 +105,6 @@ qsub.add_argument('-r', '--run-script', help='Run script relative to args.turkey
 ###############################################################################
 
 parse = subparsers.add_parser('parse', help='Parse results')
-parse.add_argument(
-    'params', help='Original params file used to generate a jobs file')
-parse.add_argument('jobs', help='Generated jobs file')
 parse.add_argument('out_dir', help='Output directory')
 
 ###############################################################################

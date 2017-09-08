@@ -1,4 +1,5 @@
 import os
+import pathlib
 import csv
 import json
 from datetime import datetime, timedelta
@@ -27,12 +28,14 @@ def parse_file(params, filepath):
 
 class Parser():
     def __init__(self, args):
-        with open(args.params, 'r') as f:
-            self.params = json.load(f)
-        with open(args.jobs, 'r') as f:
-            self.jobs = json.load(f)
-
         self.out_dir = args.out_dir
+
+        job_files = list(pathlib.Path(self.out_dir).glob('*.job'))
+        if len(job_files) == 0:
+            raise ValueError('Could not find job file!')
+
+        with open(str(job_files[0]), 'r') as f:
+            self.jobs = json.load(f)
 
     def parse(self):
         counter = 0
@@ -48,7 +51,7 @@ class Parser():
                 job['id'] = counter
 
                 parse_file(job, os.path.join(
-                    self.out_dir, str(counter), 'task.out'))
+                    self.out_dir, 'out', str(counter), 'task.out'))
 
                 writer.writerow(job)
                 counter += 1
