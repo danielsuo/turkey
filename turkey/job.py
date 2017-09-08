@@ -57,6 +57,9 @@ class Job:
 
         os.system('mkdir -p %s' % self.out_dir)
 
+        # Copy over job file to out directory for easy parsing later
+        os.system('cp %s %s' % (self.file, self.out_dir))
+
         with open(self.file, 'r') as f:
             self.tasks = [Task(task, out_dir=self.out_dir, in_dir=self.in_dir,
                                turkey_home=args.turkey_home)
