@@ -112,7 +112,7 @@ parse.add_argument('out_dir', help='Output directory')
 ###############################################################################
 
 viz = subparsers.add_parser('viz', help='Visualize results')
-viz.add_argument('file', help='parsed.csv')
+viz.add_argument('-o', '--out_dir', help='Output directory')
 
 ###############################################################################
 # Clean subcommand

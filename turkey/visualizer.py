@@ -8,7 +8,10 @@ import matplotlib.pyplot as plt
 
 class Visualizer():
     def __init__(self, args):
-        self.file = args.file
+        # TODO: Honestly should rationalize magic strings and magic directories
+        self.file = os.path.join(args.out_dir, 'parsed.csv')
+        self.sysstats = os.path.join(args.out_dir, 'stats.csv')
+
         self.files = {
                 'hist_delay': self.file.replace('parsed.csv', 'hist_delay.pdf'),
                 'hist_size': self.file.replace('parsed.csv', 'hist_size.pdf.'),
