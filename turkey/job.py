@@ -50,15 +50,16 @@ class Job:
         self.prefix = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime())
         self.file = args.file
 
+        self.in_dir = args.in_dir if args.in_dir else args.turkey_home
         self.out_dir = args.out_dir if args.out_dir is not None else \
-            self.prefix + '_' + self.file.split('/')[-1].split('.')[0] + '.out'
-
-        self.out_dir = os.path.join(args.turkey_home, 'out', self.out_dir)
+            os.path.join(args.turkey_home, 'out', self.prefix +
+                         '_' + self.file.split('/')[-1].split('.')[0] + '.out')
 
         os.system('mkdir -p %s' % self.out_dir)
 
         with open(self.file, 'r') as f:
-            self.tasks = [Task(task, out_dir=self.out_dir)
+            self.tasks = [Task(task, out_dir=self.out_dir, in_dir=self.in_dir,
+                               turkey_home=args.turkey_home)
                           for task in json.load(f)]
 
         self.pool_size = args.pool_size

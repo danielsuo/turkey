@@ -2,7 +2,7 @@
   "apps": [{
     "name": "blackscholes"
   }],
-  "tasks": 1000,
+  "tasks": 2,
   "jobs": 1,
   "conf": "native",
   "mode": "pthread",

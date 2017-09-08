@@ -11,7 +11,8 @@ import config
 class Task:
     tid = 0
 
-    def __init__(self, desc, out_dir='out'):
+    def __init__(self, desc, out_dir=None, in_dir=None,
+                 turkey_home=os.getenv('TURKEY_HOME', '.')):
 
         self.desc = desc
 
@@ -21,14 +22,19 @@ class Task:
 
         # Compute directories
         self.dirs = {}
-        self.dirs['root'] = os.getenv('TURKEY_HOME', '.')
+        self.dirs['turkey_home'] = turkey_home
         self.dirs['src'] = os.path.join(
-            self.dirs['root'], 'apps', self.desc['app'])
-        self.dirs['input'] = os.path.join(self.dirs['src'], 'inputs')
-        self.dirs['output'] = os.path.join(out_dir, str(self.desc['id']))
+            self.dirs['turkey_home'], 'apps', self.desc['app'])
+
+        # In the cluster case, source code and input might live
+        # in different places
+        self.dirs['input'] = os.path.join(
+            in_dir if in_dir is not None else turkey_home, 'apps', self.desc['app'], 'inputs')
+        self.dirs['output'] = os.path.join(
+            out_dir if out_dir is not None else turkey_home, 'out', str(self.desc['id']))
         self.dirs['conf'] = os.path.join(self.dirs['src'], 'conf')
         self.dirs['exec'] = os.path.join(
-            self.dirs['root'], 'build/apps', self.desc['app'])
+            self.dirs['turkey_home'], 'build/apps', self.desc['app'])
 
         # Make output directory if necessary
         os.system('mkdir -p %s' % self.dirs['output'])
@@ -119,8 +125,6 @@ class Task:
                 config.num_tasks_remaining.decrement()
                 print('Job finished: %d' % config.num_tasks_in_system.value)
 
-
     def delay(self):
         # Delay start
         time.sleep(self.args['start'])
-

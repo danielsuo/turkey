@@ -6,9 +6,8 @@ import sys
 import argparse
 import subprocess
 import pathos.multiprocessing as mp
-from random import randint
 
-from turkey import Job, Task, Generator, Parser, Visualizer, apps, pthread, tbb
+from turkey import Job, Task, Generator, Parser, Visualizer, apps
 
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
@@ -75,8 +74,8 @@ one.add_argument('app', help='App to run')
 one.add_argument(
     '-n', '--num-threads', help='Number of threads', type=int, default=1)
 one.add_argument('-c', '--conf', help='Configuration to run', default='test')
-one.add_argument(
-    '-o', '--out-dir', help='Output directory relative to working', default='out')
+one.add_argument('-o', '--out-dir', help='Output directory')
+one.add_argument('-i', '--in-dir', help='Input directory')
 one.add_argument(
     '-s',
     '--output_to_stdout',
@@ -90,7 +89,8 @@ one.add_argument(
 ###############################################################################
 
 qsub = subparsers.add_parser('qsub', help='Run qsub jobs')
-qsub.add_argument('jobfile', help='Job file to run relative to args.turkey_home')
+qsub.add_argument(
+    'jobfile', help='Job file to run relative to args.turkey_home')
 qsub.add_argument(
     '-c',
     '--ncpus',
@@ -187,7 +187,8 @@ elif args.cmd == 'one':
         'threads': args.num_threads
     }
 
-    task = Task(task_args, out_dir=args.out_dir)
+    task = Task(task_args, out_dir=args.out_dir,
+                in_dir=args.in_dir, turkey_home=args.turkey_home)
     task.run(stdout=args.output_to_stdout, wait=True)
 elif args.cmd == 'parse':
     parser = Parser(args)
