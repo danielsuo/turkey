@@ -22,9 +22,19 @@ find_package (Threads REQUIRED)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/folly)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/wangle)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/yasm)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/zmq)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/czmq)
+add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/lib/cppzmq)
 
 # Set some convenience variables
-set (TURKEY_DEPS ${FOLLY_EXTERNAL_PROJECT} ${WANGLE_EXTERNAL_PROJECT})
+set (TURKEY_DEPS
+  ${FOLLY_EXTERNAL_PROJECT}
+  ${WANGLE_EXTERNAL_PROJECT}
+  ${YASM_EXTERNAL_PROJECT}
+  turkey-zmq
+  turkey-czmq
+  turkey-cppzmq
+  )
 set (TURKEY_LIB_DEPS folly wangle rt glog gflags yasm ${CMAKE_THREAD_LIBS_INIT})
 set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 set (TURKEY_HOME ${CMAKE_CURRENT_SOURCE_DIR})
