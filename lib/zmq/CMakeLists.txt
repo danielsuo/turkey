@@ -9,18 +9,21 @@ cmake_minimum_required (VERSION 3.5)
 
 include (ExternalProject)
 
-set (CXX "clang++ -stdlib=c++")
+# set (CXX "clang++ -stdlib=c++")
+set (ZMQ_EXTERNAL_PROJECT zmq-git)
+set (ZMQ_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/${ZMQ_EXTERNAL_PROJECT}-prefix/src/${ZMQ_EXTERNAL_PROJECT})
 
-ExternalProject_Add (turkey-zmq
+ExternalProject_Add (${ZMQ_EXTERNAL_PROJECT}
     GIT_REPOSITORY "https://github.com/zeromq/libzmq.git"
     GIT_TAG "master"
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     BUILD_IN_SOURCE 1
     UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ./autogen.sh && ./configure
+    CONFIGURE_COMMAND ./autogen.sh && ./configure --prefix=${CMAKE_CURRENT_BINARY_DIR}
     BUILD_COMMAND make
-    INSTALL_COMMAND sudo make install
+    INSTALL_COMMAND make install
 )
 
-set (ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/turkey-zmq/include PARENT_SCOPE)
-set (ZEROMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/turkey-zmq/src/.libs PARENT_SCOPE)
+set (ZMQ_EXTERNAL_PROJECT ${ZMQ_EXTERNAL_PROJECT} PARENT_SCOPE)
+set (ZEROMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/${ZMQ_EXTERNAL_PROJECT}/include PARENT_SCOPE)
+set (ZEROMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/src/${ZMQ_EXTERNAL_PROJECT}/src/.libs PARENT_SCOPE)

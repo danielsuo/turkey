@@ -2,7 +2,10 @@ cmake_minimum_required (VERSION 3.5)
 
 include (ExternalProject)
 
-ExternalProject_Add (turkey-czmq
+set (CZMQ_EXTERNAL_PROJECT czmq-git)
+set (CZMQ_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CZMQ_EXTERNAL_PROJECT}-prefix/src/${CZMQ_EXTERNAL_PROJECT})
+
+ExternalProject_Add (${CZMQ_EXTERNAL_PROJECT}
     GIT_REPOSITORY "https://github.com/zeromq/czmq.git"
     GIT_TAG "master"
     BUILD_IN_SOURCE 1
@@ -12,5 +15,7 @@ ExternalProject_Add (turkey-czmq
     INSTALL_COMMAND ""
 )
 
-set (CZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-czmq-prefix/src/turkey-czmq/include PARENT_SCOPE)
-set (CZMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/turkey-czmq-prefix/src/turkey-czmq/src/.libs PARENT_SCOPE)
+set (CZMQ_EXTERNAL_PROJECT ${WANGLE_EXTERNAL_PROJECT} PARENT_SCOPE)
+
+set (CZMQ_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CZMQ_EXTERNAL_PROJECT}-prefix/src/${CZMQ_EXTERNAL_PROJECT}/include PARENT_SCOPE)
+set (CZMQ_LINK_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CZMQ_EXTERNAL_PROJECT}-prefix/src/${CZMQ_EXTERNAL_PROJECT}/src/.libs PARENT_SCOPE)
