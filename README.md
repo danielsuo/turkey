@@ -84,3 +84,11 @@ scl enable devtoolset-6 bash
 | water_nsquared  |                 |                 |                 |
 | water_spatial   |                 |                 |                 |
 
+## TODO: move scheduler to Python
+- Addresses tied to PID for easy implementation
+- Job spawns a Server object which has a Scheduler
+- Each time a task begins, it connects to the Server
+- Server knows how many tasks are currently running, what their attributes are, etc
+- Server runs the Server's event loop, which is just message processor
+- It can receive start, stop, update messages
+- It can send resource allocation messages (e.g., # of threads)

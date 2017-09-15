@@ -2,6 +2,8 @@ import os
 import time
 import zmq
 
+from .scheduler import Scheduler
+
 
 class Server():
     def __init__(self, pid=None, protocol='ipc', address='turkey-server', port=None):
@@ -19,16 +21,31 @@ class Server():
             'port': self.port
         }
 
+        self.tasks = []
+        self.resources = []
+
+        self.scheduler = Scheduler()
+
     def bind(self):
         self.socket.bind(self.url)
 
-    def start(self):
-	self.bind()
+    def start(self, func, args={}):
+        self.bind()
         while True:
-            message = self.socket.recv()
-            print('Received request: %s' % message)
-            time.sleep(1)
-            self.socket.send(b'Received your request!')
+            func(self, args)
+
+            # TODO: implement scheduler loop
+            # 1. On start / stop message:
+            # 2. Update task list
+            # 3. Call scheduler
+            # 4. Send messages to tasks to update resource allocs
+
+
+def loop(self, args):
+    message = self.socket.recv()
+    print('Received request: %s' % message)
+    time.sleep(1)
+    self.socket.send(b'Received your request!')
 
 
 if __name__ == '__main__':
@@ -36,4 +53,4 @@ if __name__ == '__main__':
     server = Server(protocol='tcp', address='*', port=5555)
     print(server.pid)
     print(server.url)
-    server.start()
+    server.start(loop)
