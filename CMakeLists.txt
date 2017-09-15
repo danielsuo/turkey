@@ -35,11 +35,11 @@ set (TURKEY_DEPS
   ${CZMQ_EXTERNAL_PROJECT}
   ${CPPZMQ_EXTERNAL_PROJECT}
   )
-set (TURKEY_LIB_DEPS folly wangle rt glog gflags yasm ${CMAKE_THREAD_LIBS_INIT})
+set (TURKEY_LIB_DEPS folly wangle rt glog gflags yasm zmq ${CMAKE_THREAD_LIBS_INIT})
 set (TURKEY_LIBRARIES ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 set (TURKEY_HOME ${CMAKE_CURRENT_SOURCE_DIR})
 
-link_directories (${FOLLY_LIBRARY_DIR} ${WANGLE_LIBRARY_DIR} ${YASM_LIBRARY_DIR})
+link_directories (${FOLLY_LIBRARY_DIR} ${WANGLE_LIBRARY_DIR} ${YASM_LIBRARY_DIR} ${ZMQ_LIBRARY_DIR})
 
 set (TURKEY_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -47,6 +47,9 @@ set (TURKEY_INCLUDE_DIR
   ${Boost_INCLUDE_DIR}
   ${WANGLE_INCLUDE_DIR}
   ${YASM_INCLUDE_DIR}
+  ${ZMQ_INCLUDE_DIRS}
+  ${CZMQ_INCLUDE_DIRS}
+  ${CPPZMQ_INCLUDE_DIRS}
   )
 set (APPS
   barnes
@@ -107,7 +110,7 @@ if (${MAKE} STREQUAL "all")
   foreach (APP ${APPS})
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${APP})
   endforeach ()
-else ()
+elseif (${CMAKE} NOT STREQUAL "turkey")
   if (${MAKE} IN_LIST APPS)
     add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/${APP_DIR}/${MAKE})
   endif()

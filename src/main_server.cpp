@@ -1,36 +1,39 @@
-#include "ProcReader.h"
-#include "Server.h"
-#include <atomic>
-#include <chrono>
+//
+//  Hello World server in C++
+//  Binds REP socket to tcp://*:5555
+//  Expects "Hello" from client, replies with "World"
+//
 #include <iostream>
-#include <signal.h>
-#include <thread>
+#include <string>
+#include <zmq.hpp>
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <windows.h>
 
-using namespace Turkey;
+#define sleep(n) Sleep(n)
+#endif
 
-std::atomic<bool> quit(false); // signal flag
+int main() {
+  //  Prepare our context and socket
+  zmq::context_t context(1);
+  zmq::socket_t socket(context, ZMQ_REP);
+  socket.bind("tcp://*:5555");
 
-void got_signal(int) { quit.store(true); }
-
-int main(int argc, char* argv[]) {
-  // Set up signal handler.
-  struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
-  sa.sa_handler = got_signal;
-  sigfillset(&sa.sa_mask);
-  sigaction(SIGINT, &sa, NULL);
-
-  using namespace std::chrono_literals;
-  Server server;
-  std::cout << "Starting server" << std::endl;
   while (true) {
-    // do real work here...
-    std::this_thread::sleep_for(1s);
-    server.poll();
-    if (quit.load())
-      break; // exit normally after SIGINT
-  }
+    zmq::message_t request;
 
+    //  Wait for next request from client
+    socket.recv(&request);
+    std::cout << "Received Hello" << std::endl;
+
+    //  Do some 'work'
+    sleep(1);
+
+    //  Send reply back to client
+    zmq::message_t reply(5);
+    memcpy(reply.data(), "World", 5);
+    socket.send(reply);
+  }
   return 0;
 }
