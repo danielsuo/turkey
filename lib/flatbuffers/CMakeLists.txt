@@ -2,7 +2,9 @@ cmake_minimum_required (VERSION 3.5)
 
 include (ExternalProject)
 
-ExternalProject_Add (turkey-flatbuffers
+set (FLATBUFFERS_EXTERNAL_PROJECT flatbuffers-git)
+
+ExternalProject_Add (${FLATBUFFERS_EXTERNAL_PROJECT}
     GIT_REPOSITORY "https://github.com/google/flatbuffers.git"
     GIT_TAG "master"
     BUILD_IN_SOURCE 1
@@ -12,6 +14,7 @@ ExternalProject_Add (turkey-flatbuffers
     INSTALL_COMMAND ""
 )
 
-set (FLATBUFFERS_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/turkey-flatbuffers-prefix/src/turkey-flatbuffers/include PARENT_SCOPE)
-set (FLATBUFFERS_LINK_DIR ${CMAKE_CURRENT_BINARY_DIR}/turkey-flatbuffers-prefix/src/turkey-flatbuffers/include PARENT_SCOPE)
-set (FLATBUFFERS_FLATC_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/turkey-flatbuffers-prefix/src/turkey-flatbuffers/flatc PARENT_SCOPE)
+set (FLATBUFFERS_EXTERNAL_PROJECT ${FLATBUFFERS_EXTERNAL_PROJECT} PARENT_SCOPE)
+set (FLATBUFFERS_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/${FLATBUFFERS_EXTERNAL_PROJECT}-prefix/src/${FLATBUFFERS_EXTERNAL_PROJECT}/include PARENT_SCOPE)
+set (FLATBUFFERS_LINK_DIR ${CMAKE_CURRENT_BINARY_DIR}/${FLATBUFFERS_EXTERNAL_PROJECT}-prefix/src/${FLATBUFFERS_EXTERNAL_PROJECT}/include PARENT_SCOPE)
+set (FLATBUFFERS_FLATC_EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${FLATBUFFERS_EXTERNAL_PROJECT}-prefix/src/${FLATBUFFERS_EXTERNAL_PROJECT}/flatc PARENT_SCOPE)

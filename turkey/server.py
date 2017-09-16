@@ -2,8 +2,13 @@ import os
 import time
 import zmq
 
-from .scheduler import Scheduler
+from scheduler import Scheduler
 
+import flatbuffers
+from fbs.Turkey.Message import Message, MessageStart, MessageAddType, MessageAddData, MessageEnd
+from fbs.Turkey.MessageType import MessageType
+
+print Message.GetRootAsMessage
 
 class Server():
     def __init__(self, pid=None, protocol='ipc', address='turkey-server', port=None):
@@ -47,10 +52,27 @@ def loop(self, args):
     time.sleep(1)
     self.socket.send(b'Received your request!')
 
+def sched(self, args):
+    buf = self.socket.recv()
+    buf = bytearray(buf)
+    message = Message.GetRootAsMessage(buf, 0)
+
+    builder = flatbuffers.Builder(1024)
+    MessageStart(builder)
+    MessageAddType(builder, MessageType.Update)
+    MessageAddData(builder, 0)
+    reply = MessageEnd(builder)
+    builder.Finish(reply)
+
+    self.socket.send(builder.Output())
+
+    print(message.Data())
+    time.sleep(1)
+
 
 if __name__ == '__main__':
     print('Hello, world!')
     server = Server(protocol='tcp', address='*', port=5555)
     print(server.pid)
     print(server.url)
-    server.start(loop)
+    server.start(sched)

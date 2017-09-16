@@ -1,0 +1,10 @@
+namespace Turkey;
+
+enum MessageType:byte { Start = 0, Stop = 1, Update = 2 }
+
+table Message {
+  type:MessageType;
+  data:int;
+}
+
+root_type Message;

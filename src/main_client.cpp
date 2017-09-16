@@ -1,10 +1,11 @@
-#include "Client.h"
 #include <chrono>
 #include <glog/logging.h>
 #include <iostream>
 #include <thread>
 
 #include <zmq.hpp>
+
+#include "fbs/fbs.h"
 
 using namespace Turkey;
 
@@ -19,14 +20,23 @@ int main(int argc, char* argv[]) {
   socket.connect("tcp://localhost:5555");
 
   for (int i = 0; i < 10; i++) {
-    zmq::message_t request(5);
-    memcpy (request.data(), "Hello", 5);
+		flatbuffers::FlatBufferBuilder fbb;
+		MessageBuilder builder(fbb);
+
+		builder.add_type(MessageType_Start);
+		builder.add_data(i);
+    auto message = builder.Finish();
+    fbb.Finish(message);
+		
+    zmq::message_t request(fbb.GetSize());
+    memcpy (request.data(), fbb.GetBufferPointer(), fbb.GetSize());
     std::cout << "Sending Hello " << i << "..." << std::endl;
     socket.send(request);
 
     zmq::message_t reply;
     socket.recv(&reply);
-    std::cout << "Received " << reply.data() << std::endl;
+    auto reply_message = GetMessage(reply.data());
+    std::cout << "Received " << reply_message->data() << std::endl;
   }
   return 0;
 }
