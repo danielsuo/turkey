@@ -26,13 +26,21 @@ class Message(object):
         return 0
 
     # Message
-    def Data(self):
+    def Pid(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
-def MessageStart(builder): builder.StartObject(2)
+    # Message
+    def Data(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
+def MessageStart(builder): builder.StartObject(3)
 def MessageAddType(builder, type): builder.PrependInt8Slot(0, type, 0)
-def MessageAddData(builder, data): builder.PrependInt32Slot(1, data, 0)
+def MessageAddPid(builder, pid): builder.PrependInt32Slot(1, pid, 0)
+def MessageAddData(builder, data): builder.PrependInt32Slot(2, data, 0)
 def MessageEnd(builder): return builder.EndObject()

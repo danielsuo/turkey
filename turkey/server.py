@@ -3,12 +3,8 @@ import time
 import zmq
 
 from scheduler import Scheduler
-
-import flatbuffers
-from fbs.Turkey.Message import Message, MessageStart, MessageAddType, MessageAddData, MessageEnd
+from fbs import encodeMessage, decodeMessage
 from fbs.Turkey.MessageType import MessageType
-
-print Message.GetRootAsMessage
 
 class Server():
     def __init__(self, pid=None, protocol='ipc', address='turkey-server', port=None):
@@ -46,6 +42,7 @@ class Server():
             # 4. Send messages to tasks to update resource allocs
 
 
+
 def loop(self, args):
     message = self.socket.recv()
     print('Received request: %s' % message)
@@ -54,17 +51,10 @@ def loop(self, args):
 
 def sched(self, args):
     buf = self.socket.recv()
-    buf = bytearray(buf)
-    message = Message.GetRootAsMessage(buf, 0)
+    message = decodeMessage(buf)
 
-    builder = flatbuffers.Builder(1024)
-    MessageStart(builder)
-    MessageAddType(builder, MessageType.Update)
-    MessageAddData(builder, 0)
-    reply = MessageEnd(builder)
-    builder.Finish(reply)
 
-    self.socket.send(builder.Output())
+    self.socket.send(encodeMessage(MessageType.Update, 0))
 
     print(message.Data())
     time.sleep(1)

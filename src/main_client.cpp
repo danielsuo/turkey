@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 
 		builder.add_type(MessageType_Start);
 		builder.add_data(i);
+    builder.add_pid(getpid());
     auto message = builder.Finish();
     fbb.Finish(message);
 		

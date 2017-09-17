@@ -45,13 +45,20 @@ inline const char *EnumNameMessageType(MessageType e) {
 struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum {
     VT_TYPE = 4,
-    VT_DATA = 6
+    VT_PID = 6,
+    VT_DATA = 8
   };
   MessageType type() const {
     return static_cast<MessageType>(GetField<int8_t>(VT_TYPE, 0));
   }
   bool mutate_type(MessageType _type) {
     return SetField<int8_t>(VT_TYPE, static_cast<int8_t>(_type), 0);
+  }
+  int32_t pid() const {
+    return GetField<int32_t>(VT_PID, 0);
+  }
+  bool mutate_pid(int32_t _pid) {
+    return SetField<int32_t>(VT_PID, _pid, 0);
   }
   int32_t data() const {
     return GetField<int32_t>(VT_DATA, 0);
@@ -62,6 +69,7 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int8_t>(verifier, VT_TYPE) &&
+           VerifyField<int32_t>(verifier, VT_PID) &&
            VerifyField<int32_t>(verifier, VT_DATA) &&
            verifier.EndTable();
   }
@@ -72,6 +80,9 @@ struct MessageBuilder {
   flatbuffers::uoffset_t start_;
   void add_type(MessageType type) {
     fbb_.AddElement<int8_t>(Message::VT_TYPE, static_cast<int8_t>(type), 0);
+  }
+  void add_pid(int32_t pid) {
+    fbb_.AddElement<int32_t>(Message::VT_PID, pid, 0);
   }
   void add_data(int32_t data) {
     fbb_.AddElement<int32_t>(Message::VT_DATA, data, 0);
@@ -91,9 +102,11 @@ struct MessageBuilder {
 inline flatbuffers::Offset<Message> CreateMessage(
     flatbuffers::FlatBufferBuilder &_fbb,
     MessageType type = MessageType_Start,
+    int32_t pid = 0,
     int32_t data = 0) {
   MessageBuilder builder_(_fbb);
   builder_.add_data(data);
+  builder_.add_pid(pid);
   builder_.add_type(type);
   return builder_.Finish();
 }
