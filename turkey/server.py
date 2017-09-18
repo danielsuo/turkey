@@ -13,7 +13,7 @@ class Server():
         self.port = '' if port is None else str(port)
         self.pid = os.getpid() if pid is None else pid
         self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REP)
+        self.socket = self.context.socket(zmq.ROUTER)
 
         self.url = '%(protocol)s://%(address)s%(sep)s%(port)s' % {
             'protocol': self.protocol,

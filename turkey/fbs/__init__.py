@@ -1,14 +1,13 @@
 import flatbuffers
 
 from Turkey.Message import Message, MessageStart, MessageAddType, \
-        MessageAddData, MessageAddPid, MessageEnd
+        MessageAddData, MessageEnd
 
 
 def encodeMessage(messageType, pid, data):
     builder = flatbuffers.Builder(1024)
     MessageStart(builder)
     MessageAddType(builder, messageType)
-    MessageAddPid(builder, pid)
     MessageAddData(builder, data)
     reply = MessageEnd(builder)
     builder.Finish(reply)

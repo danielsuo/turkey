@@ -2,6 +2,7 @@
 #include <glog/logging.h>
 #include <iostream>
 #include <thread>
+#include <sstream>
 
 #include <zmq.hpp>
 
@@ -14,8 +15,11 @@ int main(int argc, char* argv[]) {
   std::cout << "Starting client" << std::endl;
 
   zmq::context_t context(1);
-  zmq::socket_t socket(context, ZMQ_REQ);
-  std::cout << "Connecting to hello world server..." << std::endl;
+  zmq::socket_t socket(context, ZMQ_DEALER);
+  std::stringstream ss;
+  ss << getpid();
+  socket.setsockopt(ZMQ_IDENTITY, ss.str().c_str(), ss.str().length());
+  std::cout << "Connecting to hello world server from client " << getpid() << "..." << std::endl;
   // socket.connect("ipc:///turkey-server");
   socket.connect("tcp://localhost:5555");
 
@@ -25,7 +29,6 @@ int main(int argc, char* argv[]) {
 
 		builder.add_type(MessageType_Start);
 		builder.add_data(i);
-    builder.add_pid(getpid());
     auto message = builder.Finish();
     fbb.Finish(message);
 		

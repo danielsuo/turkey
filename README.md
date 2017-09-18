@@ -92,3 +92,8 @@ scl enable devtoolset-6 bash
 - Server runs the Server's event loop, which is just message processor
 - It can receive start, stop, update messages
 - It can send resource allocation messages (e.g., # of threads)
+
+Notes on router-dealer
+- http://zguide.zeromq.org/py:rtdealer
+- http://zguide.zeromq.org/cpp:rtdealer
+- https://stackoverflow.com/questions/38978804/zeromq-master-slave-two-way-communication
