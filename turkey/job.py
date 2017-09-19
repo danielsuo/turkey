@@ -89,8 +89,10 @@ class Job:
             # the case where tasks are pinned to fewer than cpu_count number of
             # cores
             if self.intelligent:
-                args['threads'] = int(
-                    mp.cpu_count() / config.num_tasks_in_system)
+                task.args['nthreads'] = int(
+                    int(task.args['nthreads']) / max(config.num_tasks_in_system.value, 1))
+                print "HERE", task.args["nthreads"]
+
 
             # Wait before we deliver the next task
             # TODO: Not great that this happens on the main thread

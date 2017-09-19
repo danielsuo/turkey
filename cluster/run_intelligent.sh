@@ -32,7 +32,7 @@ pip install numpy --upgrade --user
 popd
 
 # Run job
-${turkey}/bin/run.py -q ${turkey} job ${turkey}/${jobfile} -i $TMPDIR/turkey -o ${out} -p 20
+${turkey}/bin/run.py -q ${turkey} job ${turkey}/${jobfile} -i $TMPDIR/turkey -o ${out} -p 20 --intelligent
 
 # Clean up (this shouldn't be necessary, but for whatever reason, had issues)
 rm -rf $TMPDIR/*
