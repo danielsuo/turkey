@@ -5,7 +5,7 @@
 namespace Turkey {
 
 DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
-    : currentNumThreads_(defaultNumThreads), client_(defaultNumThreads),
+    : currentNumThreads_(defaultNumThreads), client_("asdf"),
       pool_(defaultNumThreads) {
   using namespace std::chrono_literals;
   fs_.addFunction(std::bind(&DynamicThreadPool::updatePoolSize, this), 500ms,
@@ -19,7 +19,8 @@ void DynamicThreadPool::start() {
 size_t DynamicThreadPool::updatePoolSize() {
   size_t numThreads;
   try {
-    numThreads = client_.pollServer();
+    // numThreads = client_.pollServer();
+    numThreads = 10;
     LOG(INFO) << "Server rec: " << numThreads;
   } catch (const std::exception& ex) {
     LOG(ERROR) << "Error in Turkey Client: " << ex.what();

@@ -66,6 +66,7 @@ class Job:
                           for task in json.load(f)]
 
         self.pool_size = args.pool_size
+        self.num_cpus = args.num_cpus
 
         # TODO: might want a better name (i.e., moldable Linux)
         self.intelligent = args.intelligent
@@ -89,8 +90,8 @@ class Job:
             # the case where tasks are pinned to fewer than cpu_count number of
             # cores
             if self.intelligent:
-                args['threads'] = int(
-                    mp.cpu_count() / config.num_tasks_in_system)
+                args['nthreads'] = int(
+                    self.num_cpus / config.num_tasks_in_system)
 
             # Wait before we deliver the next task
             # TODO: Not great that this happens on the main thread

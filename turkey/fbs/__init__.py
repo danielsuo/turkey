@@ -4,7 +4,7 @@ from Turkey.Message import Message, MessageStart, MessageAddType, \
         MessageAddData, MessageEnd
 
 
-def encodeMessage(messageType, pid, data):
+def encodeMessage(messageType, data):
     builder = flatbuffers.Builder(1024)
     MessageStart(builder)
     MessageAddType(builder, messageType)

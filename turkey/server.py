@@ -43,21 +43,20 @@ class Server():
 
 
 
-def loop(self, args):
-    message = self.socket.recv()
-    print('Received request: %s' % message)
-    time.sleep(1)
-    self.socket.send(b'Received your request!')
-
 def sched(self, args):
+    # Get identity of sender
+    identity = self.socket.recv()
+
+    # Receive and toss out empty delimeter frame
+    self.socket.recv()
+
+    # Receive buffer data and decode
     buf = self.socket.recv()
     message = decodeMessage(buf)
 
-
-    self.socket.send(encodeMessage(MessageType.Update, 0))
+    self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 0)])
 
     print(message.Data())
-    time.sleep(1)
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@ build = subparsers.add_parser('build', help='Build specified app')
 build.add_argument('app', help='App to build', default='all')
 build.add_argument('-f', '--force', help='Force rebuild', action='store_true')
 build.add_argument(
-        '-e', '--cmake-executable', help='Path to cmake', default='cmake')
+    '-e', '--cmake-executable', help='Path to cmake', default='cmake')
 build.add_argument('-j', '--parallel', help='Parallelize', action='store_true')
 
 ###############################################################################
@@ -61,9 +61,11 @@ job.add_argument('file', help='Job file')
 job.add_argument('-o', '--out-dir', help='Output directory')
 job.add_argument('-i', '--in-dir', help='Input directory')
 job.add_argument('-p', '--pool-size',
-        help='Number of workers to gate', type=int, default=mp.cpu_count())
+                 help='Number of workers to gate', type=int, default=mp.cpu_count())
+job.add_argument('-c', '--num-cpus',
+                 help='Number of CPUs we are using', default=mp.cpu_count())
 job.add_argument('--intelligent',
-        help='Use intelligent Linux scheduler', action='store_true')
+                 help='Use intelligent Linux scheduler', action='store_true')
 
 ###############################################################################
 # One-off run subcommand
@@ -72,17 +74,17 @@ job.add_argument('--intelligent',
 one = subparsers.add_parser('one', help='Run one app')
 one.add_argument('app', help='App to run')
 one.add_argument(
-        '-n', '--num-threads', help='Number of threads', type=int, default=1)
+    '-n', '--num-threads', help='Number of threads', type=int, default=1)
 one.add_argument('-c', '--conf', help='Configuration to run', default='test')
 one.add_argument('-o', '--out-dir', help='Output directory')
 one.add_argument('-i', '--in-dir', help='Input directory')
 one.add_argument(
-        '-s',
-        '--output_to_stdout',
-        help='Dump to stdout instead of file',
-        action='store_true')
+    '-s',
+    '--output_to_stdout',
+    help='Dump to stdout instead of file',
+    action='store_true')
 one.add_argument(
-        '-m', '--mode', help='Which thread library to use', default='pthread')
+    '-m', '--mode', help='Which thread library to use', default='pthread')
 
 ###############################################################################
 # qsub cluster commands
@@ -90,16 +92,17 @@ one.add_argument(
 
 qsub = subparsers.add_parser('qsub', help='Run qsub jobs')
 qsub.add_argument(
-        'path', help='Job file or directory with job files to run relative to args.turkey_home')
+    'path', help='Job file or directory with job files to run relative to args.turkey_home')
 qsub.add_argument(
-        '-c',
-        '--ncpus',
-        help='Maximum number of simultaneous jobs',
-        type=int,
-        default=272)
+    '-c',
+    '--ncpus',
+    help='Maximum number of simultaneous jobs',
+    type=int,
+    default=272)
 qsub.add_argument('-r', '--run-script', help='Run script relative to args.turkey_home',
-        default='cluster/run.sh')
-qsub.add_argument('-m', '--email', help='Specify if you want to receive lots of emails...')
+                  default='cluster/run.sh')
+qsub.add_argument(
+    '-m', '--email', help='Specify if you want to receive lots of emails...')
 
 ###############################################################################
 # Parse subcommand
@@ -149,7 +152,7 @@ elif args.cmd == 'build':
     os.system('mkdir -p build')
     os.chdir(os.path.join(args.turkey_home, 'build'))
     os.system('%s .. -DMAKE=%s && make %s' % (args.cmake_executable, args.app,
-        ('-j' if args.parallel else '')))
+                                              ('-j' if args.parallel else '')))
     os.chdir(cwd)
 elif args.cmd == 'data':
 
@@ -167,14 +170,14 @@ elif args.cmd == 'job':
     job.run()
 elif args.cmd == 'one':
     task_args = {
-            'app': args.app,
-            'conf': args.conf,
-            'mode': args.mode,
-            'threads': args.num_threads
-            }
+        'app': args.app,
+        'conf': args.conf,
+        'mode': args.mode,
+        'threads': args.num_threads
+    }
 
     task = Task(task_args, out_dir=args.out_dir,
-            in_dir=args.in_dir, turkey_home=args.turkey_home)
+                in_dir=args.in_dir, turkey_home=args.turkey_home)
     task.run(stdout=args.output_to_stdout, wait=True)
 elif args.cmd == 'parse':
     parser = Parser(args)
