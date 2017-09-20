@@ -22,8 +22,8 @@ class Server():
             'port': self.port
         }
 
-        self.tasks = []
-        self.resources = []
+        self.tasks = {}
+        self.resources = {}
 
         self.scheduler = Scheduler()
 
@@ -54,9 +54,16 @@ def sched(self, args):
     buf = self.socket.recv()
     message = decodeMessage(buf)
 
-    self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 0)])
+    print(message.Data(), message.Type())
 
-    print(message.Data())
+    if (message.Type() == MessageType.Start):
+        self.tasks[identity] = {}
+        print('Registered client %d,%s!' % (message.Data(), identity))
+        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 16)])
+    elif (message.Type() == MessageType.Stop):
+        self.tasks.pop(identity, None)
+        print('Removed client %d,%s!' % (message.Data(), identity))
+
 
 
 if __name__ == '__main__':

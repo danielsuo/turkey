@@ -5,37 +5,30 @@
 namespace Turkey {
 
 DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
-    : currentNumThreads_(defaultNumThreads), client_("asdf"),
+    : currentNumThreads_(defaultNumThreads), client_("tcp://localhost:5555"),
       pool_(defaultNumThreads) {
-  using namespace std::chrono_literals;
-  fs_.addFunction(std::bind(&DynamicThreadPool::updatePoolSize, this), 500ms,
-                  "updatePoolSize");
+  client_.setHandler([this](const Message* msg) {
+    LOG(INFO) << "Got a message!";
+    if (msg->type() == MessageType_Update) {
+      LOG(INFO) << "Got update msg!";
+      this->currentNumThreads_ = msg->data();
+      this->pool_.setNumThreads(this->currentNumThreads_);
+    }
+  });
 }
 
 void DynamicThreadPool::start() {
-  fs_.start();
+  clientThread_ =
+      std::unique_ptr<std::thread>(new std::thread(&Client::start, &client_));
 }
 
-size_t DynamicThreadPool::updatePoolSize() {
-  size_t numThreads;
-  try {
-    // numThreads = client_.pollServer();
-    numThreads = 10;
-    LOG(INFO) << "Server rec: " << numThreads;
-  } catch (const std::exception& ex) {
-    LOG(ERROR) << "Error in Turkey Client: " << ex.what();
-    return currentNumThreads_;
-  }
-
-  if (numThreads == currentNumThreads_) {
-    // Shortcircuit to avoid locking the thread list
-    return currentNumThreads_;
-  }
-
-  LOG(INFO) << "Setting threads: " << numThreads;
-
-  pool_.setNumThreads(numThreads);
-  currentNumThreads_ = numThreads;
-  return numThreads;
+// TODO: this is pretty drastic. Means stop() should be the last thing you call
+// in your program. Such ugly. Much wow.
+// TODO: Do this in a nice way
+void DynamicThreadPool::stop() {
+  LOG(INFO) << "NOTE: Do not be alarmed by the termination error below. This "
+               "is terrible, yes, but we were in a hurry.";
+  client_.~Client();
+  std::terminate();
 }
 }

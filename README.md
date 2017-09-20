@@ -85,15 +85,9 @@ scl enable devtoolset-6 bash
 | water_spatial   |                 |                 |                 |
 
 ## TODO: move scheduler to Python
-- Addresses tied to PID for easy implementation
 - Job spawns a Server object which has a Scheduler
-- Each time a task begins, it connects to the Server
-- Server knows how many tasks are currently running, what their attributes are, etc
-- Server runs the Server's event loop, which is just message processor
-- It can receive start, stop, update messages
-- It can send resource allocation messages (e.g., # of threads)
-
-Notes on router-dealer
-- http://zguide.zeromq.org/py:rtdealer
-- http://zguide.zeromq.org/cpp:rtdealer
-- https://stackoverflow.com/questions/38978804/zeromq-master-slave-two-way-communication
+- Integrate back into blackscholes
+- Check that dynamic threads are working
+- Consider putting scheduler, server listener on different threads
+- Test multiple blackscholes processes
+- Implement "intelligent" Linux as a scheduling policy

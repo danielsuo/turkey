@@ -8,26 +8,25 @@
 namespace Turkey {
 class Client {
 public:
-  explicit Client(const char* const address);
+  explicit Client(const char* address,
+                  std::function<void(const Message*)> handler =
+                      [](const Message*) {});
   ~Client();
 
   // Delete copy ctor and copy-assignment ctor
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
 
-  // size_t pollServer();
-
+  void start();
   void sendMessage(MessageType type, int data);
-  const Message* recvAndProcessMessage();
+  void recvAndProcessMessage();
+  void setHandler(std::function<void(const Message*)> handler);
 
 private:
+  const char * address_;
   size_t rec_;
   zmq::context_t context_;
   zmq::socket_t socket_;
-
-  // void registerWithServer();
-  // boost::uuids::uuid id_;
-  // RecInfo rec_;
-  // bool registered_ = false;
+  std::function<void(const Message*)> handler_;
 };
 }
