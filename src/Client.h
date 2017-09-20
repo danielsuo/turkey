@@ -18,6 +18,7 @@ public:
   Client& operator=(const Client&) = delete;
 
   void start();
+  void stop();
   void sendMessage(MessageType type, int data);
   void recvAndProcessMessage();
   void setHandler(std::function<void(const Message*)> handler);

@@ -14,8 +14,8 @@ Client::Client(const char* address,
 
 Client::~Client() {
   LOG(INFO) << "Disconnecting from server (client " << getpid() << ")";
-  sendMessage(MessageType_Stop, getpid());
-  socket_.disconnect(address_);
+  // TODO: Should do this for cleanliness
+  // socket_.disconnect(address_);
 }
 
 void Client::start() {
@@ -26,6 +26,10 @@ void Client::start() {
   while(true) {
     recvAndProcessMessage();
   }
+}
+
+void Client::stop() {
+  sendMessage(MessageType_Stop, getpid());
 }
 
 void Client::sendMessage(MessageType type, int data) {
