@@ -376,5 +376,6 @@ int main(int argc, char** argv) {
   __parsec_bench_end();
 #endif
 
+  dtp.stop();
   return 0;
 }
