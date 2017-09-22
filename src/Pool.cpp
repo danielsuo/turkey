@@ -6,15 +6,15 @@ namespace Turkey {
 
 DynamicThreadPool::DynamicThreadPool(size_t defaultNumThreads)
     : currentNumThreads_(defaultNumThreads), client_("tcp://localhost:5555"),
-      pool_(defaultNumThreads) {
+      pool_(defaultNumThreads, 3) { // Make pool with three priorities
   client_.setHandler([this](const Message* msg) {
-    LOG(INFO) << "Got a message!";
     switch (msg->type()) {
     case MessageType_Stop:
+      LOG(INFO) << "Received Stop message from server";
       exit(0);
       break;
     case MessageType_Update:
-      LOG(INFO) << "Got update msg!";
+      LOG(INFO) << "Received Update message from server with data " << msg->data();
       this->currentNumThreads_ = msg->data();
       this->pool_.setNumThreads(this->currentNumThreads_);
       break;
