@@ -22,10 +22,12 @@ include_directories (
 # Set target name and source files
 add_executable (${PROJECT_NAME}_pthread
   ${CMAKE_CURRENT_SOURCE_DIR}/src/pthread/dedup.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/pthread/encoder.c
   ${SOURCE_FILES}
 )
 add_executable (${PROJECT_NAME}_turkey
   ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/dedup.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/encoder.c
   ${SOURCE_FILES}
 )
 
