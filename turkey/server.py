@@ -1,5 +1,4 @@
 import os
-import time
 import zmq
 
 from scheduler import Scheduler

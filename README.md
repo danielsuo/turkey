@@ -86,5 +86,7 @@ scl enable devtoolset-6 bash
 
 ## TODO: move scheduler to Python
 - Job spawns a Server object which has a Scheduler
-- Consider putting scheduler, server listener on different threads
+  - Add option to job to start server
+  - Add option to qsub to start server
 - Test multiple blackscholes processes
+- Consider putting scheduler, server listener on different threads
