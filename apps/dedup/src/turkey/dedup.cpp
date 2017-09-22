@@ -22,8 +22,6 @@ extern "C" {
 #include <hooks.h>
 #endif //ENABLE_PARSEC_HOOKS
 
-#include "Pool.h"
-
 config_t * conf;
 
 
@@ -125,13 +123,6 @@ int main(int argc, char** argv) {
       return -1;
     }
   }
-
-  // Turkey::DynamicThreadPool dtp(conf->nthreads);
-  // const auto nthreads = dtp.updatePoolSize();
-
-  // std::cout << "TURKEY MODE: overriding numthreads with: " << nthreads
-            // << std::endl;
-  // conf->nthreads = nthreads;
 
 #ifndef ENABLE_BZIP2_COMPRESSION
   if (conf->compress_type == COMPRESS_BZIP2) {
