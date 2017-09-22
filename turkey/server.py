@@ -7,7 +7,7 @@ from fbs import encodeMessage, decodeMessage
 from fbs.Turkey.MessageType import MessageType
 
 class Server():
-    def __init__(self, pid=None, protocol='ipc', address='turkey-server', port=None):
+    def __init__(self, num_cpus, pid=None, protocol='ipc', address='turkey-server', port=None):
         self.protocol = protocol
         self.address = address
         self.port = '' if port is None else str(port)
@@ -23,7 +23,7 @@ class Server():
         }
 
         self.tasks = {}
-        self.resources = {}
+        self.resources = num_cpus
 
         self.scheduler = Scheduler()
 
@@ -35,7 +35,6 @@ class Server():
         while True:
             func(self, args)
 
-            # TODO: implement scheduler loop
             # 1. On start / stop message:
             # 2. Update task list
             # 3. Call scheduler
@@ -54,26 +53,25 @@ def sched(self, args):
     buf = self.socket.recv()
     message = decodeMessage(buf)
 
-    print(message.Data(), message.Type())
-
     if (message.Type() == MessageType.Start):
         self.tasks[identity] = {}
         print('Registered client %d,%s!' % (message.Data(), identity))
-        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 4)])
-        time.sleep(3)
-        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 8)])
-        time.sleep(3)
-        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 1)])
     elif (message.Type() == MessageType.Stop):
         self.tasks.pop(identity, None)
         print('Removed client %d,%s!' % (message.Data(), identity))
         self.socket.send_multipart([identity, encodeMessage(MessageType.Stop, 0)])
 
+    # For now, schedule whenever we receive a message
+    self.scheduler.schedule(self.tasks, self.resources)
+
+    # Send a message to update each remaining task
+    for taskid in self.tasks:
+        self.socket.send_multipart([taskid, encodeMessage(MessageType.Update, self.tasks[taskid]['resources'])])
 
 
 if __name__ == '__main__':
     print('Hello, world!')
-    server = Server(protocol='tcp', address='*', port=5555)
+    server = Server(64, protocol='tcp', address='*', port=5555)
     print(server.pid)
     print(server.url)
     server.start(sched)

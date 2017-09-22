@@ -5,10 +5,8 @@ class Scheduler():
         self.timeout = 0
         self.last_schedule = datetime.datetime.now()
 
-        print('Hello, world!')
+    # TODO: for now, treat resources as an int
+    def schedule(self, tasks, resources):
+        for taskid in tasks:
+            tasks[taskid]['resources'] = int(resources / len(tasks.keys()))
 
-    def schedule(self):
-        # 1. Get list of current tasks
-        # 2. Get list of current resources
-        # 3. Return mapping of tasks to resources
-        print('scheduling...')
