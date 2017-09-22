@@ -103,6 +103,7 @@ qsub.add_argument('-r', '--run-script', help='Run script relative to args.turkey
                   default='cluster/run.sh')
 qsub.add_argument(
     '-m', '--email', help='Specify if you want to receive lots of emails...')
+qsub.add_argument('-p', '--pool-size', type=int, default=mp.cpu_count())
 
 ###############################################################################
 # Parse subcommand

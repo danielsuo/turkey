@@ -88,4 +88,3 @@ scl enable devtoolset-6 bash
 - Job spawns a Server object which has a Scheduler
 - Consider putting scheduler, server listener on different threads
 - Test multiple blackscholes processes
-- Implement "intelligent" Linux as a scheduling policy

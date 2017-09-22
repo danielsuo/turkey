@@ -14,7 +14,7 @@ def generate_cmd(args):
     cmd.append('-lselect=1:ncpus=%(ncpus)d -lplace=excl')
 
     # Arguments to pass into the run script
-    cmd.append('-v turkey=%(turkey_home)s,jobfile=%(jobfile)s,out=%(out_dir)s')
+    cmd.append('-v turkey=%(turkey_home)s,jobfile=%(jobfile)s,out=%(out_dir)s,poolsize=%(pool_size)d')
 
     # Redirect stdout
     cmd.append('-o %(out_dir)s/stdout.out')
@@ -33,6 +33,7 @@ def generate_cmd(args):
             'turkey_home': args.turkey_home,
             'jobfile': args.jobfile,
             'jobname': args.jobname,
+            'pool_size', args.pool_size,
             'out_dir': args.out_dir,
             'run_script': args.run_script,
             'email': args.email
