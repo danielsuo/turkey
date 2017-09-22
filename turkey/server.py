@@ -59,7 +59,7 @@ def sched(self, args):
     if (message.Type() == MessageType.Start):
         self.tasks[identity] = {}
         print('Registered client %d,%s!' % (message.Data(), identity))
-        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 16)])
+        self.socket.send_multipart([identity, encodeMessage(MessageType.Update, 8)])
     elif (message.Type() == MessageType.Stop):
         self.tasks.pop(identity, None)
         print('Removed client %d,%s!' % (message.Data(), identity))

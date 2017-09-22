@@ -1,6 +1,5 @@
 #pragma once
 #include "Common.h"
-#include <folly/Optional.h>
 
 #include "fbs/fbs.h"
 #include <zmq.hpp>

@@ -27,6 +27,7 @@ add_executable (${PROJECT_NAME}_equi ${CMAKE_CURRENT_SOURCE_DIR}/main_equi.cpp)
 set_target_properties (${PROJECT_NAME}_equi PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
 target_link_libraries(
   ${PROJECT_NAME}_equi
+  ${TURKEY_LIBRARIES}
   m
   ${CMAKE_THREAD_LIBS_INIT}
   )

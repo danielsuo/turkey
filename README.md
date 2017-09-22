@@ -86,8 +86,6 @@ scl enable devtoolset-6 bash
 
 ## TODO: move scheduler to Python
 - Job spawns a Server object which has a Scheduler
-- Integrate back into blackscholes
-- Check that dynamic threads are working
 - Consider putting scheduler, server listener on different threads
 - Test multiple blackscholes processes
 - Implement "intelligent" Linux as a scheduling policy
