@@ -18,7 +18,7 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/TaskQ)
 add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/Public_Library)
 
 # Include directories
-include_directories (${TURKEY_INCLUDE_DIR})
+# include_directories (${TURKEY_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 # include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 #
@@ -29,7 +29,7 @@ add_executable (${PROJECT_NAME}_pthread ${SOURCE_FILES})
 
 target_link_libraries(
     ${PROJECT_NAME}_pthread
-    ${TURKEY_LIBRARIES}
+    # ${TURKEY_LIBRARIES}
     physbam
     taskq
     m

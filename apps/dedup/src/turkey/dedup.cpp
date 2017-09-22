@@ -126,12 +126,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  Turkey::DynamicThreadPool dtp(conf->nthreads);
-  const auto nthreads = dtp.updatePoolSize();
+  // Turkey::DynamicThreadPool dtp(conf->nthreads);
+  // const auto nthreads = dtp.updatePoolSize();
 
-  std::cout << "TURKEY MODE: overriding numthreads with: " << nthreads
-            << std::endl;
-  conf->nthreads = nthreads;
+  // std::cout << "TURKEY MODE: overriding numthreads with: " << nthreads
+            // << std::endl;
+  // conf->nthreads = nthreads;
 
 #ifndef ENABLE_BZIP2_COMPRESSION
   if (conf->compress_type == COMPRESS_BZIP2) {

@@ -29,17 +29,17 @@ target_link_libraries(
   ${CMAKE_THREAD_LIBS_INIT}
   )
 
-add_executable (${PROJECT_NAME}_turkey
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/HJM_Securities.cpp
-  ${SOURCE_FILES}
-  )
-target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
-set_target_properties (${PROJECT_NAME}_turkey PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
-target_link_libraries(
-  ${PROJECT_NAME}_turkey
-  ${TURKEY_LIBRARIES}
-  m
-  ${CMAKE_THREAD_LIBS_INIT}
-  )
+# add_executable (${PROJECT_NAME}_turkey
+  # ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/HJM_Securities.cpp
+  # ${SOURCE_FILES}
+  # )
+# target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+# set_target_properties (${PROJECT_NAME}_turkey PROPERTIES COMPILE_DEFINITIONS "ENABLE_THREADS")
+# target_link_libraries(
+  # ${PROJECT_NAME}_turkey
+  # ${TURKEY_LIBRARIES}
+  # m
+  # ${CMAKE_THREAD_LIBS_INIT}
+  # )
 
-add_dependencies (${PROJECT_NAME}_turkey turkey)
+# add_dependencies (${PROJECT_NAME}_turkey turkey)

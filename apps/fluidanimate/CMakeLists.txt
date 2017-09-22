@@ -19,7 +19,7 @@ add_definitions (-D__XOPEN_SOURCE=600)
 # add_definitions (-DENABLE_VISUALIZATION)
 
 # Include directories
-include_directories (${TURKEY_INCLUDE_DIR})
+# include_directories (${TURKEY_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 #
 # file (GLOB SOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/**)
@@ -30,11 +30,11 @@ add_executable (${PROJECT_NAME}_pthread
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
   )
-add_executable (${PROJECT_NAME}_turkey
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
-  )
+# add_executable (${PROJECT_NAME}_turkey
+# ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey.cpp
+# ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
+# ${CMAKE_CURRENT_SOURCE_DIR}/src/cellpool.cpp
+# )
 # add_executable (${PROJECT_NAME}_tbb
 # ${CMAKE_CURRENT_SOURCE_DIR}/src/tbb.cpp
 # ${CMAKE_CURRENT_SOURCE_DIR}/src/parsec_barrier.cpp
@@ -49,15 +49,15 @@ target_link_libraries(
   m
   ${CMAKE_THREAD_LIBS_INIT}
   )
-target_link_libraries(
-  ${PROJECT_NAME}_turkey
-  ${TURKEY_LIBRARIES}
-  glut
-  GL
-  GLU
-  m
-  ${CMAKE_THREAD_LIBS_INIT}
-  )
+# target_link_libraries(
+# ${PROJECT_NAME}_turkey
+# ${TURKEY_LIBRARIES}
+# glut
+# GL
+# GLU
+# m
+# ${CMAKE_THREAD_LIBS_INIT}
+# )
 # target_link_libraries(
 # ${PROJECT_NAME}_tbb
 # tbb
@@ -68,6 +68,6 @@ target_link_libraries(
 # ${CMAKE_THREAD_LIBS_INIT}
 # )
 
-target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+# target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
 
-add_dependencies (${PROJECT_NAME}_turkey turkey)
+# add_dependencies (${PROJECT_NAME}_turkey turkey)
