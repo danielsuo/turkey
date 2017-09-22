@@ -113,33 +113,18 @@ function (make_turkey)
 	# Build client library
 	add_library (${PROJECT_NAME} SHARED
 		${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Pool.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
-		)
-
-	# Build dummy server
-	add_executable (
-		${PROJECT_NAME}_server
-
-		${CMAKE_CURRENT_SOURCE_DIR}/src/main_server.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Server.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/ProcReader.cpp
 		)
 
 	# Build dummy client
 	add_executable (
 		${PROJECT_NAME}_client
-
 		${CMAKE_CURRENT_SOURCE_DIR}/src/main_client.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/src/Client.cpp
 		)
 
   add_dependencies (${PROJECT_NAME} ${TURKEY_DEPS} "GENERATED_CXX_FLATBUFFERS" "GENERATED_PYTHON_FLATBUFFERS")
-	add_dependencies (${PROJECT_NAME}_server ${TURKEY_DEPS})
 	add_dependencies (${PROJECT_NAME}_client ${TURKEY_DEPS})
 
 	target_link_libraries (${PROJECT_NAME} ${TURKEY_LIB_DEPS})
-	target_link_libraries (${PROJECT_NAME}_server ${TURKEY_LIB_DEPS})
 	target_link_libraries (${PROJECT_NAME}_client ${TURKEY_LIB_DEPS} ${PROJECT_NAME})
 endfunction(make_turkey)
 

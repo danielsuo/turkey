@@ -1,15 +1,18 @@
 #pragma once
-#include "Common.h"
+#include <list>
+#include <thread>
 
 #include "fbs/fbs.h"
+#include <folly/Optional.h>
+#include <wangle/concurrent/CPUThreadPoolExecutor.h>
 #include <zmq.hpp>
 
 namespace Turkey {
 class Client {
 public:
-  explicit Client(const char* address,
-                  std::function<void(const Message*)> handler =
-                      [](const Message*) {});
+  explicit Client(const char* address = "tcp://localhost:5555", int numPools = 1,
+                  std::function<void(const Message*)> allocator = nullptr);
+
   ~Client();
 
   // Delete copy ctor and copy-assignment ctor
@@ -19,14 +22,20 @@ public:
   void start();
   void stop();
   void sendMessage(MessageType type, int data);
-  void recvAndProcessMessage();
-  void setHandler(std::function<void(const Message*)> handler);
+  void processMessage();
+  void setAllocator(std::function<void(const Message*)> allocator);
+  void createPool(int defaultNumThreads = 1, int numPriorities = 3);
+
+  // TODO: yeah, yeah, this should be private, but we don't have time for
+  // accessors!
+  std::list<wangle::CPUThreadPoolExecutor> pools;
 
 private:
-  const char * address_;
+  const char* address_;
   size_t rec_;
   zmq::context_t context_;
   zmq::socket_t socket_;
-  std::function<void(const Message*)> handler_;
+  std::function<void(const Message*)> allocator_;
+  std::unique_ptr<std::thread> messageProcessingThread_;
 };
 }

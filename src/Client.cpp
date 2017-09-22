@@ -4,12 +4,27 @@
 #include <sstream>
 
 namespace Turkey {
-Client::Client(const char* address,
-               std::function<void(const Message*)> handler)
-    : address_(address), rec_(0), context_(1), socket_(context_, ZMQ_DEALER), handler_(handler) {
+
+Client::Client(const char* address, int numPools,
+               std::function<void(const Message*)> allocator)
+    : address_(address), rec_(0), context_(1), socket_(context_, ZMQ_DEALER) {
   std::stringstream ss;
   ss << getpid();
   socket_.setsockopt(ZMQ_IDENTITY, ss.str().c_str(), ss.str().length());
+
+  for (int i = 0; i < numPools; i++) {
+    createPool();
+  }
+
+  if (allocator) {
+    setAllocator(allocator);
+  } else {
+    allocator_ = [this](const Message* msg) {
+      for (auto& pool : this->pools) {
+        pool.setNumThreads(msg->data());
+      }
+    };
+  }
 }
 
 Client::~Client() {
@@ -19,17 +34,14 @@ Client::~Client() {
 }
 
 void Client::start() {
-  LOG(INFO) << "Connecting to server (client " << getpid() << ")";
-  socket_.connect(address_);
-  sendMessage(MessageType_Start, getpid());
 
-  while(true) {
-    recvAndProcessMessage();
-  }
+  messageProcessingThread_ = std::unique_ptr<std::thread>(
+      new std::thread(&Client::processMessage, this));
 }
 
 void Client::stop() {
   sendMessage(MessageType_Stop, getpid());
+  messageProcessingThread_->join();
 }
 
 void Client::sendMessage(MessageType type, int data) {
@@ -49,19 +61,42 @@ void Client::sendMessage(MessageType type, int data) {
   socket_.send(encoded);
 }
 
-void Client::recvAndProcessMessage() {
-  zmq::message_t header;
-  zmq::message_t message;
+void Client::processMessage() {
+  LOG(INFO) << "Connecting to server (client " << getpid() << ")";
+  socket_.connect(address_);
 
-  socket_.recv(&header, ZMQ_RCVMORE);
-  socket_.recv(&message);
+  sendMessage(MessageType_Start, getpid());
 
-  auto msg = GetMessage(message.data());
+  while (true) {
+    zmq::message_t header;
+    zmq::message_t message;
 
-  handler_(msg);
+    socket_.recv(&header, ZMQ_RCVMORE);
+    socket_.recv(&message);
+
+    auto msg = GetMessage(message.data());
+
+    switch (msg->type()) {
+    case MessageType_Start:
+      LOG(INFO) << "Received start message from server";
+      break;
+    case MessageType_Stop:
+      LOG(INFO) << "Received stop message from server";
+      exit(0);
+      break;
+    case MessageType_Update:
+      LOG(INFO) << "Received Update message from server with data "
+                << msg->data();
+      allocator_(msg);
+    }
+  }
 }
 
-void Client::setHandler(std::function<void(const Message*)> handler) {
-  handler_ = handler;
+void Client::createPool(int defaultNumThreads, int numPriorities) {
+  pools.emplace_back(defaultNumThreads, numPriorities);
+}
+
+void Client::setAllocator(std::function<void(const Message*)> allocator) {
+  allocator_ = allocator;
 }
 }

@@ -11,7 +11,7 @@ set (CMAKE_BUILD_TYPE Debug)
 # Find packages
 find_package (Threads)
 # find_package (TBB)
-find_package (OpenMP)
+# find_package (OpenMP)
 
 # PTHREAD
 add_executable (${PROJECT_NAME}_pthread ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
@@ -43,24 +43,24 @@ target_link_libraries(
 # )
 
 # OpenMP
-add_executable (${PROJECT_NAME}_omp ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
-set_target_properties (${PROJECT_NAME}_omp PROPERTIES COMPILE_DEFINITIONS "ENABLE_OPENMP")
-target_link_libraries(
-  ${PROJECT_NAME}_omp
-  gomp
-  m
-  ${CMAKE_THREAD_LIBS_INIT}
-  )
+# add_executable (${PROJECT_NAME}_omp ${CMAKE_CURRENT_SOURCE_DIR}/main_pthread.cpp)
+# set_target_properties (${PROJECT_NAME}_omp PROPERTIES COMPILE_DEFINITIONS "ENABLE_OPENMP")
+# target_link_libraries(
+  # ${PROJECT_NAME}_omp
+  # gomp
+  # m
+  # ${CMAKE_THREAD_LIBS_INIT}
+  # )
 
 # TURKEY
-add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
-target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
-target_link_libraries(
-  ${PROJECT_NAME}_turkey
-  ${TURKEY_LIBRARIES}
-  m
-  ${CMAKE_THREAD_LIBS_INIT}
-  )
+# add_executable (${PROJECT_NAME}_turkey ${CMAKE_CURRENT_SOURCE_DIR}/main_turkey.cpp)
+# target_include_directories (${PROJECT_NAME}_turkey PUBLIC ${TURKEY_INCLUDE_DIRS})
+# target_link_libraries(
+  # ${PROJECT_NAME}_turkey
+  # ${TURKEY_LIBRARIES}
+  # m
+  # ${CMAKE_THREAD_LIBS_INIT}
+  # )
 
 # Utility
 add_executable (${PROJECT_NAME}_ascii2binary ${CMAKE_CURRENT_SOURCE_DIR}/ascii2binary.cpp)

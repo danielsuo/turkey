@@ -8,7 +8,7 @@
 // Prentice
 // Hall, John C. Hull,
 
-#include "Pool.h"
+#include "Client.h"
 #include "options.h"
 #include <folly/futures/Future.h>
 #include <glog/logging.h>
@@ -66,10 +66,10 @@ int main(int argc, char** argv) {
   printf("Num of Options: %d\n", numOptions);
   printf("Num of Runs: %d\n", NUM_RUNS);
 
-  Turkey::DynamicThreadPool dtp(nThreads);
-  auto& pool = dtp.getPool();
-  // Start the dynamic scheduler
-  dtp.start();
+  Turkey::Client client;
+  client.start();
+
+  auto& pool = client.pools.front();
   auto chunks = std::vector<int>(kNumWorkChunks);
   std::vector<folly::Future<folly::Unit>> futs;
   for (i = 0; i < kNumWorkChunks; i++) {
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   }
   folly::collectAll(futs).wait();
 
-  dtp.stop();
+  client.stop();
 
   return 0;
 }
