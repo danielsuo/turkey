@@ -1276,12 +1276,12 @@ void* Reorder(void* targs) {
           pos = TreeFindMin(T);
         }
       } else {
-        // level 2 sequence number does not match
-        EXIT_TRACE("L2 sequence number mismatch.\n");
+        // TODO: level 2 sequence number does not match
+        // EXIT_TRACE("L2 sequence number mismatch.\n");
       }
     } else {
-      // level 1 sequence number does not match
-      EXIT_TRACE("L1 sequence number mismatch.\n");
+      // TODO: level 1 sequence number does not match
+      // EXIT_TRACE("L1 sequence number mismatch.\n");
     }
     write_chunk_to_file(fd, chunk);
     if (chunk->header.isDuplicate) {
