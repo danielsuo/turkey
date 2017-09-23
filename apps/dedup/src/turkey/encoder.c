@@ -49,13 +49,11 @@
 
 #include <pthread.h>
 
-#ifdef ENABLE_PARSEC_HOOKS
-#include <hooks.h>
-#endif //ENABLE_PARSEC_HOOKS
-
-
 #define INITIAL_SEARCH_TREE_SIZE 4096
 
+
+//The queues between the pipeline stages
+queue_t *deduplicate_que, *refine_que, *reorder_que, *compress_que;
 
 //The configuration block defined in main
 config_t * conf;
@@ -87,8 +85,6 @@ struct thread_args {
   } input_file;
 };
 
-
-#ifdef ENABLE_STATISTICS
 //Keep track of block granularity with 2^CHUNK_GRANULARITY_POW resolution (for statistics)
 #define CHUNK_GRANULARITY_POW (7)
 //Number of blocks to distinguish, CHUNK_MAX_NUM * 2^CHUNK_GRANULARITY_POW is biggest block being recognized (for statistics)
@@ -109,96 +105,6 @@ typedef struct {
   unsigned int nChunks[CHUNK_MAX_NUM]; //Coarse-granular size distribution of data chunks
   unsigned int nDuplicates; //Total number of duplicate blocks
 } stats_t;
-
-//Initialize a statistics record
-static void init_stats(stats_t *s) {
-  int i;
-
-  assert(s!=NULL);
-  s->total_input = 0;
-  s->total_dedup = 0;
-  s->total_compressed = 0;
-  s->total_output = 0;
-
-  for(i=0; i<CHUNK_MAX_NUM; i++) {
-    s->nChunks[i] = 0;
-  }
-  s->nDuplicates = 0;
-}
-
-//The queues between the pipeline stages
-queue_t *deduplicate_que, *refine_que, *reorder_que, *compress_que;
-
-//Merge two statistics records: s1=s1+s2
-static void merge_stats(stats_t *s1, stats_t *s2) {
-  int i;
-
-  assert(s1!=NULL);
-  assert(s2!=NULL);
-  s1->total_input += s2->total_input;
-  s1->total_dedup += s2->total_dedup;
-  s1->total_compressed += s2->total_compressed;
-  s1->total_output += s2->total_output;
-
-  for(i=0; i<CHUNK_MAX_NUM; i++) {
-    s1->nChunks[i] += s2->nChunks[i];
-  }
-  s1->nDuplicates += s2->nDuplicates;
-}
-
-//Print statistics
-static void print_stats(stats_t *s) {
-  const unsigned int unit_str_size = 7; //elements in unit_str array
-  const char *unit_str[] = {"Bytes", "KB", "MB", "GB", "TB", "PB", "EB"};
-  unsigned int unit_idx = 0;
-  size_t unit_div = 1;
-
-  assert(s!=NULL);
-
-  //determine most suitable unit to use
-  for(unit_idx=0; unit_idx<unit_str_size; unit_idx++) {
-    unsigned int unit_div_next = unit_div * 1024;
-
-    if(s->total_input / unit_div_next <= 0) break;
-    if(s->total_dedup / unit_div_next <= 0) break;
-    if(s->total_compressed / unit_div_next <= 0) break;
-    if(s->total_output / unit_div_next <= 0) break;
-
-    unit_div = unit_div_next;
-  }
-
-  printf("Total input size:              %14.2f %s\n", (float)(s->total_input)/(float)(unit_div), unit_str[unit_idx]);
-  printf("Total output size:             %14.2f %s\n", (float)(s->total_output)/(float)(unit_div), unit_str[unit_idx]);
-  printf("Effective compression factor:  %14.2fx\n", (float)(s->total_input)/(float)(s->total_output));
-  printf("\n");
-
-  //Total number of chunks
-  unsigned int i;
-  unsigned int nTotalChunks=0;
-  for(i=0; i<CHUNK_MAX_NUM; i++) nTotalChunks+= s->nChunks[i];
-
-  //Average size of chunks
-  float mean_size = 0.0;
-  for(i=0; i<CHUNK_MAX_NUM; i++) mean_size += (float)(SLOT_TO_CHUNK_SIZE(i)) * (float)(s->nChunks[i]);
-  mean_size = mean_size / (float)nTotalChunks;
-
-  //Variance of chunk size
-  float var_size = 0.0;
-  for(i=0; i<CHUNK_MAX_NUM; i++) var_size += (mean_size - (float)(SLOT_TO_CHUNK_SIZE(i))) *
-                                             (mean_size - (float)(SLOT_TO_CHUNK_SIZE(i))) *
-                                             (float)(s->nChunks[i]);
-
-  printf("Mean data chunk size:          %14.2f %s (stddev: %.2f %s)\n", mean_size / 1024.0, "KB", sqrtf(var_size) / 1024.0, "KB");
-  printf("Amount of duplicate chunks:    %14.2f%%\n", 100.0*(float)(s->nDuplicates)/(float)(nTotalChunks));
-  printf("Data size after deduplication: %14.2f %s (compression factor: %.2fx)\n", (float)(s->total_dedup)/(float)(unit_div), unit_str[unit_idx], (float)(s->total_input)/(float)(s->total_dedup));
-  printf("Data size after compression:   %14.2f %s (compression factor: %.2fx)\n", (float)(s->total_compressed)/(float)(unit_div), unit_str[unit_idx], (float)(s->total_dedup)/(float)(s->total_compressed));
-  printf("Output overhead:               %14.2f%%\n", 100.0*(float)(s->total_output-s->total_compressed)/(float)(s->total_output));
-}
-
-//variable with global statistics
-stats_t stats;
-#endif //ENABLE_STATISTICS
-
 
 //Simple write utility function
 static int write_file(int fd, u_char type, u_long len, u_char * content) {
@@ -374,12 +280,6 @@ void *Compress(void * targs) {
 
   ringbuffer_t recv_buf, send_buf;
 
-#ifdef ENABLE_STATISTICS
-  stats_t *thread_stats = malloc(sizeof(stats_t));
-  if(thread_stats == NULL) EXIT_TRACE("Memory allocation failed.\n");
-  init_stats(thread_stats);
-#endif //ENABLE_STATISTICS
-
   r=0;
   r += ringbuffer_init(&recv_buf, ITEM_PER_FETCH);
   r += ringbuffer_init(&send_buf, ITEM_PER_INSERT);
@@ -397,10 +297,6 @@ void *Compress(void * targs) {
     assert(chunk!=NULL);
 
     sub_Compress(chunk);
-
-#ifdef ENABLE_STATISTICS
-    thread_stats->total_compressed += chunk->compressed_data.n;
-#endif //ENABLE_STATISTICS
 
     r = ringbuffer_insert(&send_buf, chunk);
     assert(r==0);
@@ -424,11 +320,7 @@ void *Compress(void * targs) {
   //shutdown
   queue_terminate(&reorder_que[qid]);
 
-#ifdef ENABLE_STATISTICS
-  return thread_stats;
-#else
   return NULL;
-#endif //ENABLE_STATISTICS
 }
 
 
@@ -491,14 +383,6 @@ void * Deduplicate(void * targs) {
 
   ringbuffer_t recv_buf, send_buf_reorder, send_buf_compress;
 
-#ifdef ENABLE_STATISTICS
-  stats_t *thread_stats = malloc(sizeof(stats_t));
-  if(thread_stats == NULL) {
-    EXIT_TRACE("Memory allocation failed.\n");
-  }
-  init_stats(thread_stats);
-#endif //ENABLE_STATISTICS
-
   r=0;
   r += ringbuffer_init(&recv_buf, CHUNK_ANCHOR_PER_FETCH);
   r += ringbuffer_init(&send_buf_reorder, ITEM_PER_INSERT);
@@ -518,14 +402,6 @@ void * Deduplicate(void * targs) {
 
     //Do the processing
     int isDuplicate = sub_Deduplicate(chunk);
-
-#ifdef ENABLE_STATISTICS
-    if(isDuplicate) {
-      thread_stats->nDuplicates++;
-    } else {
-      thread_stats->total_dedup += chunk->uncompressed_data.n;
-    }
-#endif //ENABLE_STATISTICS
 
     //Enqueue chunk either into compression queue or into send queue
     if(!isDuplicate) {
@@ -562,11 +438,7 @@ void * Deduplicate(void * targs) {
   //shutdown
   queue_terminate(&compress_que[qid]);
 
-#ifdef ENABLE_STATISTICS
-  return thread_stats;
-#else
   return NULL;
-#endif //ENABLE_STATISTICS
 }
 
 /*
@@ -598,14 +470,6 @@ void *FragmentRefine(void * targs) {
   r += ringbuffer_init(&recv_buf, MAX_PER_FETCH);
   r += ringbuffer_init(&send_buf, CHUNK_ANCHOR_PER_INSERT);
   assert(r==0);
-
-#ifdef ENABLE_STATISTICS
-  stats_t *thread_stats = malloc(sizeof(stats_t));
-  if(thread_stats == NULL) {
-    EXIT_TRACE("Memory allocation failed.\n");
-  }
-  init_stats(thread_stats);
-#endif //ENABLE_STATISTICS
 
   while (TRUE) {
     //if no item for process, get a group of items from the pipeline
@@ -644,11 +508,6 @@ void *FragmentRefine(void * targs) {
         chunk->isLastL2Chunk = FALSE;
         chcount++;
 
-#ifdef ENABLE_STATISTICS
-        //update statistics
-        thread_stats->nChunks[CHUNK_SIZE_TO_SLOT(chunk->uncompressed_data.n)]++;
-#endif //ENABLE_STATISTICS
-
         //put it into send buffer
         r = ringbuffer_insert(&send_buf, chunk);
         assert(r==0);
@@ -665,11 +524,6 @@ void *FragmentRefine(void * targs) {
         chunk->sequence.l2num = chcount;
         chunk->isLastL2Chunk = TRUE;
         chcount++;
-
-#ifdef ENABLE_STATISTICS
-        //update statistics
-        thread_stats->nChunks[CHUNK_SIZE_TO_SLOT(chunk->uncompressed_data.n)]++;
-#endif //ENABLE_STATISTICS
 
         //put it into send buffer
         r = ringbuffer_insert(&send_buf, chunk);
@@ -698,11 +552,7 @@ void *FragmentRefine(void * targs) {
 
   //shutdown
   queue_terminate(&deduplicate_que[qid]);
-#ifdef ENABLE_STATISTICS
-  return thread_stats;
-#else
   return NULL;
-#endif //ENABLE_STATISTICS
 }
 
 /* 
@@ -813,27 +663,12 @@ void *SerialIntegratedPipeline(void * targs) {
 
     //Check whether any new data was read in, process last chunk if not
     if(bytes_read == 0) {
-#ifdef ENABLE_STATISTICS
-      //update statistics
-      stats.nChunks[CHUNK_SIZE_TO_SLOT(chunk->uncompressed_data.n)]++;
-#endif //ENABLE_STATISTICS
-
       //Deduplicate
       int isDuplicate = sub_Deduplicate(chunk);
-#ifdef ENABLE_STATISTICS
-      if(isDuplicate) {
-        stats.nDuplicates++;
-      } else {
-        stats.total_dedup += chunk->uncompressed_data.n;
-      }
-#endif //ENABLE_STATISTICS
 
       //If chunk is unique compress & archive it.
       if(!isDuplicate) {
         sub_Compress(chunk);
-#ifdef ENABLE_STATISTICS
-        stats.total_compressed += chunk->compressed_data.n;
-#endif //ENABLE_STATISTICS
       }
 
       write_chunk_to_file(fd_out, chunk);
@@ -868,27 +703,12 @@ void *SerialIntegratedPipeline(void * targs) {
         if(r!=0) EXIT_TRACE("Unable to split memory buffer.\n");
         temp->header.state = CHUNK_STATE_UNCOMPRESSED;
 
-#ifdef ENABLE_STATISTICS
-        //update statistics
-        stats.nChunks[CHUNK_SIZE_TO_SLOT(chunk->uncompressed_data.n)]++;
-#endif //ENABLE_STATISTICS
-
         //Deduplicate
         int isDuplicate = sub_Deduplicate(chunk);
-#ifdef ENABLE_STATISTICS
-        if(isDuplicate) {
-          stats.nDuplicates++;
-        } else {
-          stats.total_dedup += chunk->uncompressed_data.n;
-        }
-#endif //ENABLE_STATISTICS
 
         //If chunk is unique compress & archive it.
         if(!isDuplicate) {
           sub_Compress(chunk);
-#ifdef ENABLE_STATISTICS
-          stats.total_compressed += chunk->compressed_data.n;
-#endif //ENABLE_STATISTICS
         }
 
         write_chunk_to_file(fd_out, chunk);
@@ -1310,10 +1130,6 @@ void Encode(config_t * _conf) {
 
   conf = _conf;
 
-#ifdef ENABLE_STATISTICS
-  init_stats(&stats);
-#endif
-
   //Create chunk cache
   cache = hashtable_create(65536, hash_from_key_fn, keys_equal_fn, FALSE);
   if(cache == NULL) {
@@ -1360,9 +1176,6 @@ void Encode(config_t * _conf) {
 
   if (!S_ISREG(filestat.st_mode)) 
     EXIT_TRACE("not a normal file: %s\n", conf->infile);
-#ifdef ENABLE_STATISTICS
-  stats.total_input = filestat.st_size;
-#endif //ENABLE_STATISTICS
 
   /* src file open */
   if((fd = open(conf->infile, O_RDONLY | O_LARGEFILE)) < 0) 
@@ -1418,10 +1231,6 @@ void Encode(config_t * _conf) {
   data_process_args.nqueues = nqueues;
   data_process_args.fd = fd;
 
-#ifdef ENABLE_PARSEC_HOOKS
-    __parsec_roi_begin();
-#endif
-
   //thread for first pipeline stage (input)
   pthread_create(&threads_process, NULL, Fragment, &data_process_args);
 
@@ -1451,7 +1260,7 @@ void Encode(config_t * _conf) {
   pthread_create(&threads_send, NULL, Reorder, &send_block_args);
 
   /*** parallel phase ***/
-
+  
   //Return values of threads
   stats_t *threads_anchor_rv[conf->nthreads];
   stats_t *threads_chunk_rv[conf->nthreads];
@@ -1467,10 +1276,6 @@ void Encode(config_t * _conf) {
     pthread_join(threads_compress[i], (void **)&threads_compress_rv[i]);
   pthread_join(threads_send, NULL);
 
-#ifdef ENABLE_PARSEC_HOOKS
-  __parsec_roi_end();
-#endif
-
   /* free queues */
   for(i=0; i<nqueues; i++) {
     queue_destroy(&deduplicate_que[i]);
@@ -1482,22 +1287,6 @@ void Encode(config_t * _conf) {
   free(refine_que);
   free(reorder_que);
   free(compress_que);
-
-#ifdef ENABLE_STATISTICS
-  //Merge everything into global `stats' structure
-  for(i=0; i<conf->nthreads; i++) {
-    merge_stats(&stats, threads_anchor_rv[i]);
-    free(threads_anchor_rv[i]);
-  }
-  for(i=0; i<conf->nthreads; i++) {
-    merge_stats(&stats, threads_chunk_rv[i]);
-    free(threads_chunk_rv[i]);
-  }
-  for(i=0; i<conf->nthreads; i++) {
-    merge_stats(&stats, threads_compress_rv[i]);
-    free(threads_compress_rv[i]);
-  }
-#endif //ENABLE_STATISTICS
 
 }
 
