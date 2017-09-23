@@ -42,8 +42,8 @@ extern "C" {
 #include "tree.h"
 }
 
-#include <glog/logging.h>
 #include <folly/MPMCQueue.h>
+#include <glog/logging.h>
 
 #ifdef ENABLE_GZIP_COMPRESSION
 #include <zlib.h>
@@ -60,6 +60,9 @@ extern "C" {
 // The queues between the pipeline stages
 queue_t *deduplicate_que, *refine_que, *reorder_que, *compress_que;
 folly::MPMCQueue<void*> queue_refine(QUEUE_SIZE);
+folly::MPMCQueue<void*> queue_deduplicate(QUEUE_SIZE);
+folly::MPMCQueue<void*> queue_compress(QUEUE_SIZE);
+folly::MPMCQueue<void*> queue_reorder(QUEUE_SIZE);
 
 int enqueue_from_ringbuffer(folly::MPMCQueue<void*>& queue, ringbuffer_t* buf,
                             int num) {
@@ -365,14 +368,18 @@ void* Compress(void* targs) {
   while (1) {
     // get items from the queue
     if (ringbuffer_isEmpty(&recv_buf)) {
-      r = queue_dequeue(compress_que, &recv_buf, ITEM_PER_FETCH);
+      // r = queue_dequeue(compress_que, &recv_buf, ITEM_PER_FETCH);
+      r = dequeue_to_ringbuffer(queue_compress, &recv_buf, ITEM_PER_FETCH);
       if (r < 0)
         break;
     }
 
     // fetch one item
     chunk = (chunk_t*)ringbuffer_remove(&recv_buf);
-    assert(chunk != NULL);
+    // assert(chunk != NULL);
+    if (chunk == NULL) {
+      continue;
+    }
 
     sub_Compress(chunk);
 
@@ -381,14 +388,16 @@ void* Compress(void* targs) {
 
     // put the item in the next queue for the write thread
     if (ringbuffer_isFull(&send_buf)) {
-      r = queue_enqueue(reorder_que, &send_buf, ITEM_PER_INSERT);
+      // r = queue_enqueue(reorder_que, &send_buf, ITEM_PER_INSERT);
+      r = enqueue_from_ringbuffer(queue_reorder, &send_buf, ITEM_PER_INSERT);
       assert(r >= 1);
     }
   }
 
   // Enqueue left over items
   while (!ringbuffer_isEmpty(&send_buf)) {
-    r = queue_enqueue(reorder_que, &send_buf, ITEM_PER_INSERT);
+    // r = queue_enqueue(reorder_que, &send_buf, ITEM_PER_INSERT);
+    r = enqueue_from_ringbuffer(queue_reorder, &send_buf, ITEM_PER_INSERT);
     assert(r >= 1);
   }
 
@@ -396,7 +405,8 @@ void* Compress(void* targs) {
   ringbuffer_destroy(&send_buf);
 
   // shutdown
-  queue_terminate(reorder_que);
+  // queue_terminate(reorder_que);
+  terminate_queue(queue_reorder);
 
   return NULL;
 }
@@ -471,14 +481,19 @@ void* Deduplicate(void* targs) {
   while (1) {
     // if no items available, fetch a group of items from the queue
     if (ringbuffer_isEmpty(&recv_buf)) {
-      r = queue_dequeue(deduplicate_que, &recv_buf, CHUNK_ANCHOR_PER_FETCH);
+      // r = queue_dequeue(deduplicate_que, &recv_buf, CHUNK_ANCHOR_PER_FETCH);
+      r = dequeue_to_ringbuffer(queue_deduplicate, &recv_buf,
+                                CHUNK_ANCHOR_PER_FETCH);
       if (r < 0)
         break;
     }
 
     // get one chunk
     chunk = (chunk_t*)ringbuffer_remove(&recv_buf);
-    assert(chunk != NULL);
+    // assert(chunk != NULL);
+    if (chunk == NULL) {
+      continue;
+    }
 
     // Do the processing
     int isDuplicate = sub_Deduplicate(chunk);
@@ -488,14 +503,17 @@ void* Deduplicate(void* targs) {
       r = ringbuffer_insert(&send_buf_compress, chunk);
       assert(r == 0);
       if (ringbuffer_isFull(&send_buf_compress)) {
-        r = queue_enqueue(compress_que, &send_buf_compress, ITEM_PER_INSERT);
+        // r = queue_enqueue(compress_que, &send_buf_compress, ITEM_PER_INSERT);
+        r = enqueue_from_ringbuffer(queue_compress, &send_buf_compress,
+                                    ITEM_PER_INSERT);
         assert(r >= 1);
       }
     } else {
       r = ringbuffer_insert(&send_buf_reorder, chunk);
       assert(r == 0);
       if (ringbuffer_isFull(&send_buf_reorder)) {
-        r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
+        // r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
+      r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder, ITEM_PER_INSERT);
         assert(r >= 1);
       }
     }
@@ -503,11 +521,14 @@ void* Deduplicate(void* targs) {
 
   // empty buffers
   while (!ringbuffer_isEmpty(&send_buf_compress)) {
-    r = queue_enqueue(compress_que, &send_buf_compress, ITEM_PER_INSERT);
+    // r = queue_enqueue(compress_que, &send_buf_compress, ITEM_PER_INSERT);
+    r = enqueue_from_ringbuffer(queue_compress, &send_buf_compress,
+                                ITEM_PER_INSERT);
     assert(r >= 1);
   }
   while (!ringbuffer_isEmpty(&send_buf_reorder)) {
-    r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
+    // r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
+      r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder, ITEM_PER_INSERT);
     assert(r >= 1);
   }
 
@@ -516,7 +537,8 @@ void* Deduplicate(void* targs) {
   ringbuffer_destroy(&send_buf_reorder);
 
   // shutdown
-  queue_terminate(compress_que);
+  // queue_terminate(compress_que);
+  terminate_queue(queue_compress);
 
   return NULL;
 }
@@ -601,8 +623,10 @@ void* FragmentRefine(void* targs) {
         r = ringbuffer_insert(&send_buf, chunk);
         assert(r == 0);
         if (ringbuffer_isFull(&send_buf)) {
-          r = queue_enqueue(deduplicate_que, &send_buf,
-                            CHUNK_ANCHOR_PER_INSERT);
+          // r = queue_enqueue(deduplicate_que, &send_buf,
+          // CHUNK_ANCHOR_PER_INSERT);
+          r = enqueue_from_ringbuffer(queue_deduplicate, &send_buf,
+                                      CHUNK_ANCHOR_PER_INSERT);
           assert(r >= 1);
         }
         // prepare for next iteration
@@ -619,8 +643,10 @@ void* FragmentRefine(void* targs) {
         r = ringbuffer_insert(&send_buf, chunk);
         assert(r == 0);
         if (ringbuffer_isFull(&send_buf)) {
-          r = queue_enqueue(deduplicate_que, &send_buf,
-                            CHUNK_ANCHOR_PER_INSERT);
+          // r = queue_enqueue(deduplicate_que, &send_buf,
+          // CHUNK_ANCHOR_PER_INSERT);
+          r = enqueue_from_ringbuffer(queue_deduplicate, &send_buf,
+                                      CHUNK_ANCHOR_PER_INSERT);
           assert(r >= 1);
         }
         // prepare for next iteration
@@ -632,7 +658,9 @@ void* FragmentRefine(void* targs) {
 
   // drain buffer
   while (!ringbuffer_isEmpty(&send_buf)) {
-    r = queue_enqueue(deduplicate_que, &send_buf, CHUNK_ANCHOR_PER_INSERT);
+    // r = queue_enqueue(deduplicate_que, &send_buf, CHUNK_ANCHOR_PER_INSERT);
+    r = enqueue_from_ringbuffer(queue_deduplicate, &send_buf,
+                                CHUNK_ANCHOR_PER_INSERT);
     assert(r >= 1);
   }
 
@@ -642,7 +670,8 @@ void* FragmentRefine(void* targs) {
   ringbuffer_destroy(&send_buf);
 
   // shutdown
-  queue_terminate(deduplicate_que);
+  // queue_terminate(deduplicate_que);
+  terminate_queue(queue_deduplicate);
   return NULL;
 }
 
@@ -1155,7 +1184,8 @@ void* Reorder(void* targs) {
     // get a group of items
     if (ringbuffer_isEmpty(&recv_buf)) {
       // process queues in round-robin fashion
-      r = queue_dequeue(reorder_que, &recv_buf, ITEM_PER_FETCH);
+      // r = queue_dequeue(reorder_que, &recv_buf, ITEM_PER_FETCH);
+      r = dequeue_to_ringbuffer(queue_reorder, &recv_buf, ITEM_PER_FETCH);
       if (r < 0)
         break;
     }
