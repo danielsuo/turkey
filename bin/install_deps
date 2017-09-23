@@ -45,7 +45,8 @@ sudo apt-get install -y \
   swig \
   libcurl4-openssl-dev \
   yasm \
-  gfortran
+  gfortran \
+  cgroup-tools
 
 
 # CentOS

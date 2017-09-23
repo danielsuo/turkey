@@ -53,4 +53,5 @@ sudo yum install -y \
   yasm \
   gfortran \
   libatomic-devel \
-  libunwind-devel
+  libunwind-devel \
+  libcgroup
