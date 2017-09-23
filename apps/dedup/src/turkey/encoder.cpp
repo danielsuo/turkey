@@ -42,9 +42,10 @@ extern "C" {
 #include "tree.h"
 }
 
-#include <glog/logging.h>
 #include "Client.h"
 #include "mpmc.h"
+#include <folly/futures/Future.h>
+#include <glog/logging.h>
 
 #ifdef ENABLE_GZIP_COMPRESSION
 #include <zlib.h>
@@ -59,6 +60,7 @@ extern "C" {
 #define INITIAL_SEARCH_TREE_SIZE 4096
 
 // The queues between the pipeline stages
+queue_t *deduplicate_que, *refine_que, *reorder_que, *compress_que;
 folly::MPMCQueue<void*> queue_refine(QUEUE_SIZE);
 folly::MPMCQueue<void*> queue_deduplicate(QUEUE_SIZE);
 folly::MPMCQueue<void*> queue_compress(QUEUE_SIZE);
@@ -122,6 +124,81 @@ typedef struct {
   unsigned int nDuplicates;            // Total number of duplicate blocks
 } stats_t;
 
+// Simple write utility function
+static int write_file(int fd, u_char type, u_long len, u_char* content) {
+  if (xwrite(fd, &type, sizeof(type)) < 0) {
+    perror("xwrite:");
+    EXIT_TRACE("xwrite type fails\n");
+    return -1;
+  }
+  if (xwrite(fd, &len, sizeof(len)) < 0) {
+    EXIT_TRACE("xwrite content fails\n");
+  }
+  if (xwrite(fd, content, len) < 0) {
+    EXIT_TRACE("xwrite content fails\n");
+  }
+  return 0;
+}
+
+/*
+ * Helper function that creates and initializes the output file
+ * Takes the file name to use as input and returns the file handle
+ * The output file can be used to write chunks without any further steps
+ */
+static int create_output_file(char* outfile) {
+  int fd;
+
+  // Create output file
+  fd = open(outfile, O_CREAT | O_TRUNC | O_WRONLY | O_TRUNC,
+            S_IRGRP | S_IWUSR | S_IRUSR | S_IROTH);
+  if (fd < 0) {
+    EXIT_TRACE("Cannot open output file.");
+  }
+
+  // Write header
+  if (write_header(fd, conf->compress_type)) {
+    EXIT_TRACE("Cannot write output file header.\n");
+  }
+
+  return fd;
+}
+
+/*
+ * Helper function that writes a chunk to an output file depending on
+ * its state. The function will write the SHA1 sum if the chunk has
+ * already been written before, or it will write the compressed data
+ * of the chunk if it has not been written yet.
+ *
+ * This function will block if the compressed data is not available yet.
+ * This function might update the state of the chunk if there are any changes.
+ */
+// NOTE: The parallel version checks the state of each chunk to make sure the
+//      relevant data is available. If it is not then the function waits.
+static void write_chunk_to_file(int fd, chunk_t* chunk) {
+  assert(chunk != NULL);
+
+  // Find original chunk
+  if (chunk->header.isDuplicate)
+    chunk = chunk->compressed_data_ref;
+
+  pthread_mutex_lock(&chunk->header.lock);
+  while (chunk->header.state == CHUNK_STATE_UNCOMPRESSED) {
+    pthread_cond_wait(&chunk->header.update, &chunk->header.lock);
+  }
+
+  // state is now guaranteed to be either COMPRESSED or FLUSHED
+  if (chunk->header.state == CHUNK_STATE_COMPRESSED) {
+    // Chunk data has not been written yet, do so now
+    write_file(fd, TYPE_COMPRESS, chunk->compressed_data.n,
+               chunk->compressed_data.ptr);
+    mbuffer_free(&chunk->compressed_data);
+    chunk->header.state = CHUNK_STATE_FLUSHED;
+  } else {
+    // Chunk data has been written to file before, just write SHA1
+    write_file(fd, TYPE_FINGERPRINT, SHA1_LEN, (unsigned char*)(chunk->sha1));
+  }
+  pthread_mutex_unlock(&chunk->header.lock);
+}
 
 int rf_win;
 int rf_win_dataprocess;
@@ -380,7 +457,8 @@ void* Deduplicate(void* targs) {
       assert(r == 0);
       if (ringbuffer_isFull(&send_buf_reorder)) {
         // r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
-      r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder, ITEM_PER_INSERT);
+        r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder,
+                                    ITEM_PER_INSERT);
         assert(r >= 1);
       }
     }
@@ -395,7 +473,8 @@ void* Deduplicate(void* targs) {
   }
   while (!ringbuffer_isEmpty(&send_buf_reorder)) {
     // r = queue_enqueue(reorder_que, &send_buf_reorder, ITEM_PER_INSERT);
-      r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder, ITEM_PER_INSERT);
+    r = enqueue_from_ringbuffer(queue_reorder, &send_buf_reorder,
+                                ITEM_PER_INSERT);
     assert(r >= 1);
   }
 
@@ -1152,7 +1231,8 @@ void* Reorder(void* targs) {
     }
     write_chunk_to_file(fd, chunk);
     if (chunk->header.isDuplicate) {
-      free(chunk);
+      // TODO: This is p bad.
+      // free(chunk);
       chunk = NULL;
     }
     sequence_inc_l2(&next);
@@ -1193,6 +1273,16 @@ void Encode(config_t* _conf) {
   struct thread_args data_process_args;
   int i;
 
+  const int nqueues = 1;
+  deduplicate_que   = malloc(sizeof(queue_t) * nqueues);
+  refine_que        = malloc(sizeof(queue_t) * nqueues);
+  reorder_que       = malloc(sizeof(queue_t) * nqueues);
+  compress_que      = malloc(sizeof(queue_t) * nqueues);
+  if ((deduplicate_que == NULL) || (refine_que == NULL) ||
+      (reorder_que == NULL) || (compress_que == NULL)) {
+    printf("Out of memory\n");
+    exit(1);
+  }
   assert(!mbuffer_system_init());
 
   /* src file stat */
@@ -1264,6 +1354,15 @@ void Encode(config_t* _conf) {
   data_process_args.tid = 0;
   data_process_args.fd  = fd;
 
+  // Create client
+  Turkey::Client client(conf->nthreads, 3);
+  client.start();
+
+  // Collect results using futures
+  std::vector<folly::Future<folly::Unit>> futs_anchor;
+  std::vector<folly::Future<folly::Unit>> futs_chunk;
+  std::vector<folly::Future<folly::Unit>> futs_compress;
+
   // thread for first pipeline stage (input)
   pthread_create(&threads_process, NULL, Fragment, &data_process_args);
 
@@ -1271,21 +1370,36 @@ void Encode(config_t* _conf) {
   struct thread_args anchor_thread_args[conf->nthreads];
   for (i = 0; i < conf->nthreads; i++) {
     anchor_thread_args[i].tid = i;
-    pthread_create(&threads_anchor[i], NULL, FragmentRefine,
-                   &anchor_thread_args[i]);
+    // pthread_create(&threads_anchor[i], NULL, FragmentRefine,
+    // &anchor_thread_args[i]);
+
+    void* arg = &anchor_thread_args[i];
+
+    futs_anchor.push_back(
+        folly::via(&client.getPool(0)).then([=]() { FragmentRefine(arg); }));
   }
 
   struct thread_args chunk_thread_args[conf->nthreads];
   for (i = 0; i < conf->nthreads; i++) {
     chunk_thread_args[i].tid = i;
-    pthread_create(&threads_chunk[i], NULL, Deduplicate, &chunk_thread_args[i]);
+    // pthread_create(&threads_chunk[i], NULL, Deduplicate,
+    // &chunk_thread_args[i]);
+
+    void* arg = &chunk_thread_args[i];
+
+    futs_chunk.push_back(
+        folly::via(&client.getPool(1)).then([=]() { Deduplicate(arg); }));
   }
 
   struct thread_args compress_thread_args[conf->nthreads];
   for (i = 0; i < conf->nthreads; i++) {
     compress_thread_args[i].tid = i;
-    pthread_create(&threads_compress[i], NULL, Compress,
-                   &compress_thread_args[i]);
+    // pthread_create(&threads_compress[i], NULL, Compress,
+    // &compress_thread_args[i]);
+    void* arg = &compress_thread_args[i];
+
+    futs_compress.push_back(
+        folly::via(&client.getPool(2)).then([=]() { Compress(arg); }));
   }
 
   // thread for last pipeline stage (output)
@@ -1302,11 +1416,22 @@ void Encode(config_t* _conf) {
 
   // join all threads
   pthread_join(threads_process, NULL);
-  for (i = 0; i < conf->nthreads; i++)
-    pthread_join(threads_anchor[i], (void**)&threads_anchor_rv[i]);
-  for (i = 0; i < conf->nthreads; i++)
-    pthread_join(threads_chunk[i], (void**)&threads_chunk_rv[i]);
-  for (i = 0; i < conf->nthreads; i++)
-    pthread_join(threads_compress[i], (void**)&threads_compress_rv[i]);
+  folly::collectAll(futs_anchor).wait();
+  folly::collectAll(futs_chunk).wait();
+  folly::collectAll(futs_compress).wait();
+  // for (i = 0; i < conf->nthreads; i++)
+  // pthread_join(threads_anchor[i], (void**)&threads_anchor_rv[i]);
+  // for (i = 0; i < conf->nthreads; i++)
+  // pthread_join(threads_chunk[i], (void**)&threads_chunk_rv[i]);
+  // for (i = 0; i < conf->nthreads; i++)
+  // pthread_join(threads_compress[i], (void**)&threads_compress_rv[i]);
   pthread_join(threads_send, NULL);
+  client.stop();
+
+  free(deduplicate_que);
+  free(refine_que);
+  free(reorder_que);
+  free(compress_que);
+
+  exit(0);
 }

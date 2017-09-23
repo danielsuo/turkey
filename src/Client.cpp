@@ -5,9 +5,10 @@
 
 namespace Turkey {
 
-Client::Client(int defaultNumThreads, const char* address, int numPools,
+Client::Client(int defaultNumThreads, int numPools, const char* address,
                std::function<void(const Message*)> allocator)
-    : address_(address), rec_(0), context_(1), socket_(context_, ZMQ_DEALER) {
+    : address_(address), rec_(0), registered_(false), context_(1),
+      socket_(context_, ZMQ_DEALER) {
   std::stringstream ss;
   ss << getpid();
   socket_.setsockopt(ZMQ_IDENTITY, ss.str().c_str(), ss.str().length());
@@ -40,8 +41,18 @@ void Client::start() {
 }
 
 void Client::stop() {
-  sendMessage(MessageType_Stop, getpid());
-  messageProcessingThread_->join();
+  // Join all the pool threads
+  for (auto& pool : pools) {
+    pool.join();
+  }
+
+  // If registered with server, send a stop message and join
+  if (registered_) {
+    sendMessage(MessageType_Stop, getpid());
+    messageProcessingThread_->join();
+  }
+
+  LOG(INFO) << "Client stopped.";
 }
 
 void Client::sendMessage(MessageType type, int data) {
@@ -65,15 +76,31 @@ void Client::processMessage() {
   LOG(INFO) << "Connecting to server (client " << getpid() << ")";
   socket_.connect(address_);
 
+  LOG(INFO) << "Registering...";
   sendMessage(MessageType_Start, getpid());
 
+  // No retries, http://zguide.zeromq.org/cpp:lpclient
+  while (true) {
+    zmq::pollitem_t item = {socket_, 0, ZMQ_POLLIN, 0};
+    zmq::poll(&item, 1, 1000);
+
+    if (item.revents & ZMQ_POLLIN) {
+      LOG(INFO) << "Registered with server!";
+      registered_ = true;
+      break;
+    } else {
+      LOG(INFO) << "Unabled to reach server";
+      return;
+    }
+  }
+
+  LOG(INFO) << "Starting message processing loop";
   while (true) {
     zmq::message_t header;
     zmq::message_t message;
 
     socket_.recv(&header, ZMQ_RCVMORE);
     socket_.recv(&message);
-
     auto msg = GetMessage(message.data());
 
     switch (msg->type()) {
@@ -85,15 +112,25 @@ void Client::processMessage() {
       exit(0);
       break;
     case MessageType_Update:
-      LOG(INFO) << "Received Update message from server with data "
+      LOG(INFO) << "Received update message from server with data "
                 << msg->data();
       allocator_(msg);
     }
   }
-}
 
+}
 void Client::createPool(int defaultNumThreads, int numPriorities) {
   pools.emplace_back(defaultNumThreads, numPriorities);
+}
+
+wangle::CPUThreadPoolExecutor& Client::getPool(int index) {
+  if (pools.size() > index) {
+    std::list<wangle::CPUThreadPoolExecutor>::iterator it = pools.begin();
+    std::advance(it, index);
+    return *it;
+  }
+
+  throw std::invalid_argument("client doesn't have that many pools");
 }
 
 void Client::setAllocator(std::function<void(const Message*)> allocator) {

@@ -10,9 +10,8 @@
 namespace Turkey {
 class Client {
 public:
-  explicit Client(int defaultNumThreads = 1,
-                  const char* address   = "tcp://localhost:5555",
-                  int numPools          = 1,
+  explicit Client(int defaultNumThreads = 1, int numPools = 1,
+                  const char* address = "tcp://localhost:5555",
                   std::function<void(const Message*)> allocator = nullptr);
 
   ~Client();
@@ -27,6 +26,7 @@ public:
   void processMessage();
   void setAllocator(std::function<void(const Message*)> allocator);
   void createPool(int defaultNumThreads = 1, int numPriorities = 3);
+  wangle::CPUThreadPoolExecutor& getPool(int index = 0);
 
   // TODO: yeah, yeah, this should be private, but we don't have time for
   // accessors!
@@ -35,6 +35,7 @@ public:
 private:
   const char* address_;
   size_t rec_;
+  bool registered_;
   zmq::context_t context_;
   zmq::socket_t socket_;
   std::function<void(const Message*)> allocator_;
