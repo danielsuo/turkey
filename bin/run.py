@@ -12,7 +12,7 @@ from turkey import Job, Task, Generator, Parser, Visualizer, Qsub, apps
 # TODO: https://argcomplete.readthedocs.io/en/latest/
 
 parser = argparse.ArgumentParser(description='Turkey job runner')
-parser.add_argument('-q', '--turkey-home', help='Turkey home directory')
+parser.add_argument('-T', '--turkey-home', help='Turkey home directory')
 subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 ###############################################################################
@@ -104,6 +104,7 @@ qsub.add_argument('-r', '--run-script', help='Run script relative to args.turkey
 qsub.add_argument(
     '-m', '--email', help='Specify if you want to receive lots of emails...')
 qsub.add_argument('-p', '--pool-size', type=int, default=mp.cpu_count())
+qsub.add_argument('-q', '--queue', default='princeton')
 
 ###############################################################################
 # Parse subcommand

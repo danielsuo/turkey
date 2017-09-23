@@ -22,6 +22,9 @@ def generate_cmd(args):
     # Redirect stderr
     cmd.append('-e %(out_dir)s/stderr.out')
 
+    # Add to a specific queue
+    cmd.append('-q %(queue)s')
+
     # Mail whenever job begins, aborts, ends, or is killed
     if args.email is not None:
         cmd.append('-M %(email)s -m abe')
@@ -36,7 +39,8 @@ def generate_cmd(args):
             'pool_size': args.pool_size,
             'out_dir': args.out_dir,
             'run_script': args.run_script,
-            'email': args.email
+            'email': args.email,
+            'queue': args.queue
             }
 
     return cmd
