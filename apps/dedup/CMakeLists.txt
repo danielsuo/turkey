@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.5)
 project (dedup CXX)
 
 # set(CMAKE_C_STANDARD 99)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 
 # Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
@@ -27,7 +28,7 @@ add_executable (${PROJECT_NAME}_pthread
 )
 add_executable (${PROJECT_NAME}_turkey
   ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/dedup.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/encoder.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/turkey/encoder.cpp
   ${SOURCE_FILES}
 )
 
