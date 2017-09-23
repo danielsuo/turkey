@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.5)
 project (dedup CXX)
 
 # set(CMAKE_C_STANDARD 99)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -w")
 
 # Set compiler flags
 set (CMAKE_BUILD_TYPE Debug)
