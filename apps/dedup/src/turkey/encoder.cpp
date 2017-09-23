@@ -44,6 +44,7 @@ extern "C" {
 
 #include <folly/MPMCQueue.h>
 #include <glog/logging.h>
+#include "Client.h"
 
 #ifdef ENABLE_GZIP_COMPRESSION
 #include <zlib.h>
@@ -58,7 +59,6 @@ extern "C" {
 #define INITIAL_SEARCH_TREE_SIZE 4096
 
 // The queues between the pipeline stages
-queue_t *deduplicate_que, *refine_que, *reorder_que, *compress_que;
 folly::MPMCQueue<void*> queue_refine(QUEUE_SIZE);
 folly::MPMCQueue<void*> queue_deduplicate(QUEUE_SIZE);
 folly::MPMCQueue<void*> queue_compress(QUEUE_SIZE);
@@ -1326,25 +1326,6 @@ void Encode(config_t* _conf) {
   struct thread_args data_process_args;
   int i;
 
-  // queue allocation & initialization
-  deduplicate_que = malloc(sizeof(queue_t));
-  refine_que      = malloc(sizeof(queue_t));
-  reorder_que     = malloc(sizeof(queue_t));
-  compress_que    = malloc(sizeof(queue_t));
-  if ((deduplicate_que == NULL) || (refine_que == NULL) ||
-      (reorder_que == NULL) || (compress_que == NULL)) {
-    printf("Out of memory\n");
-    exit(1);
-  }
-
-  int threads_per_queue = conf->nthreads;
-
-  // call queue_init with threads_per_queue
-  queue_init(deduplicate_que, QUEUE_SIZE, threads_per_queue);
-  queue_init(refine_que, QUEUE_SIZE, 1);
-  queue_init(reorder_que, QUEUE_SIZE, threads_per_queue);
-  queue_init(compress_que, QUEUE_SIZE, threads_per_queue);
-
   assert(!mbuffer_system_init());
 
   /* src file stat */
@@ -1461,15 +1442,4 @@ void Encode(config_t* _conf) {
   for (i = 0; i < conf->nthreads; i++)
     pthread_join(threads_compress[i], (void**)&threads_compress_rv[i]);
   pthread_join(threads_send, NULL);
-
-  /* free queues */
-  queue_destroy(deduplicate_que);
-  queue_destroy(refine_que);
-  queue_destroy(reorder_que);
-  queue_destroy(compress_que);
-
-  free(deduplicate_que);
-  free(refine_que);
-  free(reorder_que);
-  free(compress_que);
 }
