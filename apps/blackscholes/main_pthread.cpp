@@ -15,8 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Pool.h"
-
 #ifdef ENABLE_PARSEC_HOOKS
 #include <hooks.h>
 #endif

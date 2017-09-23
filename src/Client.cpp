@@ -5,7 +5,7 @@
 
 namespace Turkey {
 
-Client::Client(const char* address, int numPools,
+Client::Client(int defaultNumThreads, const char* address, int numPools,
                std::function<void(const Message*)> allocator)
     : address_(address), rec_(0), context_(1), socket_(context_, ZMQ_DEALER) {
   std::stringstream ss;
@@ -13,7 +13,7 @@ Client::Client(const char* address, int numPools,
   socket_.setsockopt(ZMQ_IDENTITY, ss.str().c_str(), ss.str().length());
 
   for (int i = 0; i < numPools; i++) {
-    createPool();
+    createPool(defaultNumThreads);
   }
 
   if (allocator) {

@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   printf("Num of Options: %d\n", numOptions);
   printf("Num of Runs: %d\n", NUM_RUNS);
 
-  Turkey::Client client;
+  Turkey::Client client(nThreads);
   client.start();
 
   auto& pool = client.pools.front();

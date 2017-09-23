@@ -10,7 +10,9 @@
 namespace Turkey {
 class Client {
 public:
-  explicit Client(const char* address = "tcp://localhost:5555", int numPools = 1,
+  explicit Client(int defaultNumThreads = 1,
+                  const char* address   = "tcp://localhost:5555",
+                  int numPools          = 1,
                   std::function<void(const Message*)> allocator = nullptr);
 
   ~Client();
